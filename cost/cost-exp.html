@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="./jsPsych/jspsych.js"></script>
+        <script src="./jsPsych/plugins/jspsych-html-keyboard-response.js"></script>
+        <script src="./jsPsych/plugins/jspsych-categorize-image.js"></script>
+        <script src="./jsPsych/plugins/jspsych-categorize-html.js"></script>
+        <script src="./jsPsych/plugins/jspsych-fullscreen.js"></script>
+        <script src="./jsPsych/plugins/jspsych-survey-multi-choice.js"></script>
+        <script src="./jsPsych/plugins/jspsych-survey-text.js"></script>
+        <script src="./jsPsych/plugins/jspsych-html-slider-response.js"></script>
+        <script src="./custom_plugins/helper_functions.js"></script>
+        <script src="./custom_plugins/create_instructions.js"></script>
+        <script src="./custom_plugins/bdm_quiz_script.js"></script>        
+        <script src="./custom_plugins/nBack_plugins_v02.js"></script>
+        <script src="./custom_plugins/n-switch_plugins.js"></script>
+        <script src="./custom_plugins/practice_nBack_progression_script.js"></script>
+        <script src="./custom_plugins/detection_plugins.js"></script>
+        <script src="./custom_plugins/test_detection.js"></script>
+        <script src="./custom_plugins/main_timeline_creation.js"></script>
+        <script src="./custom_plugins/questionnaires.js"></script>
+        <link rel="stylesheet" href="./jsPsych/css/jspsych.css">
+        <style>
+        #jspsych-html-keyboard-response-stimulus {
+            font-size: 30px !important
+        }
+        #jspsych-categorize-html-stimulus {
+            font-size: 30px !important
+        }
+        #jspsych-categorize-html-feedback {
+            font-size: 30px !important
+        } 
+        #jspsych-html-slider-response-prompt {
+            font-size: 25px !important
+        }          
+        </style>
+    </head>
+    <body>
+    </body>
+    <script>
+      // to - do:
+      // give specific error messages also "you held the key down" or "you missed too many targets" in 
+      // end feedback screen?
+      // go through and make sure data saving makes practical sense
+      // make code prettier!
+
+      exp_version = 2;
+      // 1 is the combine, detection version
+      // 2 is the n-switch version
+
+      var debug = false;
+
+      // set up initial global variables
+      answer_key_names = ['H','K'];
+      if(Math.random()<0.5){ //50-50 shot, counterbalancing across subjects
+        answer_key_names = ['K','H'];
+      }
+      var answer_keys = [jsPsych.pluginAPI.convertKeyCharacterToKeyCode(answer_key_names[0]),jsPsych.pluginAPI.convertKeyCharacterToKeyCode('z'),jsPsych.pluginAPI.convertKeyCharacterToKeyCode(answer_key_names[1])];
+
+      var cutoff = 80; //set up the global accuracy cutoffs
+      var cutoff_percent = cutoff; //for instructions
+      var bdmcutoff = 65;
+      var stimuli = ["E","R","X","T"];
+      var detection_target = stimuli.slice(-1)[0];
+      var num_stim = stimuli.length-1; 
+      var color = 'black'; //default text color
+      var response_color = 'red'; //color change for response
+      var n_switch_colors = ['blue','red'];
+      if(Math.random()<0.5){
+        //counterbalance colors across subjects
+        n_switch_colors = ['red','blue'];
+      }
+      var n_switch_response_names = ['smaller','larger','even','odd'];
+      var n_switch_rule_sides = [1,2];
+      if(Math.random()<0.5){
+        //counterbalance colors across subjects
+        n_switch_response_names = ['even','odd','smaller','larger'];
+        n_switch_rule_sides = [2,1];
+      }
+      var rule_names = ['magnitude (less than or greater than 5?)','parity (even or odd?)']
+
+      /*var fb_img_paths = ["<p 'font-size':100px 'font-color':'blue'> E </p>", "<p 'font-size':100px 'font-color':'blue'> R </p>", "<p 'font-size':100px 'font-color':'blue'> T </p>"];*/
+      var fractals = ['<img src="./static/img/fractal1.jpg" width="250" height="250"','<img src="./static/img/fractal2.png" width="250" height="250"', '<img src="./static/img/fractal3.jpg" width="250" height="250"',
+      '<img src="./static/img/fractal4.png" width="250" height="250"', '<img src="./static/img/fractal5.jpg" width="250" height="250"']; //list out img sources 
+      var all_images = [];
+      all_images.push(fractals);
+      
+      var fractals = randomizeList(fractals); //randomize fractals
+
+      var instructs_timing = 30000;
+      var feedback_timing = 750;
+      var stim_timing = 1500;
+      var ITI_timing = 300;
+      
+      var value_list = []; //for subjects' responses on how many points they want to do each task, regardless of whether they do it
+      var points = 0; //updated every BDM loop
+      var offer = []; // also updated every BDM loop
+      var points_list = []; //how many points they actually get, task by task
+      var offer_list = []; //keep track of what the computer's offering
+      var performance_list = []; //keep track of block-wise performance for kill-check purposes
+      var accuracy = 0;
+      var kill_check = false;
+
+      // SET NUMBER OF BLOCKS HERE
+      var n_repetitions = 12;
+      if(debug){
+        n_repetitions = 2;
+      }
+      //SET NUMBER OF BLOCKS HERE
+      //task list 
+      //0 is combine
+      //1 is detection
+      //2 is n-back
+      //3 is n-switch, hard
+      //4 is n-switch, easy
+      var task_list = new Array(n_repetitions);
+      task_list.fill(0);
+      if(exp_version==2){
+        task_list.fill(3);
+      }
+      var blocknums = [];
+      blocknums.push([0,(n_repetitions/2)-1]);
+      blocknums.push([n_repetitions/2,n_repetitions-1]); //to feed into main timeline creation loop
+
+      var experiment_instructions = {
+        timeline: create_experiment_instructions() 
+        //this function does it all: game instructions, practice games, BDM instructions, BDM quiz, transition to real task
+      };
+
+      var temp_timeline = [];
+
+      if(!debug){
+        temp_timeline.push({
+          type: 'fullscreen',
+          fullscreen_mode: true
+        });
+      }
+
+      temp_timeline.push(experiment_instructions); //initialize timeline with just instructions
+
+      var firstHalf = {
+          timeline: create_main_timeline(blocknums[0],task_list),
+          conditional_function: function(){
+            accuracy = gradeBDMquiz();
+            return compareToCutoff(accuracy);
+          }
+        };
+
+        temp_timeline.push(firstHalf);
+
+        var secondHalf = {
+          timeline: create_main_timeline(blocknums[1],task_list),
+          conditional_function: function(){
+            accuracy = keepTrackofPerformance();
+            return compareToCutoff(accuracy);
+          }
+        };
+
+        moreBDM = {
+          timeline: [{
+            type: "html-keyboard-response",
+            stimulus: "<p>This experiment is almost over. Please press <strong>M</strong> if you'd like to read more about the process we used to determine the points you earned and why asking for your true fair wage is the best strategy.</p><p>Otherwise, you will now move on to some survey questions.</p><p>[Press the space bar to continue.]</p>"
+          }]
+        };
+
+        BDMexplain = {
+          timeline: moreBDMexplanation(),
+          conditional_function: function(){
+            last = jsPsych.data.getLastTrialData();
+            key = last.select('key_press').values;
+            M = jsPsych.pluginAPI.convertKeyCharacterToKeyCode('M')
+            if(key==M){
+              return true
+            }else{
+              return false
+            }
+          }
+        }
+
+        temp_timeline.push(secondHalf);
+        temp_timeline.push(moreBDM);
+        temp_timeline.push(BDMexplain); //make these more dynamic so people don't see them if it doesn't make sense to see them (i.e. people who are kicked out pre-BDM instructions)
+        // for now they're fine here
+
+        // load need for cognition scale
+        var NFC_timeline = {
+          timeline: create_need_for_cognition(),
+          conditional_function: function(){
+            return compareToCutoff(gradeBDMquiz()) //make sure they do at least half of the blocks
+          } 
+        } 
+
+        var demo_timeline = {
+          timeline: create_demographics(),
+          conditional_function: function(){
+            return compareToCutoff(gradeBDMquiz())
+          }
+        }
+
+        temp_timeline.push(NFC_timeline);
+        temp_timeline.push(demo_timeline);
+
+        ending = {
+          timeline: [{
+            type: "html-keyboard-response",
+            stimulus: function(){
+              points = sumPoints(points_list);
+              message = "<p>Thank you for your participation! This experiment is now over.</p><p>You earned " + String(points) + " points total.</p><p>Please submit your work and we will bonus you within 48 hours.</p><p>[Press space bar to close this experiment.]</p>"
+              return message;
+            },
+            data: function(){
+              TOT = jsPsych.data.get().select("time_elapsed").values;
+              TOT = TOT.slice(-1)[0];//total time on experiment in milliseconds
+              overall = keepTrackofPerformance(); 
+              dict = {TOT: TOT, overall: overall, performance_by_block: performance_list, points_list: points_list, value_list: value_list, offer_list: offer_list, exp_version: exp_version, n_switch_rule_sides: n_switch_rule_sides};
+              return dict;
+            }
+          }]
+        };
+
+        temp_timeline.push(ending);
+        
+        temp_timeline.push({
+          type: 'fullscreen',
+          fullscreen_mode: false
+        });
+
+        //var timeline = practice1rule(1);
+        var timeline = temp_timeline;
+        jsPsych.init({
+            timeline: timeline,
+            preload_images: all_images,
+            on_finish: function() {
+              //jsPsych.data.displayData('csv');//('csv');
+              jsPsych.data.get().localSave('CSV');
+            }
+        });
+    </script>
+</html>

@@ -1,0 +1,320 @@
+%% Analysis of cost of control task data 
+% meant to be posted on MTurk
+% task written in JsPsych, data printed in CSV form
+% Throughout this entire script, task 1 is the easier task (detection) and
+% task 2 is the harder task (combine)
+%% Process raw jspsych text file data
+clear all
+cutoff = 80;
+tasks = [categorical(cellstr('detection'));categorical(cellstr('combine')); categorical({'pswitch0.1'}); categorical({'pswitch0.9'})];
+
+subj_list = [3:10 201:204];
+% process individual subjects, exclude subjects who are kicked out early,
+% combine datasets into one big table
+group = table; excluded = table;
+for i = 1:length(subj_list)
+    subj = subj_list(i);
+    single = make_data_table(subj);
+    if single.failed %separate people who got kicked out early
+        excluded = [excluded; single];
+    else
+        group = [group; single];
+    end
+end
+
+n = height(group);
+data = group;
+nbackacc = data.nbackacc;
+detectacc = data.detectacc;
+nswitch1acc = data.nswitch1acc;
+nswitch9acc = data.nswitch9acc;
+task_progression = data.task_progression;
+TOT = data.TOT;
+detectrts = data.detectrts;
+nbackrts = data.nbackrts;
+perf_by_block = data.perf;
+values = data.values;
+BDM_rt = data.BDMrt;
+version = data.version;
+n1 = sum(version==1);
+n2 = sum(version==2); %specific n's for graphing/useful to have
+
+tasks_overall = [nanmean(data.detectacc,2) nanmean(data.nbackacc,2) nanmean(data.nswitch1acc,2) nanmean(data.nswitch9acc,2)];
+tasks_rts = [nanmean(data.detectrts,2) nanmean(data.nbackrts,2) nanmean(data.nswitch1rts,2) nanmean(data.nswitch9rts,2)];
+
+combineswitchrts = data.combineswitchrts;
+
+combineswitchcosts = []; nswitchswitchcosts = [];
+for row = 1:n
+    combineswitchcosts = [combineswitchcosts; nanmean(data.combineswitchcosts{row})];
+    nswitchswitchcosts = [nswitchswitchcosts; nanmean(data.allnswitchcosts{row})];
+end
+
+%% Plot some stuff
+figure
+subplot(1,2,1)
+ax = gca; fig = gcf;
+fig.Color = 'w';
+ax.FontSize = 12;
+bar([nanmean(tasks_overall(:,1)) nanmean(tasks_overall(:,2)) nanmean(tasks_overall(:,3)) nanmean(tasks_overall(:,4))])
+hold on
+errorbar(1:4,[nanmean(tasks_overall(:,1)) nanmean(tasks_overall(:,2)) nanmean(tasks_overall(:,3)) nanmean(tasks_overall(:,4))],[nanstd(tasks_overall(:,1))/sqrt(n1) nanstd(tasks_overall(:,2))/sqrt(n1) nanstd(tasks_overall(:,3))/sqrt(n2) nanstd(tasks_overall(:,4))/sqrt(n2)],'k*','LineWidth',2)
+xticklabels({'Detection','Combine','N-Switch p=0.1','N-Switch p=0.9'})
+xtickangle(45)
+ylim([50 100])
+title(['Accuracy by task'])
+
+subplot(1,2,2)
+ax = gca; fig = gcf;
+fig.Color = 'w';
+ax.FontSize = 12;
+bar([nanmean(tasks_rts(:,1)) nanmean(tasks_rts(:,2)) nanmean(tasks_rts(:,3)) nanmean(tasks_rts(:,4))])
+hold on
+errorbar(1:4,[nanmean(tasks_rts(:,1)) nanmean(tasks_rts(:,2)) nanmean(tasks_rts(:,3)) nanmean(tasks_rts(:,4))],[nanstd(tasks_rts(:,1))/sqrt(n1) nanstd(tasks_rts(:,2))/sqrt(n1) nanstd(tasks_rts(:,3))/sqrt(n2) nanstd(tasks_rts(:,4))/sqrt(n2)],'k*','LineWidth',2)
+xticklabels({'Detection','Combine','N-Switch p=0.1','N-Switch p=0.9'})
+xtickangle(45)
+title(['Mean RT by task'])
+
+figure
+subplot(1,2,1)
+ax = gca; fig = gcf;
+passingnback = (perf_by_block>cutoff&task_progression==tasks(2)); passingnback = [false(n,1) passingnback(:,1:end-1)]; %offset by 1
+passingdetect = (perf_by_block>cutoff&task_progression==tasks(1)); passingdetect = [false(n,1) passingdetect(:,1:end-1)]; %offset by 1
+neither = ~passingnback&~passingdetect;
+
+init = NaN(1,length(perf_by_block));
+for j = 1:n
+    hold on
+    bluevalues = init;
+    bluevalues(passingnback(j,:)) = values(j,passingnback(j,:));
+    purplevalues = init;
+    purplevalues(passingdetect(j,:)) = values(j,passingdetect(j,:));
+    redvalues = init;
+    redvalues(neither(j,:)) = values(j,neither(j,:));
+    plot(bluevalues,'o','MarkerFaceColor','b')
+    plot(purplevalues,'o','MarkerFaceColor','m')
+    plot(redvalues,'o','MarkerFaceColor','r')
+    bundle(j,:,1) = bluevalues; bundle(j,:,2) = purplevalues; bundle(j,:,3) = redvalues;
+end
+
+errorbar(nanmean(values),nanstd(values)/sqrt(n),'k','LineWidth',2)
+% lines for later, too messy now given how few data points we have in each
+% condition
+% errorbar(nanmean(bundle(:,:,1),1),nanstd(bundle(:,:,1))/sqrt(n),'b','LineWidth',1)
+% errorbar(nanmean(bundle(:,:,2),1),nanstd(bundle(:,:,2))/sqrt(n),'m','LineWidth',1)
+% errorbar(nanmean(bundle(:,:,3),1),nanstd(bundle(:,:,3))/sqrt(n),'r','LineWidth',1)
+fig.Color = 'w';
+ax.FontSize = 12;
+title(['Points by BDM round'])
+xlabel('Block #')
+ylabel('Points requested')
+legend({'Passed Combine','Passed Detection','Did not Pass'},'Location','Best')
+
+% RT plot same as ^
+% RT plot for BDM request by passing/not passing round before
+subplot(1,2,2)
+ax = gca; fig = gcf;
+init = NaN(1,length(perf_by_block));
+for j = 1:n
+    hold on
+    bluevalues = init;
+    bluevalues(passingnback(j,:)) = BDM_rt(j,passingnback(j,:));
+    purplevalues = init;
+    purplevalues(passingdetect(j,:)) = BDM_rt(j,passingdetect(j,:));
+    redvalues = init;
+    redvalues(neither(j,:)) = BDM_rt(j,neither(j,:));
+    plot(bluevalues,'o','MarkerFaceColor','b')
+    plot(purplevalues,'o','MarkerFaceColor','m')
+    plot(redvalues,'o','MarkerFaceColor','r')
+    bundle(j,:,1) = bluevalues; bundle(j,:,2) = purplevalues; bundle(j,:,3) = redvalues;
+end
+
+errorbar(nanmean(BDM_rt),nanstd(BDM_rt)/sqrt(n),'k','LineWidth',2)
+% lines for later, too messy now given how few data points we have in each
+% condition
+% errorbar(nanmean(bundle(:,:,1),1),nanstd(bundle(:,:,1))/sqrt(n),'b','LineWidth',1)
+% errorbar(nanmean(bundle(:,:,2),1),nanstd(bundle(:,:,2))/sqrt(n),'m','LineWidth',1)
+% errorbar(nanmean(bundle(:,:,3),1),nanstd(bundle(:,:,3))/sqrt(n),'r','LineWidth',1)
+fig.Color = 'w';
+ax.FontSize = 12;
+title('RT by BDM round')
+xlabel('Block #')
+ylabel('RT of decision')
+legend({'Passed Combine','Passed Detection','Did not Pass'},'Location','Best')
+
+figure
+ax = gca; fig = gcf;
+hold on
+for i = 1:n
+    plot(nbackacc(i,:),'o')
+end
+errorbar(nanmean(nbackacc),nanstd(nbackacc)/sqrt(n),'k','LineWidth',1)
+title('Combine Learning Curve')
+fig.Color = 'w';
+ax.FontSize = 12;
+xlabel('Block #')
+ylabel('Accuracy')
+
+figure
+for row = 1:n
+    init = NaN(12,1);
+    init(data.offers(row,:)>data.values(row,:)) = data.offers(row,data.offers(row,:)>data.values(row,:));
+    init(data.values(row,:)>data.offers(row,:)) = 1;
+    y = init;
+    x = [NaN perf_by_block(row,1:end-1)]';
+    matrix = sortrows([y,x],1);
+    plot(matrix(:,1),matrix(:,2),'o')
+    hold on
+end
+ax = gca; fig = gcf;
+title('Performance by BDM offer')
+fig.Color = 'w';
+ax.FontSize = 12;
+xlabel('BDM points at stake')
+ylabel('Accuracy')
+
+% BDM points by accuracy
+figure
+subplot(3,2,1)
+for row = 1:n
+    next_trial = find(task_progression(row,:)==tasks(2))+1;
+    y = nbackacc(row,~isnan(nbackacc(row,:)));
+    y(next_trial==length(task_progression(row,:))+1) = []; %prune lists the same way as below
+    next_trial(next_trial == length(task_progression(row,:))+1) = []; %outside the index, 13th block of 12
+    matrix = sortrows([y',values(row,next_trial)'],1);
+    plot(matrix(:,1),matrix(:,2),'o')
+    hold on
+end
+ax = gca; fig = gcf;
+fig.Color = 'w';
+ax.FontSize = 12;
+xlim([50 100])
+title('BDM value by prev. combine accuracy')
+ylabel('BDM points')
+xlabel('Accuracy')
+
+%plot mean BDM points by passing or failing hard task
+%incorporate n-switch here
+subplot(3,2,2)
+BDM_smush = [];
+for row = 1:n
+    passing = (task_progression(row,:)==tasks(2))&(perf_by_block(row,:)>=cutoff); passing = [false passing]; passing(end) = [];
+    not = (task_progression(row,:)==tasks(2))&(perf_by_block(row,:)<cutoff); not = [false not]; not(end) = [];
+    BDM_smush = [BDM_smush; nanmean(values(passing)) nanmean(values(not))];
+    scatter(ones(sum(passing),1),values(passing),'k','o')
+    hold on
+    scatter(2.*ones(sum(not),1),values(not),'k','o')
+end
+bar(nanmean(BDM_smush))
+errorbar(1:2,nanmean(BDM_smush),nanstd(BDM_smush)/sqrt(n),'ko','LineWidth',1)
+ylabel('Mean BDM points requested')
+xticks([1 2])
+xticklabels({'Passed Combine','Failed Combine'})
+title('Mean BDM points requested by grade on combine')
+ax = gca; fig = gcf;
+fig.Color = 'w';
+ax.FontSize = 12;
+
+% plot combine mean RT switch cost effect on  (all task switches, regardless of task identity)
+subplot(3,2,3)
+for row = 1:n
+    next_trial = find(task_progression(row,:)==tasks(2))+1;
+    y = nanmean(data.combineswitchcosts{row}(task_progression(row,:)==tasks(2))',2);
+    y(next_trial==length(task_progression(row,:))+1) = []; %prune lists the same way as below
+    next_trial(next_trial == length(task_progression(row,:))+1) = []; %outside the index, 13th block of 12
+    matrix = sortrows([y,values(row,next_trial)'],1);
+    plot(matrix(:,1),matrix(:,2),'o')
+    hold on
+end
+ax = gca; fig = gcf;
+fig.Color = 'w';
+ax.FontSize = 12;
+title('BDM value by prev. task switch cost (combine)')
+ylabel('BDM points')
+xlabel('Mean Switch Cost (RT in msec) within Combine')
+
+%plot switch costs in n-switch 0.9 vs. bdm points requested next
+subplot(3,2,4)
+for row = 1:n
+    next_trial = find(task_progression(row,:)==tasks(4))+1;
+    y = nanmean(data.allnswitchcosts{row}(task_progression(row,:)==tasks(4))',2);
+    y(next_trial==length(task_progression(row,:))+1) = []; %prune lists the same way as below
+    next_trial(next_trial == length(task_progression(row,:))+1) = []; %outside the index, 13th block of 12
+    matrix = sortrows([y,values(row,next_trial)'],1);
+    plot(matrix(:,1),matrix(:,2),'o')
+    hold on
+end
+ax = gca; fig = gcf;
+fig.Color = 'w';
+ax.FontSize = 12;
+title('BDM value by prev. task switch cost (n-switch)')
+ylabel('BDM points')
+xlabel('Mean Switch Cost (RT in msec) within n-switch p = 0.9')
+
+subplot(3,2,5)
+% plot combine n-back hits versus BDM points requested
+for row = 1:n
+    next_trial = find(task_progression(row,:)==tasks(2))+1;
+    y = data.nbackmatches{row};
+    y(next_trial==length(task_progression(row,:))+1) = []; %prune lists the same way as below
+    next_trial(next_trial == length(task_progression(row,:))+1) = []; %outside the index, 13th block of 12
+    matrix = sortrows([y',values(row,next_trial)'],1);
+    if ~isempty(matrix) %weed out subjects with 0 combine rounds
+        plot(matrix(:,1),matrix(:,2),'o')
+    end
+    hold on
+end
+ax = gca; fig = gcf;
+fig.Color = 'w';
+ax.FontSize = 12;
+title('BDM value by prev. nback matches (combine)')
+ylabel('BDM points')
+xlabel('# of N-Back matches within Combine')
+
+%plot BDM request by previous offer
+subplot(3,2,6)
+for row = 1:n
+    y = data.offers(row,:)';
+    x = [NaN data.values(row,2:end)]';
+    matrix = sortrows([y,x],1);
+    plot(matrix(:,1),matrix(:,2),'o')
+    hold on
+end
+ax = gca; fig = gcf;
+fig.Color = 'w';
+ax.FontSize = 12;
+title('BDM value by prev. computer offer')
+ylabel('BDM points')
+xlabel('Last offer')
+
+figure
+hold on
+for row = 1:n
+    plot(combineswitchcosts(row,:),'k*')
+end
+errorbar(nanmean(combineswitchcosts),nanstd(combineswitchcosts)/sqrt(n),'k*','LineWidth',2)
+xlabel('Task Switched To')
+xticklabels({'Detection','Combine'})
+xticks([1 2])
+ylabel('Switch Cost (RT in msec)')
+title('Mean Switch Cost (RT) within Combine')
+xlim([0.5 2.5])
+ax = gca; fig = gcf;
+fig.Color = 'w'; ax.FontSize = 12;
+
+%sanity check that tasks take the same amount of time
+figure
+y = TOT(task_progression==tasks(1));
+x = TOT(task_progression==tasks(2));
+scatter(ones(length(y),1),y)
+hold on
+scatter(2*ones(length(x),1),x)
+errorbar(1:2,[mean(y) mean(x)],[std(y)/length(y) std(x)/length(x)],'ko')
+xlim([0.75 2.25])
+ylabel('Time on task (seconds)')
+xticks([1 2])
+xticklabels({'Detection','Combine'})
+ax = gca; fig = gcf;
+fig.Color = 'w';
+ax.FontSize = 12;
+
