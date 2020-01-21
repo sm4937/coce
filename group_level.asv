@@ -288,7 +288,7 @@ for i=1:n
         hold on
     end
 end
-title('BDM value by prev. # switches')
+title('BDM value equest by prev. # switches')
 ylabel('BDM points')
 xlabel('# of switches in last block')
 ax = gca; fig = gcf;

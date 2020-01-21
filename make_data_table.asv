@@ -228,11 +228,10 @@ for trial = 1:length(first_trials)
         matchcount = [matchcount nansum(nback&accurate)];
     elseif task == tasks(3) %figure out switch costs in n-switch
         relevant = raw_data.task == tasks(3) & raw_data.practice==categorical({'false'}); %prune out feedback and ITI trials
-        switches = table2array(raw_data(:,swidx))==categorical({'true'}) & relevant; %find switches, convert to logical
-        notswitches = table2array(raw_data(:,swidx))==categorical({'false'}) & relevant; %find switches, convert to logical
-        stacked = [nanmean(rts(notswitches(first+1:last))); nanmean(rts(switches(first+1:last)))]; %let's not analyze first trials, since they're both not switches and not not switches
+        switches = table2array(raw_data(:,swidx))==categorical({'true'}); %find switches, convert to logical
+        stacked = [nanmean(rts(relevant(first:last)&~switches(first:last))); nanmean(rts(relevant(first:last)&switches(first:last)))];
         nswitchrts(:,trial) = stacked;
-        nswitches(trial) = sum(raw_data.new_correct(first+1:last)&switches(first+1:last)); %first trial is not a switch
+        nswitches(trial) = sum(raw_data.new_correct(first+1:last)&switches(first+1:last));
     end
 end
 
