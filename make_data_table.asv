@@ -245,7 +245,7 @@ allnswitchcosts{1} = diff(nswitchrts);
 
 %% look into frustration effects, changed answers, missed trials
 % block by block
-missed = NaN(1,default_length); lastresponse = missed; changedresponse = missed;
+missed = NaN(1,default_length);
 for block = 1:length(first_trials) % go by first-trial and last-trial indices
     first = first_trials(block); last = last_trials(block);
     ITIs = task_list(first:last) == categorical({'ITI'});
@@ -253,10 +253,8 @@ for block = 1:length(first_trials) % go by first-trial and last-trial indices
     task = ~ITIs & ~fb;
     rts = raw_data.rt(first:last);
     missed(block) = sum(isnan(rts(task)));
-    lateresponse(block) = sum(~isnan(rts(ITIs))) + sum(~isnan(rts(fb)));
-    changedresponse(block) = sum(~isnan(rts(task))&~isnan(rts(fb))); %responded both during task and during fb
+    lateresponse = sum(~isnan(rts(ITIs))) + sum(
 end
-
 
 %% make individual scores for BDM offer mimicry
 y = values(2:end);
@@ -294,7 +292,5 @@ data.failed = failed;
 data.allnswitchrts = allnswitchrts;
 data.allnswitchcosts = allnswitchcosts;
 data.missedtrials = missed;
-data.lateresponse = lateresponse;
-data.changedresponse = changedresponse;
 
 %end

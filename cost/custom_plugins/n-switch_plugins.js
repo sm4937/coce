@@ -136,7 +136,8 @@ function setup_nswitch(practice,loopi,condition){
         trial_duration: instructs_timing
       }
 
-    ntrials = 10;
+    ntrials = 15;
+    practice_flag = true;
 
   } // end practice task creation
 
@@ -151,14 +152,14 @@ function setup_nswitch(practice,loopi,condition){
     //console.log(trial_type)
   }
 
-  if(practice){
+  /*if(practice){
     trial_list = [false, false, false, false, false, false, false, false, false, false];
     for(var j = 0; j <= 3; j++){ //up to 3 random switch trials in practice block to practice that
       idx = Math.floor(Math.random()*ntrials);
       trial_list[idx] = true; //add one random switch trial in there
       practice_flag = true;
     }
-  }
+  }*/
 
   rule = rules[0];
   color = colors[rule-1];
@@ -275,15 +276,15 @@ function accuracySwitch(data){ //calculate accuracy for detection task (0-back)
   lasttrialdata = jsPsych.data.getLastTimelineData().filter({task: "n-switch"});
   correct_list = lasttrialdata.select('correct').values;
   accuracy = turnLogicalIntoAccuracy(correct_list);
-  return accuracy*100;
+  return Number.parseFloat(accuracy*100).toFixed(2);
  };
 
 function accuracyfinalSwitch(){
   lasttrialdata = jsPsych.data.get().filter({practice: true}).filter({task: 'n-switch'});
-  ntrials = 10;
+  ntrials = 15;
   correct_list = lasttrialdata.select('correct').values.slice(-ntrials);
   accuracy = turnLogicalIntoAccuracy(correct_list);
-  return accuracy*100; 
+  return Number.parseFloat(accuracy*100).toFixed(2);
 }
 
 function practice1rule(rule){

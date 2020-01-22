@@ -10,8 +10,8 @@ function create_experiment_instructions(){
       stimulus: function() {
         experiment_instructs = '<p>In this experiment, you\'ll complete up to ' + String(n_repetitions) + ' short rounds of two tasks.</p>'
         experiment_instructs +='<p>If you are ' + String(cutoff_percent) + '% correct or better during one round of a task, then you pass that round and earn bonus points for it. If you are less than ' + String(cutoff_percent) + '% correct, you will not earn any points for that round.</p>'
+        experiment_instructs +='<p>Keep in mind that you should be about ' + String(cutoff_percent) + '% accurate for up to ' + String(n_repetitions) + ' rounds.</p>'        
         experiment_instructs +='<p>You can earn 1 to 5 points each round.</p>';
-        experiment_instructs +='<p>Keep in mind that you should be about ' + String(cutoff_percent) + '% accurate for up to ' + String(n_repetitions) + ' rounds.</p>'
         experiment_instructs +='<p>At the end of the experiment, the points you earned will be added up and turned into a bonus payment. $$ The more points you earn, the more money you will be paid. $$</p>'
         experiment_instructs +='<p>We can tell if you\'re not paying attention; if you\'re not, then this experiment will end early and you will earn a smaller payment. $$</p>'
         experiment_instructs +='<p>[Press space to continue.]</p>';
@@ -282,12 +282,16 @@ function create_practice_tasks(exp_version){
     practice_timeline.push(magnitude);
     practice_timeline.push(parity);
     var together = {
-      timeline: setup_nswitch(true,-1,1)
+      timeline: setup_nswitch(true,-1,2) //easy block
+    }
+    var practice_hard = {
+      timeline: setup_nswitch(true,-1,1) //hard block
     }
     //temp.push(together);
 
     max_repeats = 3;
     practice_timeline.push(together)
+    practice_timeline.push(practice_hard)
     for(var reps=0;reps<max_repeats;reps++){
     starter_message = '<p>You are not at ' + String(cutoff_percent) + '% accuracy yet.</p><p>Let\'s try this task again.</p>';
     var notice = {

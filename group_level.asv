@@ -369,7 +369,5 @@ ax = gca; fig = gcf;
 fig.Color = 'w';
 ax.FontSize = 12;
 
-%plot late responses/changed responses by task
-figure
-data.
+%plot late responses/changed responses by 
 

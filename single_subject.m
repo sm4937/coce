@@ -3,7 +3,7 @@
 % task written in JsPsych, data printed in CSV form
 %% Process raw jspsych text file data
 clear all
-subjnum = 203;
+subjnum = 205;
 
 cutoff = 80; 
 
