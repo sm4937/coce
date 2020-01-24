@@ -7,9 +7,11 @@
 clear all
 cutoff = 80;
 tasks = [categorical(cellstr('detection'));categorical(cellstr('combine')); categorical({'pswitch0.1'}); categorical({'pswitch0.9'})];
+tasklabels = {'detection','combine','pswitch=0.1','pswitch0.9'};
 hardtasks = [tasks(2) tasks(4)];
 
-subj_list = [3:10 201:205];
+%subj_list = [3:10 201:205];
+subj_list = [8:10 201:205];%excluding really early pilots
 % process individual subjects, exclude subjects who are kicked out early,
 % combine datasets into one big table
 group = table; excluded = table;
@@ -33,6 +35,8 @@ task_progression = data.task_progression;
 TOT = data.TOT;
 detectrts = data.detectrts;
 nbackrts = data.nbackrts;
+nswitch9rts = data.nswitch9rts;
+nswitch1rts = data.nswitch1rts;
 perf_by_block = data.perf;
 values = data.values;
 BDM_rt = data.BDMrt;
@@ -74,7 +78,7 @@ hold on
 errorbar(1:4,[nanmean(tasks_rts(:,1)) nanmean(tasks_rts(:,2)) nanmean(tasks_rts(:,3)) nanmean(tasks_rts(:,4))],[nanstd(tasks_rts(:,1))/sqrt(n1) nanstd(tasks_rts(:,2))/sqrt(n1) nanstd(tasks_rts(:,3))/sqrt(n2) nanstd(tasks_rts(:,4))/sqrt(n2)],'k*','LineWidth',2)
 xticklabels({'Detection','Combine','N-Switch p=0.1','N-Switch p=0.9'})
 xtickangle(45)
-title(['Mean RT by task'])
+title(['Mean log(RT) by task'])
 
 figure
 subplot(1,2,1)
@@ -144,17 +148,35 @@ ylabel('RT of decision')
 legend({'Passed Combine','Passed Detection','Did not Pass'},'Location','Best')
 
 figure
+subplot(1,2,1)
 ax = gca; fig = gcf;
 hold on
 for i = 1:n
-    plot(nbackacc(i,:),'o')
+    plot(nbackacc(i,:),'ro')
+    plot(nswitch9acc(i,:),'bo')
 end
-errorbar(nanmean(nbackacc),nanstd(nbackacc)/sqrt(n),'k','LineWidth',1)
-title('Combine Learning Curve')
+errorbar(nanmean(nbackacc),nanstd(nbackacc)/sqrt(n1),'r','LineWidth',1)
+errorbar(nanmean(nswitch9acc),nanstd(nswitch9acc)/sqrt(n2),'b','LineWidth',1)
+title('Hard Learning Curves (accuracy)')
 fig.Color = 'w';
 ax.FontSize = 12;
 xlabel('Block #')
 ylabel('Accuracy')
+
+subplot(1,2,2)
+ax = gca; fig = gcf;
+hold on
+for i = 1:n
+    plot(nbackrts(i,:),'ro')
+    plot(nswitch9rts(i,:),'bo')
+end
+errorbar(nanmean(nbackrts),nanstd(nbackrts)/sqrt(n1),'k','LineWidth',1)
+errorbar(nanmean(nswitch9rts),nanstd(nswitch9rts)/sqrt(n2),'k','LineWidth',1)
+title('Hard Learning Curves (reaction times)')
+fig.Color = 'w';
+ax.FontSize = 12;
+xlabel('Block #')
+ylabel('Mean log(RT) (ms)')
 
 figure
 for row = 1:n
@@ -371,5 +393,17 @@ ax.FontSize = 12;
 
 %plot late responses/changed responses by task
 figure
-data.
+subplot(1,2,1)
+for task = 1:length(tasks)
+    bar(task,nanmean(data.lateresponse(data.task_progression==tasks(task))))
+    scatter(task*ones(sum(sum(data.task_progression==tasks(task))),1),data.lateresponse(data.task_progression==tasks(task)))
+    hold on
+end
+ax = gca; fig = gcf;
+xticks(1:length(tasks))
+xticklabels(tasklabels)
+xtickangle(45)
+ylabel('mean late responses')
+ax.FontSize = 12;
+fig.Color = 'w';
 

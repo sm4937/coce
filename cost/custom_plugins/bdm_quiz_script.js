@@ -89,7 +89,7 @@ function bdmQuiz(){
         experiment_instructs +='<p>Say you ask for 3 points and the computer offers 4, then if you pass the task with at least ' + String(cutoff_percent) + '% accuracy, you will be given 4 points.</p>'
         experiment_instructs +='<p>If you ask for more points than the computer offers you, then you will do a different task on that round. The alternate task is worth <strong>1 point.</strong></p>'
         experiment_instructs +='<p>For example, if you ask for 5 points and the computer offers 4 points, then you will do something else and be given 1 point.</p>'
-        experiment_instructs +='<p>There is no way to game the payment system. You will either get the computer\'s random point offer, or 1 point for an alternative task.</p>'
+        experiment_instructs +='<p>There is no way to game the payment system. You will either get the computer\'s random point offer, or 1 point for an alternate task.</p>'
         experiment_instructs += space_bar_message;
         return experiment_instructs;
       }

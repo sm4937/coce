@@ -119,6 +119,7 @@ if subjnum == 2 % you accidentally deleted this so put it here
 end
 
 rts = table2array(raw_data(:,rtidx));
+logrts = log(rts);
 
 overall = str2num(char(table2array(raw_data(end,overallidx)))); %overall accuracy
 total_length = str2num(char(table2array(raw_data(end,TOTidx))))/60000; %convert msec to minutes
@@ -135,18 +136,21 @@ BDMs = find(task_list == BDM_label);
 BDM_rt = rts(BDMs);
 
 %data_long = raw_data(task_start:end,:);
+debrief = find(task_list == categorical({'debrief'}));
 first_trials = BDMs+4; %start of individual tasks
-last_trials = BDMs-2; %pre-first BDM isn't a task trial
-last_trials(1) = []; last_trials(end+1) = height(raw_data)-9;
+last_trials = BDMs-2;
+last_trials(1) = []; last_trials(end+1) = length(task_list) - 9; %pre-first BDM isn't a task trial
+%last_trials = debrief-1; 
+%last_trials = last_trials(last_trials > first_trials(1));
 %end of individual tasks
 detectrts = NaN(1,default_length); nbackrts = NaN(1,default_length); nswitchmeanrts = NaN(2,default_length); %defaults for concatenating failed subjects
 for i=1:length(first_trials)
     if task_list(first_trials(i))==tasks(1)
-        detectrts(:,i) = nanmean(raw_data.rt(first_trials(i):last_trials(i)));
+        detectrts(:,i) = nanmean(logrts(first_trials(i):last_trials(i)));
         nbackrts(:,i) = NaN;
         nswitchmeanrts(:,i) = NaN(2,1);
     elseif task_list(first_trials(i))==tasks(2)
-        nbackrts(:,i) = nanmean(raw_data.rt(first_trials(i):last_trials(i)));
+        nbackrts(:,i) = nanmean(logrts(first_trials(i):last_trials(i)));
         detectrts(:,i) = NaN;
         nswitchmeanrts(:,i) = NaN(2,1);
     elseif task_list(first_trials(i))==tasks(3)
@@ -154,9 +158,9 @@ for i=1:length(first_trials)
         detectrts(:,i) = NaN;
         pswitch = table2array(raw_data(first_trials(i),pswindex));
         if pswitch==0.1
-            stacked = [nanmean(rts(first_trials(i):last_trials(i))); NaN];
+            stacked = [nanmean(logrts(first_trials(i):last_trials(i))); NaN];
         elseif pswitch==0.9
-            stacked = [NaN; nanmean(rts(first_trials(i):last_trials(i)))];
+            stacked = [NaN; nanmean(logrts(first_trials(i):last_trials(i)))];
         end
         nswitchmeanrts(:,i) = stacked;
     end
@@ -245,7 +249,7 @@ allnswitchcosts{1} = diff(nswitchrts);
 
 %% look into frustration effects, changed answers, missed trials
 % block by block
-missed = NaN(1,default_length); lastresponse = missed; changedresponse = missed;
+missed = NaN(1,default_length); lateresponse = missed; changedresponse = missed;
 for block = 1:length(first_trials) % go by first-trial and last-trial indices
     first = first_trials(block); last = last_trials(block);
     ITIs = task_list(first:last) == categorical({'ITI'});
@@ -254,7 +258,7 @@ for block = 1:length(first_trials) % go by first-trial and last-trial indices
     rts = raw_data.rt(first:last);
     missed(block) = sum(isnan(rts(task)));
     lateresponse(block) = sum(~isnan(rts(ITIs))) + sum(~isnan(rts(fb)));
-    changedresponse(block) = sum(~isnan(rts(task))&~isnan(rts(fb))); %responded both during task and during fb
+    %changedresponse(block) = sum(~isnan(rts(task))&~isnan(rts(fb))); %responded both during task and during fb
 end
 
 
