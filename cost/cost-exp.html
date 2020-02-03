@@ -47,6 +47,7 @@
       exp_version = 2;
       // 1 is the combine, detection version
       // 2 is the n-switch version
+      var subjnum = String(exp_version) + String(Math.round(Math.random()*10**7)); //eight numbers should suffice?
 
       var debug = false;
 
@@ -159,7 +160,7 @@
         moreBDM = {
           timeline: [{
             type: "html-keyboard-response",
-            stimulus: "<p>This experiment is almost over. Please press <strong>M</strong> if you'd like to read more about the process we used to determine the points you earned and why asking for your true fair wage is the best strategy.</p><p>Otherwise, you will now move on to some survey questions.</p><p>[Press the space bar to continue.]</p>"
+            stimulus: "<p>This experiment is almost over. Please press <strong>M</strong> if you'd like to read more about the process we used to determine the points you earned and why asking for your true fair wage is the best strategy.</p><p>Otherwise, you will now move on to some survey questions.</p><p>Before you submit this experiment, you will need your personal code: <strong>" + subjnum + "</strong>.<p>You may want to write this down now, though you will see it once more before the experiment is over.</p><p>[Press the space bar to continue.]</p>"
           }]
         };
 
@@ -205,14 +206,14 @@
             type: "html-keyboard-response",
             stimulus: function(){
               points = sumPoints(points_list);
-              message = "<p>Thank you for your participation! This experiment is now over.</p><p>You earned " + String(points) + " points total.</p><p>Please submit your work and we will bonus you within 48 hours.</p><p>[Press space bar to close this experiment.]</p>"
+              message = "<p>Thank you for your participation! This experiment is now over.</p><p>You earned " + String(points) + " points total.</p><p>Please submit your work with your personal code and we will bonus you within 48 hours.</p><p>Your personal code is <strong>" + subjnum + "</strong>.</p><p>[Press space bar to close this experiment.]</p>"
               return message;
             },
             data: function(){
               TOT = jsPsych.data.get().select("time_elapsed").values;
               TOT = TOT.slice(-1)[0];//total time on experiment in milliseconds
               overall = keepTrackofPerformance(); 
-              dict = {TOT: TOT, overall: overall, performance_by_block: performance_list, points_list: points_list, value_list: value_list, offer_list: offer_list, exp_version: exp_version, n_switch_rule_sides: n_switch_rule_sides};
+              dict = {TOT: TOT, overall: overall, performance_by_block: performance_list, points_list: points_list, value_list: value_list, offer_list: offer_list, exp_version: exp_version, n_switch_rule_sides: n_switch_rule_sides, subjnum: subjnum*1}; //make subjnum a number, not a string
               return dict;
             }
           }]
