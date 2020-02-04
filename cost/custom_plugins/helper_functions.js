@@ -27,11 +27,11 @@ function runBDM(points,offer,task_ID){
     BDM_message += "<p> You will be given " + String(offer) + " points if you achieve at least " + String(cutoff_percent)  + "% accuracy on this task. </p>" + fractals[task_ID] + " location='center'></img>";
     points = offer; 
   } else {
-    BDM_message += "<p> You will do the following task instead to earn 1 point. </p> " + fractals[task_ID-1] + " location='center'></img>";
+    BDM_message += "<p> You will do the following task instead to earn 1 point. </p> " + fractals[task_ID+1] + " location='center'></img>";
     points = 1; 
   }
   if(timeoutflag){
-    BDM_message = "<p> You did not respond in time. You will do the following task to earn 1 point. </p>" + fractals[task_ID-1] + "location ='center'></img>";
+    BDM_message = "<p> You did not respond in time. You will do the following task to earn 1 point. </p>" + fractals[task_ID+1] + "location='center'></img>";
     points = 1;
   }
   BDM_message += "<p>[Press the space bar to continue.]</p>"
@@ -244,3 +244,4 @@ function randomizeList(list){
   }
   return newlist
 }
+

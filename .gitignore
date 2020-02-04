@@ -4,3 +4,7 @@ make_data_table.asv
 group_level.asv
 *~
 *.asv
+
+#data folders
+pilotdata/*
+data/*

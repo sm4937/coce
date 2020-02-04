@@ -375,6 +375,22 @@ function create_practice_tasks(exp_version){
   }
 }
 
+function create_consent_form(){
+  consent_text = "<p style='font-size:30px'>Informed Consent Form for Experiments on Cognitive Control</p>"
+  consent_text += "<p style='font-size:25px'>Kyb Lab at the Max Planck Institute for Biological Cybernetics</p>"
+  consent_text += "<p style='font-size:20px'>This is a psychology experiment being conducted by Dr. Peter Dayan, director of the Max Planck Institute for Biological Cybernetics, and the members of his lab. In order to consent to participate, you MUST meet the following criteria: </p>"
+  consent_text += "<p style='font-size:20px'>-   18 years of age or older. </p>"
+  consent_text += "<p style='font-size:20px'>-   Fluent speaker of English. </p>"
+  consent_text += "<p style='font-size:20px'>-   Have not previously participated in this experiment. </p>"
+  consent_text += "<p style='font-size:20px'>This study is designed to look at how people learn how to make decisions to accomplish their goals. In this task, you will be asked to make choices, play games, and answer questions related to those games.  The study will take about 30 minutes and will pay $2 plus a performance-dependent bonus of up to a maximum of $10. The performance bonus is explained in more detail in the instructions that follow. </p>"
+  consent_text += "<p style='font-size:20px'>Your participation in this research is voluntary. You may refrain from answering any questions that make you uncomfortable and may withdraw your participation at any time without penalty by exiting this task and alerting the experimenter. You may choose not to complete certain parts of the task or answer certain questions. You may contact us at the address provided below if you have additional questions or concerns.</p>"
+  consent_text += "<p style='font-size:20px'>Other than monetary compensation, participating in this study will provide no direct benefits to you. But we hope that this research will benefit society at large by contributing towards establishing a scientific foundation for improving human learning and cognitive control abilities.</p>"
+  consent_text += "<p style='font-size:20px'>Your online username may be connected to your individual responses, but we will not be asking for any additional personally identifying information, and we will handle responses as confidentially as possible. We cannot however guarantee the confidentiality of information transmitted over the Internet. We will be keeping deidentified data collected as part of this experiment indefinitely. Data used in scientific publications will remain completely anonymous. </p>"
+  consent_text += "<p style='font-size:20px'>If you have any questions about the study, feel free to contact our lab. Dr. Dayan and his lab members can be reached at kyblab.tuebingen@gmail.com. </p>"
+  consent_text += "<p style='font-size:20px'>By selecting the consent option below, I acknowledge that I am 18 or older, that I am a fluent speaker of English, that I have read this consent form, and that I agree to take part in the research. </p>"
+  return consent_text
+}
+
 // code graveyard - counterbalance practice games for random presentation order
   /*counterb = 1 + Math.round(Math.random());
   practice_nback1 = {
