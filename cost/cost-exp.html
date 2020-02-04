@@ -12,6 +12,7 @@
         <script src="./jsPsych/plugins/jspsych-html-slider-response.js"></script>
         <script src="./custom_plugins/helper_functions.js"></script>
         <script src="./custom_plugins/create_instructions.js"></script>
+        <script src="./custom_plugins/create_consent_forms.js"></script>
         <script src="./custom_plugins/bdm_quiz_script.js"></script>        
         <script src="./custom_plugins/nBack_plugins_v02.js"></script>
         <script src="./custom_plugins/n-switch_plugins.js"></script>
@@ -21,7 +22,6 @@
         <script src="./custom_plugins/main_timeline_creation.js"></script>
         <script src="./custom_plugins/questionnaires.js"></script>
         <link rel="stylesheet" href="./jsPsych/css/jspsych.css">
-        <link href="consent.html">
         <style>
         #jspsych-html-keyboard-response-stimulus {
             font-size: 30px !important
@@ -126,28 +126,18 @@
       blocknums.push([n_repetitions/2,n_repetitions-1]); //to feed into main timeline creation loop
 
       //begin timeline creation:
-      var consent_form = {
-          type: 'survey-multi-select',
-          preamble: create_consent_form(),
-          required_message: "You must consent to start the experiment",
-          button_label: "Start Experiment",
-          questions: [
-            {
-              prompt: "", 
-              options: ["I consent"], 
-              horizontal: false,
-              required: true,
-              name: "consent"
-            }
-          ], 
+      
+      var consent_forms = {
+        timeline: create_consent_timeline()
       };
+
+      var temp_timeline = [];
+      temp_timeline.push(consent_forms)
+
       var experiment_instructions = {
         timeline: create_experiment_instructions() 
         //this function does it all: game instructions, practice games, BDM instructions, BDM quiz, transition to real task
       };
-
-      var temp_timeline = [];
-      temp_timeline.push(consent_form)
 
       if(!debug){
         temp_timeline.push({
@@ -179,7 +169,7 @@
         moreBDM = {
           timeline: [{
             type: "html-keyboard-response",
-            stimulus: "<p>This experiment is almost over. Please press <strong>M</strong> if you'd like to read more about the process we used to determine the points you earned and why asking for your true fair wage is the best strategy.</p><p>Otherwise, you will now move on to some survey questions.</p><p>Before you submit this experiment, you will need your personal code: <strong>" + subjnum + "</strong>.<p>You may want to write this down now, though you will see it once more before the experiment is over.</p><p>[Press the space bar to continue.]</p>"
+            stimulus: "<p>This experiment is almost over. Please press <strong>M</strong> if you'd like to read more about the process we used to determine the points you earned and why asking for your true fair wage is the best strategy.</p><p>Otherwise, you will now move on to some survey questions.</p><p>When you finish the questions, you will be shown your personal code.</p><p>To properly submit this experiment, you will need your personal code, so make sure to write it down before you exit the experiment window.</p><p>[Press the space bar to continue.]</p>"
           }]
         };
 
@@ -230,7 +220,7 @@
             },
             data: function(){
               TOT = jsPsych.data.get().select("time_elapsed").values;
-              TOT = TOT.slice(-1)[0];//total time on experiment in milliseconds
+              TOT = TOT.slice(-1)[0]; //total time on experiment in milliseconds
               overall = keepTrackofPerformance(); 
               turkInfo = jsPsych.turk.turkInfo();
               turk = !turkInfo.outsideTurk;
@@ -248,7 +238,7 @@
               }
               dict = {TOT: TOT, overall: overall, performance_by_block: performance_list, points_list: points_list, value_list: value_list, offer_list: offer_list, exp_version: exp_version, n_switch_rule_sides: n_switch_rule_sides, subjnum: subjnum*1, worker_ID: worker, assignment_ID: assignment, hit_ID: hitid}; //make subjnum a number, not a string
               jsPsych.data.addProperties(dict);
-              return true;
+              return interaction_data.values(); //so the data saved in the ending is the interaction data. the data files get the dict added as properties, changing how the data is structured for analysis of non-pilots
             }
           }]
         };
@@ -266,7 +256,7 @@
             preload_images: all_images,
             on_finish: function() {
               //jsPsych.data.displayData('csv');//('csv');
-              jsPsych.data.get().localSave('CSV');
+              jsPsych.data.get().localSave('CSV','./data/' + subjnum + '.csv');
             }
         });
     </script>

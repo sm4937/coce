@@ -45,7 +45,7 @@ function create_main_timeline(blocknums, task_list){
           if(points<=offer & points!=null){
             return true;
           } else {
-            console.log('skipping hard task')
+            //skipping hard task
             return false;
           }
         }
@@ -58,7 +58,7 @@ function create_main_timeline(blocknums, task_list){
             points = 1;
             return true;
           } else {
-            console.log('skipping easy task')
+            //skipping easy task
             return false;
           }
         }
