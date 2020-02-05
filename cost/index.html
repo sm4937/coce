@@ -21,6 +21,7 @@
         <script src="./custom_plugins/test_detection.js"></script>
         <script src="./custom_plugins/main_timeline_creation.js"></script>
         <script src="./custom_plugins/questionnaires.js"></script>
+        <script src="./php/write_data.php"></script>
         <link rel="stylesheet" href="./jsPsych/css/jspsych.css">
         <style>
         #jspsych-html-keyboard-response-stimulus {
@@ -256,7 +257,8 @@
             preload_images: all_images,
             on_finish: function() {
               //jsPsych.data.displayData('csv');//('csv');
-              jsPsych.data.get().localSave('CSV','./data/' + subjnum + '.csv');
+              //jsPsych.data.get().localSave('CSV','./data/' + subjnum + '.csv');
+              function(){ saveData('./data/' + subjnum + '.csv', jsPsych.data.get().csv()); }
             }
         });
     </script>

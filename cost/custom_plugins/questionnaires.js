@@ -57,21 +57,24 @@ function create_need_for_cognition(){
     timeline: [{
       type: 'survey-multi-choice',
       questions: formattedqs1,
-      preamble: NFC_instructs
+      preamble: NFC_instructs,
+      data: {task: 'NFC'}
     }]
   }
   var NFC2 = {
     timeline: [{
       type: 'survey-multi-choice',
       questions: formattedqs2,
-      preamble: NFC_instructs
+      preamble: NFC_instructs,
+      data: {task: 'NFC'}
     }]
   }
   var NFC3 = {
     timeline: [{
       type: 'survey-multi-choice',
       questions: formattedqs3,
-      preamble: NFC_instructs
+      preamble: NFC_instructs,
+      data: {task: 'NFC'}
     }]
   }
     //NFC.push(multi_choice_block_horizontal);
@@ -102,7 +105,8 @@ function create_demographics(){
   var demo = {
     timeline: [{
       type: 'survey-multi-choice',
-      questions: all_questions
+      questions: all_questions,
+      data: {task: 'demographics'}
     }]
   }
 
@@ -113,7 +117,8 @@ function create_demographics(){
   var textboxes = {
     timeline: [{
       type: 'survey-text',
-      questions: free_response_questions
+      questions: free_response_questions,
+      data: {task: 'free_response'}
     }]
   }
 
