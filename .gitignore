@@ -8,3 +8,6 @@ group_level.asv
 #data folders
 pilotdata/*
 data/*
+
+#this weird thing
+desktop.ini
