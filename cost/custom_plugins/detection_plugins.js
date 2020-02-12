@@ -35,7 +35,10 @@ function setup_detection(practice,loopi){
         overall = accuracyDetection(); cutoff_message = pointsFeedback(); performance_list.push(overall);
         return "<p>" + cutoff_message + "</p> </p><p>Press the space bar to continue. </p>";
       },
-      data: {task: 'debrief'},
+      data: function(){
+        dict = {task: 'debrief', perf: accuracyDetection()};
+        return dict;
+      }, 
       trial_duration: instructs_timing //30 seconds to respond
     };
 
@@ -72,7 +75,7 @@ function setup_detection(practice,loopi){
 
   var test_stimuli = [];
     for(var trial = 0; trial < ntrials; trial++){
-      test_stimuli.push({stimulus: stimuli[stimnum_list[trial]], response_color: response_color, correct_key: key_list[trial], data: {detect: data_list[trial], stimnum: stimnum_list[trial], task: 'detection', correct_key: key_list[trial], tasknum: loopi}})
+      test_stimuli.push({stimulus: stimuli[stimnum_list[trial]], response_color: response_color, correct_key: key_list[trial], data: {detect: data_list[trial], nback: false, n: 0, stimnum: stimnum_list[trial], task: 'detection', correct_key: key_list[trial], tasknum: loopi}})
     }; 
 
   var detect = {

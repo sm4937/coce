@@ -30,11 +30,23 @@ function create_main_timeline(blocknums, task_list){
       timeline: [{
         type: "html-keyboard-response",
         stimulus: function(data){
-          getBDMresponse();
-          BDM_message = runBDM(points,offer,task_ID);
+          data = getBDMresponse();
+          points = data['points']; offer = data['offer']; value_list = data['value_list']; //not getting returned but still important
+          BDM_output = runBDM(points,offer,task_ID);
+          BDM_message = BDM_output['BDM_message'];
+          points_list = BDM_output['points_list']; offer_list = BDM_output['offer_list'];
           return BDM_message;
+          //return offer_list;
+          //return points_list;
+          //return value_list;
          },
-         trial_duration: instructs_timing
+         trial_duration: instructs_timing,
+         data: function(){
+          //dict1 = getBDMresponse();
+          //points = dict1['points']; value_list = dict1['value_list'];
+          dict = {offer_list: offer_list, value_list: value_list, points_list: points_list, points: points_list[(points_list.length)-1], offer: offer_list[(offer_list.length)-1], value: value_list[(value_list.length)-1]}
+          return dict;
+        }
        }]
     }
       

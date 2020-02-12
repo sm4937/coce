@@ -3,11 +3,13 @@
 % task written in JsPsych, data printed in CSV form
 %% Process raw jspsych text file data
 clear all
-subjnum = 205;
+subjnum = 23893644;
+filename = '12.02.2020_trial';
 
 cutoff = 80; 
-
-data = make_data_table(subjnum); 
+long_format = import_mturk_data(['./data/' filename '.csv']);
+single = long_format(long_format.subjnum==subjnum,:);
+data = make_data_table(single); 
 task_progression = data.task_progression;
 TOT = data.TOT;
 perf_by_block = data.perf;

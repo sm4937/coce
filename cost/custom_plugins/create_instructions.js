@@ -18,7 +18,7 @@ function create_experiment_instructions(){
         //return "<p style='font-size:25px'>" + n_back_instructs + " </p>";
         return experiment_instructs;
       },
-      data: {task: 'instructions'}
+      data: setDataColumns()
     }]
   };
 
@@ -120,7 +120,7 @@ function create_practice_tasks(exp_version){
     var check_accuracy = {
       timeline: [{
         type: "html-keyboard-response",
-        data: {practice_accuracy: accuracyfinalNback(),task: 'instructions'},
+        data: {number_practice_hard: 0, practice_accuracy: accuracyfinalNback(),task: 'instructions'},
         stimulus: function(){
           accuracy = accuracyfinalNback();
           if(accuracy>=cutoff){
@@ -152,7 +152,7 @@ function create_practice_tasks(exp_version){
       timeline: [{
         type: "html-keyboard-response",
         stimulus: "<p>You're not at " + String(cutoff_percent) + "% accuracy on this task.</p><p>Let's try one more time. Try your best! If we can't reach " + String(cutoff_percent) + "% accuracy, then this experment will end.</p><p>[Press the space bar to continue.]</p>",
-        data: {practice_accuracy: accuracyFinalCombine(), task: 'instructions'}
+        data: {practice_accuracy: accuracyFinalCombine(), number_practice_hard: 0, task: 'instructions'}
       }],
       conditional_function: function(){
         accuracy = accuracyFinalCombine();
@@ -197,7 +197,7 @@ function create_practice_tasks(exp_version){
     var log = {
       timeline: [{
         type: "html-keyboard-response",
-        data: {number_practice_combines: reps+1},
+        data: {number_practice_hard: reps+1},
         trial_duration: instructs_timing,
         stimulus: '<p>You will get ' + String(max_repeats-reps) + ' more tries to get to ' + String(cutoff_percent) + '% accuracy on this task.</p><p>Don\'t worry, most subjects need a few rounds of practice on this task.</p><p>If the feedback is more distracting than helpful, try your best to just ignore it.</p><p>[Press space bar to try again.]</p>',
         response_ends_trial: true
@@ -266,7 +266,7 @@ function create_practice_tasks(exp_version){
           //return "<p style='font-size:25px'>" + n_back_instructs + " </p>";
           return initial_instructs;
         },
-        data: {task: 'instructions'}
+        data: {task: 'instructions', number_practice_hard: 0}
       }]
     };
     var practice_timeline = [];
@@ -322,7 +322,7 @@ function create_practice_tasks(exp_version){
     var log = {
       timeline: [{
         type: "html-keyboard-response",
-        data: {number_practice_combines: reps+1},
+        data: {number_practice_hard: reps+1},
         trial_duration: instructs_timing,
         stimulus: '<p>You will get ' + String(max_repeats-reps) + ' more tries to get to ' + String(cutoff_percent) + '% accuracy on this task.</p><p>Don\'t worry, most subjects need a few rounds of practice on this task.</p><p>If the feedback is more distracting than helpful, try your best to just ignore it.</p><p>[Press space bar to try again.]</p>',
         response_ends_trial: true

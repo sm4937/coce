@@ -21,7 +21,6 @@
         <script src="./custom_plugins/test_detection.js"></script>
         <script src="./custom_plugins/main_timeline_creation.js"></script>
         <script src="./custom_plugins/questionnaires.js"></script>
-        <script src="./php/write_data.php"></script>
         <link rel="stylesheet" href="./jsPsych/css/jspsych.css">
         <style>
         #jspsych-html-keyboard-response-stimulus {
@@ -47,7 +46,7 @@
       // go through and make sure data saving makes practical sense
       // make code prettier!
 
-      exp_version = 1;
+      exp_version = 2;
       // 1 is the combine, detection version
       // 2 is the n-switch version
       var subjnum = String(exp_version) + String(Math.round(Math.random()*10**7)); //eight numbers should suffice?
@@ -75,11 +74,11 @@
         n_switch_colors = ['red','blue'];
       }
       var n_switch_response_names = ['smaller','larger','even','odd'];
-      var n_switch_rule_sides = [1,2];
+      var n_switch_rule_sides = 'magnitude left';
       if(Math.random()<0.5){
         //counterbalance colors across subjects
         n_switch_response_names = ['even','odd','smaller','larger'];
-        n_switch_rule_sides = [2,1];
+        n_switch_rule_sides = 'magnitude right';
       }
       var rule_names = ['magnitude (less than or greater than 5?)','parity (even or odd?)']
 
@@ -106,7 +105,7 @@
       var kill_check = false;
 
       // SET NUMBER OF BLOCKS HERE
-      var n_repetitions = 12;
+      var n_repetitions = 24;
       if(debug){
         n_repetitions = 2;
       }
@@ -133,7 +132,7 @@
       };
 
       var temp_timeline = [];
-      temp_timeline.push(consent_forms)
+      if(!debug){temp_timeline.push(consent_forms)}
 
       var experiment_instructions = {
         timeline: create_experiment_instructions() 
@@ -170,7 +169,7 @@
         moreBDM = {
           timeline: [{
             type: "html-keyboard-response",
-            stimulus: "<p>This experiment is almost over. Please press <strong>M</strong> if you'd like to read more about the process we used to determine the points you earned and why asking for your true fair wage is the best strategy.</p><p>Otherwise, you will now move on to some survey questions.</p><p>When you finish the questions, you will be shown your personal code.</p><p>To properly submit this experiment, you will need your personal code, so make sure to write it down before you exit the experiment window.</p><p>[Press the space bar to continue.]</p>"
+            stimulus: "<p>This experiment is almost over. Please press <strong>M</strong> if you'd like to read more about the process we used to determine the points you earned and why asking for your true fair wage is the best strategy.</p><p>Otherwise, you will now move on to some survey questions.</p><p>When you finish the questions, you will be shown your personal code.</p><p>To properly submit this experiment, you will need your personal code, so make sure to write it down before you exit the experiment window.</p><p>[Press the space bar to submit your results to the experimenter.]</p>"
           }]
         };
 
@@ -216,30 +215,18 @@
             type: "html-keyboard-response",
             stimulus: function(){
               points = sumPoints(points_list);
-              message = "<p>Thank you for your participation! This experiment is now over.</p><p>You earned " + String(points) + " points total.</p><p>Please submit your work with your personal code and we will bonus you within 48 hours.</p><p>Your personal code is <strong>" + subjnum + "</strong>.</p><p>[Press space bar to close this experiment.]</p>"
+              message = "<p>Thank you for your participation! This experiment is now over.</p><p>You earned " + String(points) + " points total.</p><p>Please submit your work with your personal code and we will bonus you within 48 hours.</p><p>Your personal code is <strong>" + subjnum + "</strong>.</p><p>If you want to copy your personal code, please highlight it and right-click to do so. If you press any buttons on your keyboard, this window will close.</p><p>[<strong> Press any key to submit your points to the experimenter so we can bonus you.</strong>]</p>"
               return message;
             },
             data: function(){
               TOT = jsPsych.data.get().select("time_elapsed").values;
               TOT = TOT.slice(-1)[0]; //total time on experiment in milliseconds
-              overall = keepTrackofPerformance(); 
-              turkInfo = jsPsych.turk.turkInfo();
-              turk = !turkInfo.outsideTurk;
+              overall = keepTrackofPerformance();
+              points = sumPoints(points_list);
               var interaction_data = jsPsych.data.getInteractionData();
-              if(turk){
-                var urlVar = jsPsych.data.urlVariables();
-                var worker = urlVar.workerId;
-                var assignment = urlVar.assignmentId;
-                var hitid = urlVar.hitId;
-              }
-              if(!turk){
-                var worker = null;
-                var assignment = null;
-                var hitid = null;
-              }
-              dict = {TOT: TOT, overall: overall, performance_by_block: performance_list, points_list: points_list, value_list: value_list, offer_list: offer_list, exp_version: exp_version, n_switch_rule_sides: n_switch_rule_sides, subjnum: subjnum*1, worker_ID: worker, assignment_ID: assignment, hit_ID: hitid}; //make subjnum a number, not a string
+              dict = {TOT: TOT, overall: overall, total_points: points, exp_version: exp_version, n_switch_rule_sides: n_switch_rule_sides, subjnum: subjnum*1}; //make subjnum a number, not a string
               jsPsych.data.addProperties(dict);
-              return interaction_data.values(); //so the data saved in the ending is the interaction data. the data files get the dict added as properties, changing how the data is structured for analysis of non-pilots
+              return {interaction_data: interaction_data.values()}; //so the data saved in the ending is the interaction data. the data files get the dict added as properties, changing how the data is structured for analysis of non-pilots
             }
           }]
         };
@@ -251,14 +238,52 @@
           fullscreen_mode: false
         });
 
+        function saveDataToDb_trial() {
+          //jspsych-written
+          var xhr = new XMLHttpRequest();
+          xhr.open('POST', 'php/write_data_one_row.php'); // change 'write_data.php' to point to php script.
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          xhr.onload = function() {
+            if(xhr.status == 200){
+              //var response = JSON.parse(xhr.responseText);
+              var response = xhr.responseText;
+              //console.log(response.success)
+              //console.log(response);
+              //console.log('status 200');
+            }
+          };
+          xhr.send(jsPsych.data.get().json()); //for jspsych's version
+        }
+
+        function saveDataToDb() {
+          //jspsych-written
+          var xhr = new XMLHttpRequest();
+          xhr.open('POST', 'php/write_data.php'); // change 'write_data.php' to point to php script.
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          xhr.onload = function() {
+            if(xhr.status == 200){
+              //var response = JSON.parse(xhr.responseText);
+              var response = xhr.responseText;
+              //console.log(response.success)
+              //console.log(response);
+              //console.log('status 200');
+            }
+          };
+          xhr.send(jsPsych.data.get().json()); //for jspsych's version
+        }
+
         var timeline = temp_timeline;
         jsPsych.init({
             timeline: timeline,
             preload_images: all_images,
-            on_finish: function() {
+            on_trial_finish: function() {
               //jsPsych.data.displayData('csv');//('csv');
               //jsPsych.data.get().localSave('CSV','./data/' + subjnum + '.csv');
-              function(){ saveData('./data/' + subjnum + '.csv', jsPsych.data.get().csv()); }
+             //saveDataToCsv(subjnum, jsPsych.data.get().csv());
+             saveDataToDb_trial()
+            },
+            on_finish: function(){
+              saveDataToDb() //with final values appended to every trial, too, so cleaned up nicely
             }
         });
     </script>

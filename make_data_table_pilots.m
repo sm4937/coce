@@ -1,11 +1,33 @@
-function [data] = make_data_table(raw_data)
+function [data] = make_data_table_pilots(subjnum)
+%subjnum = 203;
+filename = ['.\data\Pilot' num2str(subjnum) '.txt'];
+raw_data = import_jspsych_txt(filename);
+if subjnum == 4
+    raw_data = import_subj4_txt(filename);
+elseif subjnum == 5
+    raw_data = import_subj5_txt(filename);
+elseif subjnum == 6
+    raw_data = import_subj6_txt(filename);
+elseif subjnum >= 7
+    raw_data = load(['.\pilotdata\Pilot' num2str(subjnum) '.mat']);
+    eval(['raw_data = raw_data.Pilot' num2str(subjnum) ';'])
+end
 
-%filename = ['\data\' filename];
-data = table;
 colnames = raw_data.Properties.VariableNames;
-default_length = 24;
-subjnum = unique(raw_data.subjnum);
+default_length = 12;
 
+to_delete = {'stimulus','internal_node_id'}; %clean things up for your sanity scrolling through all this shit
+for var = 1:length(to_delete)
+    column = to_delete(var);
+    idx = find(ismember(colnames,column));
+    raw_data(:,idx) = [];
+    colnames(:,idx) = [];
+end
+%raw_data(:,find(ismember(colnames,{'stimulus'}))) = []; %remove 'Stimulus' column since it's bulky and not informative
+%raw_data(:,find(ismember(colnames,{'internal_node_id'}))) = []; %remove 'internal_node_id' column since it's also bulky
+
+relevant_vars = {'TOT','overall','performance_by_block','task','time_elapsed','trial_index','value_list','rt','success',...
+'detect','nback','correct'}; %easier way to do the following colname match operation?
 fullscreenidx = 0;
 for i = 1:length(colnames)
     if strmatch(colnames{i},'TOT')
@@ -29,16 +51,22 @@ for i = 1:length(colnames)
     if strmatch(colnames{i},'success')
         fullscreenidx = i;
     end
+    if strmatch(colnames{i},'internal_node_id')
+        internalnode = i;
+    end
+    if strmatch(colnames{i},'stimulus')
+        stimulus = i;
+    end
     if strmatch(colnames{i},'detect')
         detectidx = i;
     end
 end
 
 nbackidx = find(ismember(colnames,{'nback'}));
-perfidx = find(ismember(colnames,{'perf'}));
-value = find(ismember(colnames,{'value'}));
-offer = find(ismember(colnames,{'offer'}));
-version_idx = find(ismember(colnames,{'exp_version'}));
+perfidx = find(ismember(colnames,{'performance_by_block'}));
+value = find(ismember(colnames,{'value_list'}));
+offer = find(ismember(colnames,{'offer_list'}));
+version = find(ismember(colnames,{'exp_version'}));
 pswindex = find(ismember(colnames,{'prob_switch'}));
 swidx = find(ismember(colnames,{'switch1'}));
 %accidx = find(ismember(colnames,{'correct'}))
@@ -51,27 +79,12 @@ raw_data.new_correct(raw_data.correct_key==90) = true;
 % can be trimmed as you go
 accidx = find(ismember(colnames,{'new_correct'})); 
 
-%clean the switch column up, it's messy because of the zero's in it become
-%"undefined"s
-switch1 = table2array(raw_data(:,swidx));
-valid_switch_data = (switch1==categorical({'1'})|switch1==categorical({'NULL'}));
-raw_data.switch1(~valid_switch_data) = categorical({'0'});
-
 %separate out the people who failed from the people who didn't 
-tasknumlist = double(string(raw_data.tasknum));
-tasknumlist = unique(tasknumlist(~isnan(tasknumlist)));
-if sum(~isnan(tasknumlist))>0
-    if tasknumlist(end) < 23
-        data.failed = true;
-        data.subjnum = subjnum; %print some stuff about people who fail, eventually
-        return
-    else
-        failed = false;
-    end
+tasknumlist = raw_data.tasknum(~isnan(raw_data.tasknum));
+if tasknumlist(end) < 11
+    failed = true;
 else
-    data.failed = true;
-    data.subjnum = subjnum;
-    return
+    failed = false;
 end
 % see whether subjects were in fullscreen mode the entire experiment
 fullscreen = false;
@@ -79,17 +92,35 @@ if fullscreenidx ~= 0
     fullscreen = table2array(raw_data(end,fullscreenidx));
     if strmatch(fullscreen,"true")
         fullscreen = true;
-    elseif fullscreen == categorical({'1'})
-        fullscreen = true;
     else
         fullscreen = false;
     end
 end
-raw_data(end,:) = []; %trim out fullscreen trial with no data
+if subjnum >= 5 % to be removed when no longer analyzing pilot data
+    raw_data(end,:) = []; %trim out fullscreen trial with no data
+end
 
 % pull out need for cognition scores
 %[NFC,NFCmeaned] = gradeNFC(raw_data);
 %doesn't work for early pilots
+
+perf = split(table2array(raw_data(end,perfidx)),',');
+perf_by_block = str2num(char(perf)); %performance by block #
+value_list = split(table2array(raw_data(end,value)),',');
+offer_list = split(table2array(raw_data(end,offer)),',');
+for i=1:length(value_list)
+    if value_list(i) == "" %subj didn't respond in time to BDM prompt
+        value_list(i) = "0";
+    end
+end
+values = str2num(char(value_list)); %points requested by block #
+offers = str2num(char(offer_list));
+if subjnum == 2 % you accidentally deleted this so put it here
+    value_list = ["4.04", "3.08", "4.04", "4.04", "1.96", "1.80", "1.80", "1.48", "1.64", "1.16", "2.12", "1.64"];
+    for i = 1:length(value_list)
+        values(i) = str2double(char(value_list(i)));
+    end
+end
 
 rts = table2array(raw_data(:,rtidx));
 logrts = log(rts);
@@ -97,7 +128,11 @@ logrts = log(rts);
 overall = str2num(char(table2array(raw_data(end,overallidx)))); %overall accuracy
 total_length = str2num(char(table2array(raw_data(end,TOTidx))))/60000; %convert msec to minutes
 task_list = table2array(raw_data(:,taskidx));
-exp_version = table2array(raw_data(1,version_idx));
+if ~isempty(version)
+    exp_version = str2num(char(table2array(raw_data(end,version))));
+else
+    exp_version = 1;
+end
 
 tasks = [categorical(cellstr('detection'));categorical(cellstr('combine'));categorical(cellstr('n-switch'))];
 BDM_label = categorical(cellstr('BDM')); % find BDM trials in the sequence
@@ -109,35 +144,9 @@ debrief = find(task_list == categorical({'debrief'}));
 first_trials = BDMs+4; %start of individual tasks
 last_trials = BDMs-2;
 last_trials(1) = []; last_trials(end+1) = length(task_list) - 9; %pre-first BDM isn't a task trial
+%last_trials = debrief-1; 
+%last_trials = last_trials(last_trials > first_trials(1));
 %end of individual tasks
-
-not_practice = double(string(raw_data.tasknum))>-1; % find practice trials and by extension, post-practice trials
-real_task_idx = find(not_practice); real_task_idx = real_task_idx(1);
-not_practice = false(height(raw_data),1); not_practice(real_task_idx:end) = true;
-practice = ~not_practice; %a fun double negative
-main_task = not_practice; main_task(last_trials(end)+2:end) = false; %exclude questionnaire trials
-
-perf_list = table2array(raw_data(:,perfidx));
-perf_by_block = perf_list(perf_list~=categorical({'NULL'})&main_task);
-perf_by_block = str2num(char(perf_by_block));
-
-%subject fair wages
-value_list = table2array(raw_data(:,value));
-value_by_block = value_list(value_list~=categorical({'NULL'})&main_task);
-% BDM offers (random numbers)
-offer_list = table2array(raw_data(:,offer));
-offer_by_block = offer_list(offer_list~=categorical({'NULL'})&main_task);
-for i=1:length(value_by_block)
-    if value_list(i) == "" %subj didn't respond in time to BDM prompt
-        value_list(i) = "0";
-    end
-end
-values = str2num(char(value_by_block)); %points requested by block #
-offers = str2num(char(offer_by_block));
-% prune out weird values, gee thanks jspsych!
-values = values(values<=5); offers = offers(offers<=5);
-
-%% compile rts by block and task
 detectrts = NaN(1,default_length); nbackrts = NaN(1,default_length); nswitchmeanrts = NaN(2,default_length); %defaults for concatenating failed subjects
 for i=1:length(first_trials)
     if task_list(first_trials(i))==tasks(1)
@@ -226,9 +235,9 @@ for trial = 1:length(first_trials)
         blrts(trial,:) = [nanmean(rts(bl_detect)) nanmean(rts(bl_nback))];
         matchcount = [matchcount nansum(nback&accurate)];
     elseif task == tasks(3) %figure out switch costs in n-switch
-        relevant = raw_data.task == tasks(3);% & raw_data.practice==categorical({'false'}); %prune out feedback and ITI trials
-        switches = table2array(raw_data(:,swidx))==categorical({'1'}) & relevant; %find switches, convert to logical
-        notswitches = table2array(raw_data(:,swidx))==categorical({'0'}) & relevant; %find switches, convert to logical
+        relevant = raw_data.task == tasks(3) & raw_data.practice==categorical({'false'}); %prune out feedback and ITI trials
+        switches = table2array(raw_data(:,swidx))==categorical({'true'}) & relevant; %find switches, convert to logical
+        notswitches = table2array(raw_data(:,swidx))==categorical({'false'}) & relevant; %find switches, convert to logical
         stacked = [nanmean(rts(notswitches(first+1:last))); nanmean(rts(switches(first+1:last)))]; %let's not analyze first trials, since they're both not switches and not not switches
         nswitchrts(:,trial) = stacked;
         nswitches(trial) = sum(raw_data.new_correct(first+1:last)&switches(first+1:last)); %first trial is not a switch
@@ -260,9 +269,10 @@ end
 %% make individual scores for BDM offer mimicry
 y = values(2:end);
 x = offers(1:end-1);
-%[r,p] = corr(x,y);
-%BDMmimicry = [r,p];
+[r,p] = corr(x,y);
+BDMmimicry = [r,p];
 
+data = table;
 data.subjnum = subjnum;
 data.version = exp_version;
 data.fullscreen = fullscreen;
@@ -287,7 +297,7 @@ data.combineswitchrts = combineswitchrts;
 data.nbackmatches = nbackmatches;
 data.nswitches = nswitches;
 data.offers = offers';
-%data.BDMmimicry = BDMmimicry;
+data.BDMmimicry = BDMmimicry;
 data.failed = failed;
 data.allnswitchrts = allnswitchrts;
 data.allnswitchcosts = allnswitchcosts;

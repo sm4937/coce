@@ -84,8 +84,8 @@ function setup_practice_nBack(n){
       return {practice_accuracy: accuracy, practice: true}
     },
     stimulus: function(){
-      overall = accuracyNback(); 
-      return "<p>Your accuracy was <strong>" + overall + "%</strong>.</p><p>You will need to be at least " + String(cutoff_percent) + "% accurate during the study to earn points.</p><p>Please remember that you will not receive feedback like this during the real experiment.</p><p>Press the space bar to continue.</p>";
+      accuracy = accuracyNback(); 
+      return "<p>Your accuracy was <strong>" + accuracy + "%</strong>.</p><p>You will need to be at least " + String(cutoff_percent) + "% accurate during the study to earn points.</p><p>Please remember that you will not receive feedback like this during the real experiment.</p><p>Press the space bar to continue.</p>";
     }
   };
 
@@ -245,7 +245,7 @@ function setup_practice_combo(){
     type: "html-keyboard-response",
     data: function(){
       accuracy = accuracyCombine();
-      return {practice_accuracy: accuracy, practice: true}
+      return {task: 'debrief',practice_accuracy: accuracy, practice: true}
     },
     stimulus: function() {
       overall = accuracyCombine();

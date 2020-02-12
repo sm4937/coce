@@ -36,9 +36,8 @@ function runBDM(points,offer,task_ID){
   }
   BDM_message += "<p>[Press the space bar to continue.]</p>"
   points_list.push(points); offer_list.push(offer);
-  return BDM_message;
-  return points_list;
-  return offer_list;
+  data = {BDM_message: BDM_message, points_list: points_list, offer_list: offer_list}
+  return data;
 };
 
 function getBDMresponse(){
@@ -53,9 +52,8 @@ function getBDMresponse(){
     points = null;
   }
   value_list.push(points);
-  return offer;
-  return value_list;
-  return points;
+  data = {offer: offer, value_list: value_list, points: points};
+  return data
   };
 
 function turnLogicalIntoAccuracy(input){
@@ -245,9 +243,93 @@ function randomizeList(list){
   return newlist
 }
 
-function saveData(name, data){
+function getColNames(){
+  //sarah-written
   var xhr = new XMLHttpRequest();
-  xhr.open('POST', './php/write_data.php'); // 'write_data.php' is the path to the php file described above.
+  xhr.open('GET', 'php/get_data_needed_from_db.php');
+  xhr.responseType = 'text';
+  xhr.send();
+  xhr.onload = function() {
+    if(xhr.status == 200){
+      //var response = JSON.parse(xhr.responseText);
+      var response = xhr.responseText;
+      console.log(response);
+      console.log('status 200');
+    }
+  };
+  col_names = readline();
+  return col_names;
+}
+
+function saveDataToCsv(name, data){
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', 'php/write_data_to_csv.php'); // 'write_data.php' is the path to the php file described above.
   xhr.setRequestHeader('Content-Type', 'application/json');
   xhr.send(JSON.stringify({filename: name, filedata: data}));
+}
+
+function setDataColumns(){
+  //this will be automatic some day, for now it's manual
+  turkInfo = jsPsych.turk.turkInfo();
+  turk = !turkInfo.outsideTurk;
+  if(turk){
+    var urlVar = jsPsych.data.urlVariables();
+    var worker = urlVar.workerId;
+    var assignment = urlVar.assignmentId;
+    var hitid = urlVar.hitId;
+  }
+  if(!turk){
+    var worker = null;
+    var assignment = null;
+    var hitid = null;
+  }
+  dict = {
+    worker_ID: worker,
+    assignment_ID: assignment,
+    hid_ID: hitid,
+    //task: "instructions",
+    subjnum: subjnum*1,
+    exp_version: exp_version
+  }
+  jsPsych.data.addProperties(dict)
+  /*dict = {rt: null,
+    responses:null,
+    question_order: null, 
+    trial_type: null, 
+    trial_index: null, 
+    time_elapsed: null, 
+    internal_node_id: null,
+    TOT: null,
+    overall: null,
+    performance_by_block: null,
+    points_list: null,
+    value_list: null,
+    offer_list: null,
+    exp_version: null,
+    n_switch_rule_sides: null,
+    subjnum: subjnum,
+    worker_ID: worker,
+    assignment_ID: assignment,
+    hit_ID: hitid,
+    success: null,
+    stimulus: null,
+    key_press: null,
+    task: 'instructions',
+    correct: null,
+    detect: null,
+    correct_key: null,
+    tasknum: null,
+    practice_accuracy: null,
+    practice: null,
+    nback: null,
+    n: null,
+    number_practice_hard: null,
+    response: null,
+    BQMquizgrade: null,
+    task_displayed: null,
+    slider_start: null,
+    stimnum: null,
+    interaction_data: null
+  }*/ //end data dict, defining all fields from the beginning
+  return dict
 }

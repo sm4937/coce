@@ -88,7 +88,10 @@ function setup_nswitch(practice,loopi,condition){
         overall = accuracySwitch(); cutoff_message = pointsFeedback(); performance_list.push(overall);
         return "<p>" + cutoff_message + "</p> </p><p>Press the space bar to continue. </p>";
       },
-      data: {task: 'debrief'},
+      data: function(){
+        dict = {task: 'debrief', perf: accuracySwitch()};
+        return dict;
+      },
       trial_duration: instructs_timing //30 seconds to respond
     };
 

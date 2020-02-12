@@ -81,7 +81,7 @@ function setup_nBack(loopi){ //called n-back but it's the combine
 
   var test_stimuli = [];
   for(var trial = 0; trial < ntrials; trial++){
-    test_stimuli.push({stimulus: stimuli[stimnum_list[trial]], response_color: response_color, correct_key: key_list[trial], fb: feedback_list[trial], data: {nback: data_list[trial], correct_key: key_list[trial], detect: detect_list[trial], n: 3, task: 'combine', tasknum: loopi}})
+    test_stimuli.push({stimulus: stimuli[stimnum_list[trial]], response_color: response_color, correct_key: key_list[trial], fb: feedback_list[trial], data: {nback: data_list[trial], stimnum: stimnum_list[trial], correct_key: key_list[trial], detect: detect_list[trial], n: 3, task: 'combine', tasknum: loopi}})
   };
 
   var combine = {
@@ -94,7 +94,11 @@ function setup_nBack(loopi){ //called n-back but it's the combine
        overall = accuracyCombine(); cutoff_message = pointsFeedback(); performance_list.push(overall);
        return "<p style='font-size:25px'>" + cutoff_message + "</p> </p><p style='font-size:25px'>Press the space bar to continue. </p>";
       },
-      trial_duration: instructs_timing //30 seconds to respond
+      trial_duration: instructs_timing, //30 seconds to respond
+      data: function(){
+        dict = {task: "debrief", perf: accuracyCombine()}
+        return dict;
+      }
   };
 
   var presentation_screen = {

@@ -10,14 +10,28 @@ tasks = [categorical(cellstr('detection'));categorical(cellstr('combine')); cate
 tasklabels = {'detection','combine','pswitch=0.1','pswitch0.9'};
 hardtasks = [tasks(2) tasks(4)];
 
-%subj_list = [3:10 201:205];
-subj_list = [8:10 201:205];%excluding really early pilots
+files = string(ls('./data')); files(1:2) = []; %trim directory entries
+files = files(contains(files,'.mat'));
+files = {'11.02.2020.mat','12.02.2020_trial.mat'};
+subjs = [];long_format = [];
+for i = 1:length(files)
+    file = files{i};
+    raw =  load(['./data/'  file]);
+    raw.Untitled.TOT = double(string(raw.Untitled.TOT));
+    raw.Untitled.total_points = double(string(raw.Untitled.total_points));
+    %replace problem variables with doubles
+    long_format = [long_format; raw.Untitled];
+    %pull all the data into one long table
+end
+subjs = unique(long_format.subjnum(~isnan(long_format.subjnum)));
+
 % process individual subjects, exclude subjects who are kicked out early,
 % combine datasets into one big table
 group = table; excluded = table;
-for i = 1:length(subj_list)
-    subj = subj_list(i);
-    single = make_data_table(subj);
+for i = 1:length(subjs)
+    subj = subjs(i);
+    raw_data = long_format(long_format.subjnum == subj,:);
+    single = make_data_table(raw_data);
     if single.failed %separate people who got kicked out early
         excluded = [excluded; single];
     else
@@ -83,8 +97,8 @@ title(['Mean log(RT) by task'])
 figure
 subplot(1,2,1)
 ax = gca; fig = gcf;
-passingnback = (perf_by_block>cutoff&task_progression==tasks(2)); passingnback = [false(n,1) passingnback(:,1:end-1)]; %offset by 1
-passingdetect = (perf_by_block>cutoff&task_progression==tasks(1)); passingdetect = [false(n,1) passingdetect(:,1:end-1)]; %offset by 1
+passingnback = (perf_by_block>cutoff&(task_progression==tasks(2)|task_progression==tasks(4))); passingnback = [false(n,1) passingnback(:,1:end-1)]; %offset by 1
+passingdetect = (perf_by_block>cutoff&(task_progression==tasks(1)|task_progression==tasks(3))); passingdetect = [false(n,1) passingdetect(:,1:end-1)]; %offset by 1
 neither = ~passingnback&~passingdetect;
 
 init = NaN(1,length(perf_by_block));
@@ -145,7 +159,7 @@ ax.FontSize = 12;
 title('RT by BDM round')
 xlabel('Block #')
 ylabel('RT of decision')
-legend({'Passed Combine','Passed Detection','Did not Pass'},'Location','Best')
+legend({'Passed Hard','Passed Easy','Did not Pass'},'Location','Best')
 
 figure
 subplot(1,2,1)
