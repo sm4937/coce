@@ -12,13 +12,16 @@ hardtasks = [tasks(2) tasks(4)];
 
 files = string(ls('./data')); files(1:2) = []; %trim directory entries
 files = files(contains(files,'.mat'));
-files = {'11.02.2020.mat','12.02.2020_trial.mat'};
+files = {'11.02.2020.mat','12.02.2020_trial.mat','13.02.2020_trial.mat'};
 subjs = [];long_format = [];
 for i = 1:length(files)
     file = files{i};
     raw =  load(['./data/'  file]);
     raw.Untitled.TOT = double(string(raw.Untitled.TOT));
     raw.Untitled.total_points = double(string(raw.Untitled.total_points));
+    raw.Untitled.stimnum = double(string(raw.Untitled.total_points));
+    raw.Untitled.prob_switch = double(string(raw.Untitled.prob_switch));
+    raw.Untitled.rule = double(string(raw.Untitled.rule));
     %replace problem variables with doubles
     long_format = [long_format; raw.Untitled];
     %pull all the data into one long table
@@ -31,9 +34,9 @@ group = table; excluded = table;
 for i = 1:length(subjs)
     subj = subjs(i);
     raw_data = long_format(long_format.subjnum == subj,:);
-    single = make_data_table(raw_data);
+    [single,failed_counts] = make_data_table(raw_data);
     if single.failed %separate people who got kicked out early
-        excluded = [excluded; single];
+        excluded = [excluded; failed_counts];
     else
         group = [group; single];
     end
@@ -116,7 +119,8 @@ for j = 1:n
     bundle(j,:,1) = bluevalues; bundle(j,:,2) = purplevalues; bundle(j,:,3) = redvalues;
 end
 
-errorbar(nanmean(values),nanstd(values)/sqrt(n),'k','LineWidth',2)
+%errorbar(nanmean(values),nanstd(values)/sqrt(n),'k','LineWidth',2)
+% too variable for now, too
 % lines for later, too messy now given how few data points we have in each
 % condition
 % errorbar(nanmean(bundle(:,:,1),1),nanstd(bundle(:,:,1))/sqrt(n),'b','LineWidth',1)
@@ -160,6 +164,34 @@ title('RT by BDM round')
 xlabel('Block #')
 ylabel('RT of decision')
 legend({'Passed Hard','Passed Easy','Did not Pass'},'Location','Best')
+
+%just check out subject BDM strategy
+figure
+subplot(1,2,1)
+for i = 1:n
+    scatter(1:24,values(i,:),'o','Filled')
+    hold on
+end
+title('Mean fair wage per subject per block')
+fig = gcf; ax = gca;
+fig.Color = 'w';
+ax.FontSize = 12;
+
+subplot(1,2,2)
+for i = 1:n
+    if group.version(i) == 1
+        color = 'r';
+    else
+        color = 'b';
+    end
+    scatter(1:24,values(i,:),['o' color],'Filled')
+    hold on
+end
+title('Mean fair wage per subject per block')
+legend('Exp 1','Exp 2')
+fig = gcf; ax = gca;
+fig.Color = 'w';
+ax.FontSize = 12;
 
 figure
 subplot(1,2,1)
@@ -391,6 +423,7 @@ fig.Color = 'w'; ax.FontSize = 12;
 
 %sanity check that tasks take the same amount of time
 figure
+subplot(1,2,1)
 y = TOT(task_progression==tasks(1));
 x = TOT(task_progression==tasks(2));
 scatter(ones(length(y),1),y)
@@ -404,6 +437,19 @@ xticklabels({'Detection','Combine'})
 ax = gca; fig = gcf;
 fig.Color = 'w';
 ax.FontSize = 12;
+
+subplot(1,2,2)
+y = sum(sum(task_progression==tasks(1)));
+x = sum(sum(task_progression==tasks(2)));
+w = sum(sum(task_progression==tasks(3)));
+z = sum(sum(task_progression==tasks(4)));
+bar([y,x,w,z])
+xticklabels({'detection','combine','n-switch,p0.1','n-switchp0.9'})
+ax = gca; fig = gcf;
+fig.Color = 'w';
+ax.FontSize = 12;
+title('# times each task completed across subjects')
+ylabel('Count')
 
 %plot late responses/changed responses by task
 figure
@@ -420,4 +466,30 @@ xtickangle(45)
 ylabel('mean late responses')
 ax.FontSize = 12;
 fig.Color = 'w';
+
+%% why high dropout rates?
+
+figure
+subplot(1,2,1)
+bar([sum(excluded.values(excluded.exp_version==1,1:4)) 0 n1])
+labels = [excluded.labels(1,1:4) ' ' 'finished'];
+xticklabels([labels])
+title('Dropout over course of experiment 1')
+ylabel('n')
+ax = gca; fig = gcf;
+ax.FontSize = 14;
+fig.Color = 'w';
+
+subplot(1,2,2)
+bar([sum(excluded.values(excluded.exp_version==2,1:4)) 0 n2])
+labels = [excluded.labels(1,1:4) ' ' 'finished'];
+xticklabels([labels])
+title('Dropout over course of experiment 2')
+ylabel('n')
+ax = gca; fig = gcf;
+ax.FontSize = 14;
+fig.Color = 'w';
+
+
+
 

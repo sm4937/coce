@@ -1,7 +1,7 @@
-function [data] = make_data_table(raw_data)
+function [data,failed_data] = make_data_table(raw_data)
 
 %filename = ['\data\' filename];
-data = table;
+data = table; failed_counts = [];
 colnames = raw_data.Properties.VariableNames;
 default_length = 24;
 subjnum = unique(raw_data.subjnum);
@@ -38,7 +38,7 @@ nbackidx = find(ismember(colnames,{'nback'}));
 perfidx = find(ismember(colnames,{'perf'}));
 value = find(ismember(colnames,{'value'}));
 offer = find(ismember(colnames,{'offer'}));
-version_idx = find(ismember(colnames,{'exp_version'}));
+version_idx = ismember(colnames,{'exp_version'});
 pswindex = find(ismember(colnames,{'prob_switch'}));
 swidx = find(ismember(colnames,{'switch1'}));
 %accidx = find(ismember(colnames,{'correct'}))
@@ -56,6 +56,17 @@ accidx = find(ismember(colnames,{'new_correct'}));
 switch1 = table2array(raw_data(:,swidx));
 valid_switch_data = (switch1==categorical({'1'})|switch1==categorical({'NULL'}));
 raw_data.switch1(~valid_switch_data) = categorical({'0'});
+%
+detect = raw_data.detect;
+valid = (detect==categorical({'1'})|detect==categorical({'NULL'}));
+raw_data.detect(~valid) = categorical({'0'});
+raw_data.detect = string(raw_data.detect);
+
+nback = raw_data.nback;
+valid = (nback==categorical({'1'})|nback==categorical({'NULL'}));
+raw_data.nback(~valid) = categorical({'0'});
+raw_data.nback = string(raw_data.nback);
+
 
 %separate out the people who failed from the people who didn't 
 tasknumlist = double(string(raw_data.tasknum));
@@ -64,13 +75,17 @@ if sum(~isnan(tasknumlist))>0
     if tasknumlist(end) < 23
         data.failed = true;
         data.subjnum = subjnum; %print some stuff about people who fail, eventually
+        failed_data = dropout(raw_data); %pass it into a deeper function to figure out they dropped out
         return
     else
         failed = false;
+        failed_data = table;
+        %demo = process_demo(raw_data); %we'll get this back
     end
 else
     data.failed = true;
     data.subjnum = subjnum;
+    failed_data = dropout(raw_data);
     return
 end
 % see whether subjects were in fullscreen mode the entire experiment
@@ -213,7 +228,7 @@ for trial = 1:length(first_trials)
         rts = task_rts(~isnan(condition)&condition~=0);
         %detectrts = [detectrts; nanmean(rts)];
     elseif task == tasks(2)
-        detect = table2array(raw_data(first:last,detectidx)) == 'true'; %need to convert to logical
+        detect = table2array(raw_data(first:last,detectidx)) == '1'; %need to convert to logical
         nback = table2array(raw_data(first:last,nbackidx)) == '1'; %make sure that this is 1, or 'true' or something
         accurate = raw_data.new_correct(first:last);
         condition = init'; condition(nback) = 2; condition(detect) = 1; %always need to count detect trials as non-nbacks, no overlapping there
@@ -295,5 +310,8 @@ data.missedtrials = missed;
 data.lateresponse = lateresponse;
 data.changedresponse = changedresponse;
 %data.NFC = NFC;
+% data.age = demo.age;
+% data.sex = demo.sex;
+% data.edu = demo.edu;
 
 %end

@@ -2,7 +2,7 @@
 % go file by file
 % not working yet
 
-filename = '12.02.2020_trial';
+filename = '13.02.2020_trial';
 subjs = [];
 long_format = import_mturk_data(['./data/' filename '.csv']);
 %raw_data = load('11.02.2020.mat','Untitled');
