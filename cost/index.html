@@ -40,18 +40,14 @@
     <body>
     </body>
     <script>
-      // to - do:
-      // give specific error messages also "you held the key down" or "you missed too many targets" in 
-      // end feedback screen?
-      // go through and make sure data saving makes practical sense
-      // make code prettier!
 
-      exp_version = 2;
+      exp_version = 2; //Math.ceil(Math.random()*2); //randomize for simplicity of running from home
+      // we're fixing to 2, because version 1 is two extremes rather than version 2, which is a better balance of task difficulties
       // 1 is the combine, detection version
       // 2 is the n-switch version
       var subjnum = String(exp_version) + String(Math.round(Math.random()*10**7)); //eight numbers should suffice?
 
-      var debug = false;
+      var debug = true;
 
       // set up initial global variables
       answer_key_names = ['H','K'];
@@ -60,8 +56,8 @@
       }
       var answer_keys = [jsPsych.pluginAPI.convertKeyCharacterToKeyCode(answer_key_names[0]),jsPsych.pluginAPI.convertKeyCharacterToKeyCode('z'),jsPsych.pluginAPI.convertKeyCharacterToKeyCode(answer_key_names[1])];
 
-      var cutoff = 80; //set up the global accuracy cutoffs
-      var cutoff_percent = cutoff; //for instructions
+      var cutoff = 80; //set up the accuracy cutoffs, applied for now only in training phase
+      var cutoff_percent = 80; //for instructions
       var bdmcutoff = 65;
       var stimuli = ["E","R","X","T"];
       var detection_target = stimuli.slice(-1)[0];
@@ -122,11 +118,31 @@
         task_list.fill(3);
       }
       var blocknums = [];
-      blocknums.push([0,(n_repetitions/2)-1]);
-      blocknums.push([n_repetitions/2,n_repetitions-1]); //to feed into main timeline creation loop
+      blocknums.push([0,(n_repetitions/4)-1]);
+      blocknums.push([n_repetitions/4,((2*n_repetitions)/4)-1]); //to feed into main timeline creation loop
+      blocknums.push([(2*n_repetitions)/4,((3*n_repetitions)/4)-1]); 
+      blocknums.push([(3*n_repetitions)/4,n_repetitions-1]); 
+      
+      /*var firstHalf = {
+          timeline: create_main_timeline(blocknums[0],task_list),
+          conditional_function: function(){
+            accuracy = gradeBDMquiz();
+            return compareToCutoff(accuracy);
+          }
+        };
+
+      temp_timeline.push(firstHalf);
+        var secondHalf = {
+          timeline: create_main_timeline(blocknums[1],task_list),
+          conditional_function: function(){
+            accuracy = keepTrackofPerformance();
+            return compareToCutoff(accuracy);
+          }
+        };
+
+      temp_timeline.push(secondHalf);*/
 
       //begin timeline creation:
-      
       var consent_forms = {
         timeline: create_consent_timeline()
       };
@@ -148,30 +164,36 @@
 
       temp_timeline.push(experiment_instructions); //initialize timeline with just instructions
 
-      var firstHalf = {
-          timeline: create_main_timeline(blocknums[0],task_list),
+      //break the task into quarters for kicking people out who aren't even at 50% accuracy
+      //var theMeat = [];
+      for(i=0;i<(blocknums.length);i++){ //check in every 1/4 of the task now, instead of half
+        var chunk = {
+          timeline: create_main_timeline(blocknums[i],task_list),
           conditional_function: function(){
-            accuracy = gradeBDMquiz();
-            return compareToCutoff(accuracy);
+            last = jsPsych.data.get().select('tasknum').values;
+            //tasknum_list = last.select('tasknum').values;
+            practice_just_ended = (last.slice(-1)[0] == -1);
+            if(practice_just_ended){
+              accuracy = gradeBDMquiz();
+              return accuracy>65;
+            }
+            if(!practice_just_ended){
+              accuracy = keepTrackofPerformance();
+              return accuracy>50; //make sure people are at least above chance
+            }
           }
-        };
+        }
+        temp_timeline.push(chunk);
+      };
 
-        temp_timeline.push(firstHalf);
+      //temp_timeline.push(theMeat);
 
-        var secondHalf = {
-          timeline: create_main_timeline(blocknums[1],task_list),
-          conditional_function: function(){
-            accuracy = keepTrackofPerformance();
-            return compareToCutoff(accuracy);
-          }
-        };
-
-        moreBDM = {
-          timeline: [{
-            type: "html-keyboard-response",
-            stimulus: "<p>This experiment is almost over. Please press <strong>M</strong> if you'd like to read more about the process we used to determine the points you earned and why asking for your true fair wage is the best strategy.</p><p>Otherwise, you will now move on to some survey questions.</p><p>When you finish the questions, you will be shown your personal code.</p><p>To properly submit this experiment, you will need your personal code, so make sure to write it down before you exit the experiment window.</p><p>[Press the space bar to submit your results to the experimenter.]</p>"
-          }]
-        };
+      moreBDM = {
+        timeline: [{
+          type: "html-keyboard-response",
+          stimulus: "<p>This experiment is almost over. Please press <strong>M</strong> if you'd like to read more about the process we used to determine the points you earned and why asking for your true fair wage is the best strategy.</p><p>Otherwise, you will now move on to some survey questions.</p><p>When you finish the questions, you will be shown your personal code.</p><p>To properly submit this experiment, you will need your personal code, so make sure to write it down before you exit the experiment window.</p><p>[Press the space bar to continue to the questionnaires]</p>"
+        }]
+      };
 
         BDMexplain = {
           timeline: moreBDMexplanation(),
@@ -187,7 +209,6 @@
           }
         }
 
-        temp_timeline.push(secondHalf);
         temp_timeline.push(moreBDM);
         temp_timeline.push(BDMexplain); //make these more dynamic so people don't see them if it doesn't make sense to see them (i.e. people who are kicked out pre-BDM instructions)
         // for now they're fine here
@@ -196,18 +217,29 @@
         var NFC_timeline = {
           timeline: create_need_for_cognition(),
           conditional_function: function(){
-            return compareToCutoff(gradeBDMquiz()) //make sure they do at least half of the blocks
+            accuracy = gradeBDMquiz();
+            return accuracy>65; //make sure they do at least half of the blocks
           } 
         } 
 
         var demo_timeline = {
           timeline: create_demographics(),
           conditional_function: function(){
-            return compareToCutoff(gradeBDMquiz())
+            accuracy = gradeBDMquiz();
+            return accuracy>65;
+          }
+        }
+
+        var SAPS_timeline = {
+          timeline: create_SAPS(),
+          conditional_function: function(){
+            accuracy = gradeBDMquiz();
+            return accuracy>65;
           }
         }
 
         temp_timeline.push(NFC_timeline);
+        temp_timeline.push(SAPS_timeline);
         temp_timeline.push(demo_timeline);
 
         ending = {
@@ -215,7 +247,7 @@
             type: "html-keyboard-response",
             stimulus: function(){
               points = sumPoints(points_list);
-              message = "<p>Thank you for your participation! This experiment is now over.</p><p>You earned " + String(points) + " points total.</p><p>Please submit your work with your personal code and we will bonus you within 48 hours.</p><p>Your personal code is <strong>" + subjnum + "</strong>.</p><p>If you want to copy your personal code, please highlight it and right-click to do so. If you press any buttons on your keyboard, this window will close.</p><p>[<strong> Press any key to submit your points to the experimenter so we can bonus you.</strong>]</p>"
+              message = "<p>Thank you for your participation! This experiment is now over.</p><p>You earned " + String(points) + " points total.</p><p>Please submit your work with your personal code and we will bonus you within 48 hours.</p><p>Your personal code is on the next page.</p><p>[<strong>Press any key to reveal your personal code.</strong>]</p>"
               return message;
             },
             data: function(){
@@ -224,14 +256,30 @@
               overall = keepTrackofPerformance();
               points = sumPoints(points_list);
               var interaction_data = jsPsych.data.getInteractionData();
+              questionnaire_answers = parseQuestionText();
               dict = {TOT: TOT, overall: overall, total_points: points, exp_version: exp_version, n_switch_rule_sides: n_switch_rule_sides, subjnum: subjnum*1}; //make subjnum a number, not a string
               jsPsych.data.addProperties(dict);
-              return {interaction_data: interaction_data.values()}; //so the data saved in the ending is the interaction data. the data files get the dict added as properties, changing how the data is structured for analysis of non-pilots
+              return {interaction_data: interaction_data.values(), responses: questionnaire_answers}; //so the data saved in the ending is the interaction data. the data files get the dict added as properties, changing how the data is structured for analysis of non-pilots
             }
           }]
         };
 
         temp_timeline.push(ending);
+
+        personal_code = {
+          timeline: [{
+            type: "html-keyboard-response",
+            stimulus: function (){
+              message = "<p>Your personal code is <strong>" + subjnum + "</strong>.</p><p>Thank you for completing my experiment!</p>";
+              saveDataToDb(); //sneak this in here
+              return message;
+            },
+            response_ends_trial: false,
+            trial_duration: 600000
+          }]
+        };
+
+        temp_timeline.push(personal_code);
         
         temp_timeline.push({
           type: 'fullscreen',
@@ -281,10 +329,10 @@
               //jsPsych.data.get().localSave('CSV','./data/' + subjnum + '.csv');
              //saveDataToCsv(subjnum, jsPsych.data.get().csv());
              saveDataToDb_trial()
-            },
-            on_finish: function(){
-              saveDataToDb() //with final values appended to every trial, too, so cleaned up nicely
             }
+            /*on_finish: function(){
+              saveDataToDb() //with final values appended to every trial, too, so cleaned up nicely
+            }*/
         });
     </script>
 </html>

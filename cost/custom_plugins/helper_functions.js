@@ -5,11 +5,12 @@ function pointsFeedback(){
   tasknum = lasttrial.select("tasknum").values;
   tasknum = tasknum[0];
   points = points_list[tasknum];
-  if(overall < cutoff){
+  /*if(overall < cutoff){
     var cutoff_message = 'You were not accurate enough. You earned 0 points.';
     } else {
     var cutoff_message = 'Great job! You earned ' + String(points) + ' point(s) from this task.';
-    };
+    };*/
+  cutoff_message = 'Great job! You earned ' + String(points) + ' point(s) from this task.';
   return cutoff_message;
 };  
 
@@ -24,7 +25,8 @@ function runBDM(points,offer,task_ID){
   var BDM_message = "<p style='font-size':25px> You want <strong> " + String(points) + " </strong> points. </p> <p> The computer offers <strong>" + String(offer) + "</strong> points. </p>"
   timeoutflag = points==null;
   if(points <= offer){
-    BDM_message += "<p> You will be given " + String(offer) + " points if you achieve at least " + String(cutoff_percent)  + "% accuracy on this task. </p>" + fractals[task_ID] + " location='center'></img>";
+    //BDM_message += "<p> You will be given " + String(offer) + " points if you achieve at least " + String(cutoff_percent)  + "% accuracy on this task. </p>" + fractals[task_ID] + " location='center'></img>";
+    BDM_message += "<p> You will be given " + String(offer) + " points for completing this task. </p>" + fractals[task_ID] + " location='center'></img>";
     points = offer; 
   } else {
     BDM_message += "<p> You will do the following task instead to earn 1 point. </p> " + fractals[task_ID+1] + " location='center'></img>";
@@ -84,9 +86,10 @@ function sumPoints(input){
   sum = 0;
   for(i = 0; i < input.length; i++){
     point = Math.ceil(input[i]);
-    if(performance_list[i]>=cutoff){
+    /*if(performance_list[i]>=cutoff){
       sum += point;
-    }
+    }*/
+    sum += point;
   }
   return sum;
 }
@@ -332,4 +335,26 @@ function setDataColumns(){
     interaction_data: null
   }*/ //end data dict, defining all fields from the beginning
   return dict
+}
+
+function parseQuestionText(){
+  NFC_responses = jsPsych.data.get().filter({task: 'NFC'}).select('responses').values;
+  demo_responses = jsPsych.data.get().filter({task: 'demographics'}).select('responses').values;
+  free_responses = jsPsych.data.get().filter({task: 'free_response'}).select('responses').values;
+  SAPS_responses = jsPsych.data.get().filter({task: 'SAPS'}).select('responses').values;
+  long_string = [];
+  for(i=0;i<NFC_responses.length;i++){
+    long_string += NFC_responses[i]
+  }
+  for(i=0;i<SAPS_responses.length;i++){
+    long_string += SAPS_responses[i];
+  }
+  for(i=0;i<demo_responses.length;i++){
+    long_string += demo_responses[i];
+  }
+  for(i=0;i<free_responses.length;i++){
+    long_string += free_responses[i];
+  }
+  final = long_string.replace(/[^a-zA-Z0-9]/g,'_');
+  return final
 }

@@ -96,7 +96,8 @@ function setup_detection(practice,loopi){
       timeline: [{
         type: "html-keyboard-response",
           stimulus: function() {
-            var initial_instructs = '<p>In this task, you will need to press <strong>' + answer_key_names[1] + '</strong> every time you see the target letter <strong>' + detection_target + '</strong>. </p><p>You must respond while the letter is on screen or your answer will not count.</p><p> Pay attention! If you are not at least ' + String(cutoff_percent) + '% accurate, you will not earn points for completing this round.</p> <p>Press space to begin.</p>';
+            //var initial_instructs = '<p>In this task, you will need to press <strong>' + answer_key_names[1] + '</strong> every time you see the target letter <strong>' + detection_target + '</strong>. </p><p>You must respond while the letter is on screen or your answer will not count.</p><p> Pay attention! If you are not at least ' + String(cutoff_percent) + '% accurate, you will not earn points for completing this round.</p> <p>Press space to begin.</p>';
+            var initial_instructs = '<p>In this task, you will need to press <strong>' + answer_key_names[1] + '</strong> every time you see the target letter <strong>' + detection_target + '</strong>. </p><p>You must respond while the letter is on screen or your answer will not count.</p><p>Press space to begin.</p>';            
              //return "<p style='font-size:25px'>" + n_back_instructs + " </p>";
             return initial_instructs;
               },
@@ -108,7 +109,7 @@ function setup_detection(practice,loopi){
        type: "html-keyboard-response",
        stimulus: function() {
          overall = accuracyDetection();
-         return "<p>Your accuracy was <strong>" + overall + "%</strong>.</p><p>You will need to be at least " + String(cutoff_percent) + "% accurate to earn points in the real experiment.</p><p>In the real experiment, you will not receive the same feedback as during practice.</p><p>Press the space bar to continue. </p>";
+         return "<p>Your accuracy was <strong>" + overall + "%</strong>.</p><p>You will need to be at least " + String(cutoff_percent) + "% accurate to progress to the main experiment.</p><p>In the main experiment, you will not receive the same feedback as during practice.</p><p>Press the space bar to continue. </p>";
         },
         data: function(){
           accuracy = accuracyDetection();

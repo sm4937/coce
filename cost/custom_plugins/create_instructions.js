@@ -9,11 +9,11 @@ function create_experiment_instructions(){
       type: "html-keyboard-response",
       stimulus: function() {
         experiment_instructs = '<p>In this experiment, you\'ll complete up to ' + String(n_repetitions) + ' short rounds of two tasks.</p>'
-        experiment_instructs +='<p>If you are ' + String(cutoff_percent) + '% correct or better during one round of a task, then you pass that round and earn bonus points for it. If you are less than ' + String(cutoff_percent) + '% correct, you will not earn any points for that round.</p>'
-        experiment_instructs +='<p>Keep in mind that you should be about ' + String(cutoff_percent) + '% accurate for up to ' + String(n_repetitions) + ' rounds.</p>'        
+        //experiment_instructs +='<p>If you are ' + String(cutoff_percent) + '% correct or better during one round of a task, then you pass that round and earn bonus points for it. If you are less than ' + String(cutoff_percent) + '% correct, you will not earn any points for that round.</p>'
+        //experiment_instructs +='<p>Keep in mind that you should be about ' + String(cutoff_percent) + '% accurate for up to ' + String(n_repetitions) + ' rounds.</p>'        
         experiment_instructs +='<p>You can earn 1 to 5 points each round.</p>';
         experiment_instructs +='<p>At the end of the experiment, the points you earned will be added up and turned into a bonus payment. $$ The more points you earn, the more money you will be paid. $$</p>'
-        experiment_instructs +='<p>We can tell if you\'re not paying attention; if you\'re not, then this experiment will end early and you will earn a smaller payment. $$</p>'
+        experiment_instructs +='<p>We can tell if you\'re not paying attention; if you\'re not, then this experiment will end early and you will earn a smaller payment. $</p>'
         experiment_instructs +='<p>[Press space to continue.]</p>';
         //return "<p style='font-size:25px'>" + n_back_instructs + " </p>";
         return experiment_instructs;
@@ -23,19 +23,27 @@ function create_experiment_instructions(){
   };
 
   var full_combine_practice = {
-    timeline: create_practice_tasks(exp_version)
+    timeline: create_practice_tasks(exp_version),
+    conditional_function: function(){
+      return !debug //only run if not debug version
+    }
   }
 
   BDM_quiz = {
     timeline: bdmQuiz(),
     conditional_function: function(){
-      if(exp_version==1){
-        accuracy = accuracyFinalCombine()
-      }
-      if(exp_version==2){
-        accuracy = accuracyfinalSwitch()
-      }
+      if(!debug){
+        if(exp_version==1){
+          accuracy = accuracyFinalCombine()
+        }
+        if(exp_version==2){
+          accuracy = accuracyfinalSwitch()
+        }
       return compareToCutoff(accuracy);
+      }
+      if(debug){
+        return true //for now, run in debug mode
+      }
     }
   };
 
@@ -65,12 +73,12 @@ function create_experiment_instructions(){
     timeline: [{
       type: "html-keyboard-response",
       stimulus: function() {
-        experiment_instructs = '<p>Pay attention! If you are not at least ' + String(cutoff_percent) + '% accurate, you will not earn points for completing each task.</p>'
-        experiment_instructs += '<p>You will not be getting the same amount of feedback on your performance in the real experiment.</p>'
+        //experiment_instructs = '<p>Pay attention! If you are not at least ' + String(cutoff_percent) + '% accurate, you will not earn points for completing each task.</p>'
+        experiment_instructs = '<p>You will not be getting the same amount of feedback on your performance in the real experiment.</p>'
         //experiment_instructs += '<p>If you press a button, the stimulus on screen will turn ' + response_color + ' to show you that the computer registered your response.</p>'
         experiment_instructs += '<p>If you press a button, the stimulus on screen will change color to show you that the computer registered your response.</p>'
         experiment_instructs += '<p>At the end of the experiment, we\'ll ask you to complete some optional survey questions.</p>'
-        experiment_instructs += '<p>If we can tell that you are not paying attention (not accurate enough or not responding quickly enough), then this experiment will end early and you will earn a smaller payment. $$</p>'
+        experiment_instructs += '<p>If we can tell that you are not paying attention (not accurate enough or not responding quickly enough), then this experiment will end early and you will earn a smaller payment. $</p>'
         experiment_instructs += '<p>[Press the space bar to begin the real experiment.]</p>'
         return experiment_instructs;
         },
@@ -81,10 +89,6 @@ function create_experiment_instructions(){
       return compareToCutoff(gradeBDMquiz())
     }
   };
-
-if(debug){
-  return timeline = [debrief1, debrief2]
-}
 
 //return timeline = [instructs, practice_detection, practice_1_back, practice_2_back, practice_3_back, check_accuracy, repeat_3_back, practice_combine, check_final_accuracy, repeat_combine, reach_asymptote, repeat_combine, BDM_quiz, debrief]//setup_practice_nBack(1),setup_practice_nBack(2),setup_practice_nBack(3), BDM_quiz, debrief];
 //return timeline = [full_combine_practice, BDM_quiz, debrief]//setup_practice_nBack(1),setup_practice_nBack(2),setup_practice_nBack(3), BDM_quiz, debrief];
@@ -165,7 +169,7 @@ function create_practice_tasks(exp_version){
     };
 
     // flexible framework for repeating practice combine as many times as a subject might need it
-    max_repeats = 5;
+    max_repeats = 9;
     combine_practice_timeline = [practice_combine];
     for(var reps=0;reps<max_repeats;reps++){
     starter_message = '<p>You are not at ' + String(cutoff_percent) + '% accuracy yet.</p><p>Let\'s try this task again.</p>';
@@ -289,7 +293,7 @@ function create_practice_tasks(exp_version){
     }
     //temp.push(together);
 
-    max_repeats = 3;
+    max_repeats = 9;
     practice_timeline.push(together)
     practice_timeline.push(practice_hard)
     for(var reps=0;reps<max_repeats;reps++){

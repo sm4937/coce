@@ -112,25 +112,25 @@ function setup_nswitch(practice,loopi,condition){
     var instructs = {
       timeline: [{
         type: "html-keyboard-response",
-          stimulus: function() {
-            var initial_instructs = '<p>Now, let\'s practice responding to both rules.</p>'
-            initial_instructs += '<p>You will be responding to both rules, one at a time, depending on the color of the number on screen.</p>';
-            initial_instructs += '<p>You will use four different keys, <strong>S, F, H, and K</strong> to respond.</p>'
-            initial_instructs += '<p style="color: '+ colors[0] + '">If the number is ' + colors[0] + ', you will need to respond to its ' + rule_names[0] + '.</p>';
-            initial_instructs += '<p style="color: '+ colors[1] + '">If the number is ' + colors[1] + ', you will need to respond to its ' + rule_names[1] + '.</p>';
-            initial_instructs += '<p>Press the space bar to practice this task.</p>';
-            return initial_instructs;
-              },
-            data: {task: 'instructions'},
-            trial_duration: instructs_timing
-            }]
-          };    
+        stimulus: function() {
+          var initial_instructs = '<p>Now, let\'s practice responding to both rules.</p>'
+          initial_instructs += '<p>You will be responding to both rules, one at a time, depending on the color of the number on screen.</p>';
+          initial_instructs += '<p>You will use four different keys, <strong>S, F, H, and K</strong> to respond.</p>'
+          initial_instructs += '<p style="color: '+ colors[0] + '">If the number is ' + colors[0] + ', you will need to respond to its ' + rule_names[0] + '.</p>';
+          initial_instructs += '<p style="color: '+ colors[1] + '">If the number is ' + colors[1] + ', you will need to respond to its ' + rule_names[1] + '.</p>';
+          initial_instructs += '<p>Press the space bar to practice this task.</p>';
+          return initial_instructs;
+        },
+        data: {task: 'instructions'},
+        trial_duration: instructs_timing
+      }]
+    };    
 
       var debrief = {
        type: "html-keyboard-response",
        stimulus: function() {
          overall = accuracySwitch();
-         return "<p>Your accuracy was <strong>" + overall + "%</strong>.</p><p>You will need to be at least " + String(cutoff_percent) + "% accurate to earn points in the real experiment.</p><p>In the real experiment, you will not receive the same feedback as during practice.</p><p>Press the space bar to continue. </p>";
+         return "<p>Your accuracy was <strong>" + overall + "%</strong>.</p><p>You will need to be at least " + String(cutoff_percent) + "% accurate to progress to the real experiment.</p><p>In the real experiment, you will not receive the same feedback as during practice.</p><p>Press the space bar to continue. </p>";
         },
         data: function(){
           accuracy = accuracySwitch();
@@ -368,7 +368,7 @@ function practice1rule(rule){
     type: "html-keyboard-response",
     stimulus: function() {
       overall = accuracySwitch();
-      return "<p>You were <strong>" + overall + "% accurate</strong>.</p><p>You will need to be at least " + String(cutoff_percent) + "% accurate to earn points in the real experiment.</p><p>In the real experiment, you will not receive the same feedback as during practice.</p><p>Press the space bar to continue. </p>";
+      return "<p>You were <strong>" + overall + "% accurate</strong>.</p><p>You will need to be at least " + String(cutoff_percent) + "% accurate to progress to the real experiment.</p><p>In the real experiment, you will not receive the same feedback as during practice.</p><p>Press the space bar to continue. </p>";
     },
     data: function(){
       accuracy = accuracySwitch();

@@ -43,6 +43,8 @@ function create_need_for_cognition(){
   for(var q=0; q<ends[0]; q++){
     formattedqs1.push({prompt: "<strong>" + question_list[q] + "</strong>", options: options, required:false, horizontal:true});
   }
+  //add a Screener question
+  formattedqs1.push({prompt: "<strong>7. Please select 'extremely characteristic of me' if you've read this question.</strong>", options: options, required:false, horizontal:true,name:'screener'})
   formattedqs2 = [];
   for(var q=ends[0]; q<ends[1]; q++){
     formattedqs2.push({prompt: "<strong>" + question_list[q] + "</strong>", options: options, required:false, horizontal:true});
@@ -128,3 +130,55 @@ function create_demographics(){
   return timeline = [demo, textboxes];
 
 };
+
+function create_SAPS(){
+  var SAPS_instructions = '<p><strong>The following items are designed to measure certain attitudes people have toward themselves, their performance, and toward others. It is important that your answers be true and accurate for you. For each statement, please select an answer from strongly disagree to strongly agree to describe your degree of agreement with each item.</p></strong>';
+
+  var options = ["strongly disagree", "disagree", "somewhat disagree", "neutral", "somewhat agree", "agree", "strongly agree"];
+
+  //var standards = {options: options, required:false, horizontal:true};
+  var question_list = ["1. I have high expectations for myself.",
+    "2. Doing my best never seems to be enough.",
+    "3. I set very high standards for myself.",
+    "4. I often feel disappointment after completing a task because I know I could have done better.",
+    "5. I have a strong need to strive for excellence.",
+    //screener
+    "7. My performance rarely measures up to my standards.",
+    "8. I expect the best from myself.",
+    "9. I am hardly ever satisfied with my performance."]
+
+    // make a list of dictionaries [{},{},{}] with standard settings
+
+  ends = [5, 8];
+  formattedqs1 = [];
+  for(var q=0; q<ends[0]; q++){
+    formattedqs1.push({prompt: "<strong>" + question_list[q] + "</strong>", options: options, required:false, horizontal:true});
+  }
+  formattedqs2 = [];
+  formattedqs2.push({prompt: "<strong>6. Please select 'somewhat agree' if you've read this question.</strong>", options: options, required:false, horizontal:true, name:'screener'})
+  for(var q=ends[0]; q<ends[1]; q++){
+    formattedqs2.push({prompt: "<strong>" + question_list[q] + "</strong>", options: options, required:false, horizontal:true});
+  }
+  // standards['prompt'] = "This is a question?"
+
+  var SAPS1 = {
+    timeline: [{
+      type: 'survey-multi-choice',
+      questions: formattedqs1,
+      preamble: SAPS_instructions,
+      data: {task: 'SAPS'}
+    }]
+  }
+  var SAPS2 = {
+    timeline: [{
+      type: 'survey-multi-choice',
+      questions: formattedqs2,
+      preamble: SAPS_instructions,
+      data: {task: 'SAPS'}
+    }]
+  }
+    //NFC.push(multi_choice_block_horizontal);
+
+  return timeline = [SAPS1, SAPS2];
+
+}

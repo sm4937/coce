@@ -20,7 +20,7 @@ function create_main_timeline(blocknums, task_list){
         labels: ['5','4','3','2','1'],
         start: srt_point,
         step: 4,
-        prompt: "<p>How many points is a fair wage for completing this task?</p>",
+        prompt: "<p>How many points is a fair wage for completing 1 round of this task?</p>",
         trial_duration: instructs_timing //30 seconds to respond
         }],
       timeline_variables: BDM_trial
@@ -54,34 +54,34 @@ function create_main_timeline(blocknums, task_list){
     var run_hard_task = {
       timeline: run_task_by_ID(task_ID,loopi),//setup_nBack(loopi),
       conditional_function: function(){
-          if(points<=offer & points!=null){
-            return true;
-          } else {
-            //skipping hard task
-            return false;
-          }
+        if(points<=offer & points!=null){
+          return true;
+        } else {
+          //skipping hard task
+          return false;
         }
-      };
+      }
+    };
 
     var run_easy_task = {
       timeline: run_task_by_ID(task_ID+1,loopi),
       conditional_function: function(){
-          if(points>offer || points==null){ //didn't do hard n-back
-            points = 1;
-            return true;
-          } else {
-            //skipping easy task
-            return false;
-          }
+        if(points>offer || points==null){ //didn't do hard n-back
+          points = 1;
+          return true;
+        } else {
+          //skipping easy task
+          return false;
         }
-      };
+      }
+    };
 
-      loop_timeline.push(BDM);
-      loop_timeline.push(BDM_outcome);
-      loop_timeline.push(run_hard_task);
-      loop_timeline.push(run_easy_task);
+    loop_timeline.push(BDM);
+    loop_timeline.push(BDM_outcome);
+    loop_timeline.push(run_hard_task);
+    loop_timeline.push(run_easy_task);
 
-    } // outer trial (task) loop
+  } // outer trial (task) loop
 
   return loop_timeline;
 

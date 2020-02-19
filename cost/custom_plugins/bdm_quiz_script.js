@@ -37,11 +37,14 @@ function bdmQuiz(){
       type: "html-keyboard-response",
         stimulus: function() {
           experiment_instructs = "<p>Please read these instructions carefully, as you will be tested on your understanding of them.</p>"
-          experiment_instructs +="<p>Before each round begins, you will be asked how many points is a fair wage to be at least " + String(cutoff_percent) + "% accurate at one of the tasks you just practiced.</p>"
+         // experiment_instructs +="<p>Before each round begins, you will be asked how many points is a fair wage to be at least " + String(cutoff_percent) + "% accurate at one of the tasks you just practiced.</p>"
+          experiment_instructs +='<p>Before each round begins, you will be asked how many points is a fair wage to complete that particular round of one of the tasks you just practiced.</p>'
+          experiment_instructs +='<p>We will explain what we mean by "fair wage" on the next screen.</p>' 
+          experiment_instructs +='<p>This means that <strong>you have some control over what you will be paid</strong> at the end of the experiment.</p>'
           experiment_instructs +='<p>We want you to tell us truthfully how many points is a fair wage, and so we are using a payment process where <strong>telling the truth is the best strategy.</strong></p>'
           //experiment_instructs +='<p>In other words, you will be <strong>selling</strong> your task performance to us. </p>'
-          experiment_instructs +='<p>This means that <strong>you have some control over what you will be paid</strong> at the end of the experiment.</p>'
-          experiment_instructs +='<p>Whenever given a choice, <strong> the best thing you can do is to always ask for what you consider to be a fair wage for at least '+ String(cutoff_percent) + '% accuracy on the task.</strong></p>'
+          //experiment_instructs +='<p>Whenever given a choice, <strong> the best thing you can do is to always ask for what you consider to be a fair wage for at least '+ String(cutoff_percent) + '% accuracy on the task.</strong></p>'          
+          experiment_instructs +='<p>Whenever given a choice, <strong> the best thing you can do is to always ask for what you consider to be a fair wage to complete that particular round of that task.</strong></p>'
           experiment_instructs += space_bar_message;
            //return "<p style='font-size:25px'>" + n_back_instructs + " </p>";
           return experiment_instructs;
@@ -55,10 +58,11 @@ function bdmQuiz(){
         stimulus: function() {
           experiment_instructs = '<p>What do we mean by "fair wage"?</p>'
           experiment_instructs +='<p>When you get hired to complete some work, you may ask for more or less payment based on how much you would enjoy doing that work.</p>'
-          experiment_instructs +='<p>For example, you might dislike mowing the lawn more than watering the garden, and may ask for more in return for mowing the lawn.</p>'
-          experiment_instructs +='<p>A fair wage for you is the amount of points you think it would be fair for you to receive in exchange for your completion of the task.</p>'
-          experiment_instructs += '<p>While you won\'t get paid exactly what you ask for, the best strategy is to ask for what you truly believe is a fair wage for you.</p>'
-          experiment_instructs += '<p>We\'re not going to get into the exact reasons why until the end of the experiment.</p>'
+          experiment_instructs +='<p>For example, on some days, you might dislike mowing the lawn more than watering the garden, and may ask for more in return for mowing the lawn.</p>'
+          experiment_instructs +='<p>On other days, you might enjoy mowing the lawn more (perhaps because the weather is nicer), and may ask for less in return.</p>'
+          experiment_instructs +='<p>A fair wage on a particular round is the amount of points you think it would be fair for you to receive in exchange for your completion of that round.</p>'
+          experiment_instructs += '<p>Your fair wage may also change with time.</p>'
+          //experiment_instructs += '<p>We\'re not going to get into the exact reasons why until the end of the experiment.</p>'
           experiment_instructs += space_bar_message;
           return experiment_instructs;
             }
@@ -84,12 +88,16 @@ function bdmQuiz(){
     timeline: [{
       type: "html-keyboard-response",
       stimulus: function(){
-        experiment_instructs ='<p>In short, once you report your fair wage, the computer will present you with a <strong> random offer.</strong></p>'
-        experiment_instructs +='<p>If you ask for fewer points than the computer offers you, then you will complete the task and be given the points the computer offered.</p>'
-        experiment_instructs +='<p>Say you ask for 3 points and the computer offers 4, then if you pass the task with at least ' + String(cutoff_percent) + '% accuracy, you will be given 4 points.</p>'
+        experiment_instructs = '<p>While you won\'t get paid exactly what you ask for, the best strategy is to ask for what you truly believe is a fair wage for you.</p>'
+        experiment_instructs +='<p>In short, once you report your fair wage, the computer will present you with a <strong> random offer.</strong></p>'
+        experiment_instructs +='<p>If you ask for fewer points than the computer offers you, then you will complete that round and be given the points the computer offered.</p>'
+        //experiment_instructs +='<p>Say you ask for 3 points and the computer offers 4, then if you pass the task with at least ' + String(cutoff_percent) + '% accuracy, you will be given 4 points.</p>'
+        experiment_instructs +='<p>Say you ask for 3 points and the computer offers 4, then if you complete that round, you will be given 4 points.</p>'        
         experiment_instructs +='<p>If you ask for more points than the computer offers you, then you will do a different task on that round. The alternate task is worth <strong>1 point.</strong></p>'
         experiment_instructs +='<p>For example, if you ask for 5 points and the computer offers 4 points, then you will do something else and be given 1 point.</p>'
-        experiment_instructs +='<p>There is no way to game the payment system. You will either get the computer\'s random point offer, or 1 point for an alternate task.</p>'
+        //experiment_instructs +='<p>There is no way to game the payment system. You will either get the computer\'s random point offer, or 1 point for an alternate task.</p>'
+        experiment_instructs +='<p>The number of points you ask for for completing that round of a task therefore influences both how many points you actually earn and how likely you are to complete that task.</p>'
+        experiment_instructs +='<p>If your fair wage for a particular round of a task is the maximum number of points you can earn (5), then the chances you have to do that task are very low and you\'re more likely to earn 1 point instead.</p>'        
         experiment_instructs += space_bar_message;
         return experiment_instructs;
       }
@@ -102,7 +110,8 @@ function bdmQuiz(){
         stimulus: function() {
           experiment_instructs = '<p>What is the rule of the auction? Once you tell us what you think is a fair wage for you, the computer will present you with a <strong> random counter-offer. </strong></p>'
           experiment_instructs +='<p>If you ask for fewer points than the computer offers you, then you will complete the task and be given the points the computer offered.</p>'
-          experiment_instructs +='<p>Say you ask for 3 points and the computer offers 4, then if you complete the task with at least '+ String(cutoff_percent) + '% accuracy, you will be given 4 points.</p>'
+          //experiment_instructs +='<p>Say you ask for 3 points and the computer offers 4, then if you complete the task with at least '+ String(cutoff_percent) + '% accuracy, you will be given 4 points.</p>'                    
+          experiment_instructs +='<p>Say you ask for 3 points and the computer offers 4, then if you complete the task, you will be given 4 points.</p>'
           experiment_instructs +='<p>If you ask for more points than the computer offers you, then you will do a different task on that round. The alternate task is worth <strong> 1 point. </strong></p>'
           experiment_instructs +='<p>For example, if you ask for 5 points and the computer offers 4 points, then you will do something else and be given 1 point.</p>'
           experiment_instructs += space_bar_message;
@@ -118,7 +127,7 @@ function bdmQuiz(){
           experiment_instructs = '<p>Why is it in your best interest to ask for a truly fair wage?</p>'
           experiment_instructs +='<p>You might think your best strategy is to always ask for a lot of points. This is <strong>incorrect.</strong></p>'
           experiment_instructs +='<p>The points you earn are determined by the computer\'s random offer, and <strong> not </strong> just what you ask for.</p>'
-          experiment_instructs +='<p>Thus, if you ask for more than your truly fair wage, you will not affect your final point payment. Instead, you might lose the opportunity to do that task and earn more than 1 point.</p>'
+          experiment_instructs +='<p>Thus, if you ask for more than your true fair wage, you will not affect your final point payment. Instead, you might lose the opportunity to do that task and earn more than 1 point.</p>'
           experiment_instructs += '<p>This happens if the computer\'s random number lies between your true fair wage and the value you reported.</p>'
           experiment_instructs +='<p>It follows that by asking for a fair wage for you, you will earn that amount or more if the computer is willing to pay as much as your fair wage.</p>'
           experiment_instructs +='<p>What happens if you ask for less than a truly fair wage? Then you will earn fewer points than you believe you deserve!</p>'
@@ -136,7 +145,8 @@ function bdmQuiz(){
     timeline: [{
       type: "html-keyboard-response",
         stimulus: function() {
-          experiment_instructs = '<p><strong> Your best strategy is to always ask for what you believe is a fair wage for hitting at least ' + String(cutoff_percent) + '% accuracy on 1 round of a task.</strong></p>'
+          experiment_instructs = '<p><strong> Your best strategy on each round is to always ask for what you believe is a fair wage for completing that round of the task.</strong></p>'
+          //experiment_instructs = '<p><strong> Your best strategy is to always ask for what you believe is a fair wage for hitting at least ' + String(cutoff_percent) + '% accuracy on 1 round of a task.</strong></p>'
           experiment_instructs +='<p>We will now quiz you on the instructions you\'ve just read. If you fail this quiz, you cannot participate in this experiment.</p>'
           experiment_instructs +='<p>Press R if you\'d like to read these instructions again.</p>'
           experiment_instructs +='<p>Press the space bar if you\'d like to move on to the quiz.</p>'
@@ -162,10 +172,10 @@ function bdmQuiz(){
   questions = [];
   response_prompt = "<p'font-size':25px>[Press A or B to indicate your answer.]</p>";
   quiz_questions = ["<p'font-size':25px>Imagine you think a true fair wage is 2 points. Which amount should you ask for?</p><p 'font-size':25px> A. 4</p><p 'font-size':25px> B. 2</p>", 
-  "<p><img src='./static/img/offer_big.png'></p><p'font-size':25px>What happens when you ask for <strong>more</strong> points than the computer offers?</p><p>A. You will start the pictured task, and get the points the computer offered if you pass that round.</p><p 'font-size':25px> B. You will start a different task and be given 1 point if you pass that round.</p>",
+  "<p><img src='./static/img/offer_big.png'></p><p'font-size':25px>What happens when you ask for <strong>more</strong> points than the computer offers?</p><p>A. You will start the pictured task, and get the points the computer offered if you complete that round.</p><p 'font-size':25px> B. You will start a different task and be given 1 point if you complete that round.</p>",
   "<p'font-size':25px>Under which of the following two conditions will you do the pictured task?</p><p>A. When you ask for 2 points, and the computer randomly offers 3 points.</p><p 'font-size':25px> B. When you ask for 2 points, and the computer randomly offers 1 point.</p>",
-  "<p><img src='./static/img/offer_small.png'></p><p'font-size':25px>What happens when you ask for <strong>fewer</strong> points than the computer offers?</p><p>A. You will start the task, and get the points the computer offered if you pass that round.</p><p 'font-size':25px> B. You will start a different task and be given 1 point if you pass that round.</p>",
-  "<p'font-size':25px>Under which of the following two conditions will you <strong>not</strong> do the pictured task?</p><p>A. When you ask for 3 points, and the computer randomly offers 2 points.</p><p 'font-size':25px> B. When you ask for 3 points, and the computer randomly offers 4 points.</p>",
+  "<p><img src='./static/img/offer_small.png'></p><p'font-size':25px>What happens when you ask for <strong>fewer</strong> points than the computer offers?</p><p>A. You will start the task, and get the points the computer offered if you complete that round.</p><p 'font-size':25px> B. You will start a different task and be given 1 point if you complete that round.</p>",
+  "<p'font-size':25px>What happens if you ask for fewer points than your true fair wage for one round of a task?</p><p 'font-size':25px>A. You may have to complete that round of that task for fewer points than you feel you deserve.</p><p 'font-size':25px>B. You will have to complete a different task instead. </p>",
   "<p'font-size':25px>Which is the correct strategy for asking for points?</p><p>A. Ask for as many points as possible.</p><p 'font-size':25px> B. Tell the truth about what is a fair wage for you.</p>"];
   for(i=0;i<quiz_questions.length;i++){
     questions[i] = "<p'font-size':15px>[Question " + String(i+1) + " of " + String(quiz_questions.length) + "]</p>" + response_prompt + quiz_questions[i];
@@ -223,15 +233,20 @@ function gradeBDMquiz(){
 
 
 function moreBDMexplanation(){
+ 
   screen5 = {
-  timeline: [{
-    type: "html-keyboard-response",
-      stimulus: function() {
-      experiment_instructs = '<p>Why is the best strategy to ask for <strong> what you truly believe is a fair wage for you</strong>?</p>'
-        experiment_instructs +='<p>Because the payment process of this experiment has one special rule.</p>'
-        experiment_instructs +='<p>Its an unusual rule, but its implications are simple.</p>'
-        experiment_instructs +='<p>There is no way of gaming the process.</p>'
-        experiment_instructs +='<p>The <strong> best </strong> thing you can do in every trial is <strong> ask yourself how many points you want to be paid if you achieve at least ' + String(cutoff_percent) + '% accuracy that round, and then ask for that amount.</strong></p>'
+    timeline: [{
+      type: "html-keyboard-response",
+      stimulus: function(){
+        experiment_instructs ='<p>In short, once you report your fair wage, the computer will present you with a <strong> random offer.</strong></p>'
+        experiment_instructs +='<p>If you ask for fewer points than the computer offers you, then you will complete the task and be given the points the computer offered.</p>'
+        //experiment_instructs +='<p>Say you ask for 3 points and the computer offers 4, then if you pass the task with at least ' + String(cutoff_percent) + '% accuracy, you will be given 4 points.</p>'
+        experiment_instructs +='<p>Say you ask for 3 points and the computer offers 4, then if you complete the task, you will be given 4 points.</p>'        
+        experiment_instructs +='<p>If you ask for more points than the computer offers you, then you will do a different task on that round. The alternate task is worth <strong>1 point.</strong></p>'
+        experiment_instructs +='<p>For example, if you ask for 5 points and the computer offers 4 points, then you will do something else and be given 1 point.</p>'
+        //experiment_instructs +='<p>There is no way to game the payment system. You will either get the computer\'s random point offer, or 1 point for an alternate task.</p>'
+        experiment_instructs +='<p>The number of points you would like to earn for completing 1 round of a task therefore influences both how many points you earn and how likely you are to complete a specific task.</p>'
+        experiment_instructs +='<p>If your fair wage for one round of a task is the maximum number of points you can earn (5), then the chances you have to do that task are very low.</p>'        
         experiment_instructs += space_bar_message;
         return experiment_instructs;
       }
@@ -239,17 +254,18 @@ function moreBDMexplanation(){
   };
 
   screen6 = {
-  timeline: [{
-    type: "html-keyboard-response",
-      stimulus: function() {
-        experiment_instructs = '<p>What is the rule? Once you tell us what you think is a fair wage for you, the computer will present you with a <strong> random counter-offer. </strong></p>'
-        experiment_instructs +='<p>If you ask for fewer points than the computer offers you, then you will complete the task and be given the points the computer offered.</p>'
-        experiment_instructs +='<p>For example, say you ask for 3 points and the computer offers 4, then if you complete the task with at least '+ String(cutoff_percent) + '% accuracy, you will be given 4 points.</p>'
-        experiment_instructs +='<p>If you ask for more points than the computer offers you, then you will do a different task on that round. The alternate task is worth <strong> 1 point. </strong></p>'
-        experiment_instructs +='<p>For example, if you ask for 5 points and the computer offers 4 points, then you will do something else and be given 1 point.</p>'
-        experiment_instructs += space_bar_message;
-        return experiment_instructs;
-      }
+    timeline: [{
+      type: "html-keyboard-response",
+        stimulus: function() {
+          experiment_instructs = '<p>What is the rule of the auction? Once you tell us what you think is a fair wage for you, the computer will present you with a <strong> random counter-offer. </strong></p>'
+          experiment_instructs +='<p>If you ask for fewer points than the computer offers you, then you will complete the task and be given the points the computer offered.</p>'
+          //experiment_instructs +='<p>Say you ask for 3 points and the computer offers 4, then if you complete the task with at least '+ String(cutoff_percent) + '% accuracy, you will be given 4 points.</p>'                    
+          experiment_instructs +='<p>Say you ask for 3 points and the computer offers 4, then if you complete the task, you will be given 4 points.</p>'
+          experiment_instructs +='<p>If you ask for more points than the computer offers you, then you will do a different task on that round. The alternate task is worth <strong> 1 point. </strong></p>'
+          experiment_instructs +='<p>For example, if you ask for 5 points and the computer offers 4 points, then you will do something else and be given 1 point.</p>'
+          experiment_instructs += space_bar_message;
+          return experiment_instructs;
+        }
     }]
   };
 
@@ -258,17 +274,17 @@ function moreBDMexplanation(){
       type: "html-keyboard-response",
         stimulus: function() {
           experiment_instructs = '<p>Why is it in your best interest to ask for a truly fair wage?</p>'
-          experiment_instructs +='<p>You might think your best strategy is to always ask for a lot of points. This is <strong>not the case.</strong></p>'
+          experiment_instructs +='<p>You might think your best strategy is to always ask for a lot of points. This is <strong>incorrect.</strong></p>'
           experiment_instructs +='<p>The points you earn are determined by the computer\'s random offer, and <strong> not </strong> just what you ask for.</p>'
-          experiment_instructs +='<p>Thus, if you ask for more than your truly fair wage, you will not affect your final point payment. Instead, you might lose the opportunity to do that task and earn more than 1 point.</p>'
-          experiment_instructs +='<p>This happens if the computer\'s random number lies between your true fair wage and the value you reported.</p>'
-          experiment_instructs +='<p>It follows that by asking for a fair wage for you, you will earn that amount or more if the computer offers to pay as much as your fair wage.</p>'
+          experiment_instructs +='<p>Thus, if you ask for more than your true fair wage, you will not affect your final point payment. Instead, you might lose the opportunity to do that task and earn more than 1 point.</p>'
+          experiment_instructs += '<p>This happens if the computer\'s random number lies between your true fair wage and the value you reported.</p>'
+          experiment_instructs +='<p>It follows that by asking for a fair wage for you, you will earn that amount or more if the computer is willing to pay as much as your fair wage.</p>'
           experiment_instructs +='<p>What happens if you ask for less than a truly fair wage? Then you will earn fewer points than you believe you deserve!</p>'
           experiment_instructs += space_bar_message;
           return experiment_instructs;
-            }
-          }]
-        };
+        }
+    }]
+  };
 
   screen12 = {
     timeline: [{
@@ -306,7 +322,8 @@ function exampleBDM(){
         points = lasttrialdata.select("response").values;
         points = 1+points*0.04;
         points = Number.parseFloat(points).toFixed(2);
-        message = "<p>You asked for " + String(points) + " points.</p><p>The computer offered " + String(offer) + " points.</p><p>Because the computer's offer is larger, you would move onto the pictured task and, if you achieved " + String(cutoff_percent) + "% accuracy on this task, you would be given " + String(offer) + " points at the end.</p><p>Press the space bar to continue.</p>"
+        //message = "<p>You asked for " + String(points) + " points.</p><p>The computer offered " + String(offer) + " points.</p><p>Because the computer's offer is larger, you would move onto the pictured task and, if you achieved " + String(cutoff_percent) + "% accuracy on this task, you would be given " + String(offer) + " points at the end.</p><p>Press the space bar to continue.</p>"
+        message = "<p>You asked for " + String(points) + " points.</p><p>The computer offered " + String(offer) + " points.</p><p>Because the computer's offer is larger, you would complete the pictured task and be given " + String(offer) + " points at the end.</p><p>Press the space bar to continue.</p>"
         return message;      
       },
       trial_duration: instructs_timing
@@ -337,7 +354,8 @@ function exampleBDM(){
         points = lasttrialdata.select("response").values;
         points = 1+points*0.04;
         points = Number.parseFloat(points).toFixed(2);
-        message = "<p>You asked for " + String(points) + " points.</p><p>The computer offered " + String(offer) + " points.</p><p>Because the computer's offer is smaller, you would skip the pictured task and, if you achieved " + String(cutoff_percent) + "% accuracy on an alternate task, you would be given 1 point at the end.</p><p>Press the space bar to continue.</p>"
+        //message = "<p>You asked for " + String(points) + " points.</p><p>The computer offered " + String(offer) + " points.</p><p>Because the computer's offer is smaller, you would skip the pictured task and, if you achieved " + String(cutoff_percent) + "% accuracy on an alternate task, you would be given 1 point at the end.</p><p>Press the space bar to continue.</p>"
+        message = "<p>You asked for " + String(points) + " points.</p><p>The computer offered " + String(offer) + " points.</p><p>Because the computer's offer is smaller, you would skip the pictured task and complete an alternate task. You would be given 1 point at the end.</p><p>Press the space bar to continue.</p>"        
         return message;      
       },
       trial_duration: instructs_timing
