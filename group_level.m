@@ -9,10 +9,14 @@ cutoff = 80;
 tasks = [categorical(cellstr('detection'));categorical(cellstr('combine')); categorical({'pswitch0.1'}); categorical({'pswitch0.9'})];
 tasklabels = {'detection','combine','pswitch=0.1','pswitch0.9'};
 hardtasks = [tasks(2) tasks(4)];
+default_length = 24;
 
-files = string(ls('./data')); files(1:2) = []; %trim directory entries
-files = files(contains(files,'.mat'));
-files = {'11.02.2020.mat','12.02.2020_trial.mat','13.02.2020_trial.mat'};
+% files = string(ls('./data')); files(1:2) = []; %trim directory entries
+% files = files(contains(files,'.mat'));
+%files = {'11.02.2020.mat','12.02.2020_trial.mat','13.02.2020_trial.mat'};
+%version 1 ^
+
+files = {'18.02.2020.mat','19.02.2020.mat','24.02.2020.mat','25.02.2020.mat'};
 subjs = [];long_format = [];
 for i = 1:length(files)
     file = files{i};
@@ -22,6 +26,9 @@ for i = 1:length(files)
     raw.Untitled.stimnum = double(string(raw.Untitled.total_points));
     raw.Untitled.prob_switch = double(string(raw.Untitled.prob_switch));
     raw.Untitled.rule = double(string(raw.Untitled.rule));
+    raw.Untitled.practice_accuracy = double(string(raw.Untitled.practice_accuracy));
+    raw.Untitled.overall = double(string(raw.Untitled.overall));
+    raw.Untitled.session = i*ones(height(raw.Untitled),1); %add in a session factor for random effects model
     %replace problem variables with doubles
     long_format = [long_format; raw.Untitled];
     %pull all the data into one long table
@@ -44,6 +51,46 @@ end
 
 n = height(group);
 data = group;
+
+%% BASIC DATA QUALITY CHECKS %%
+%sanity check - BDM differences across sessions?
+figure
+subplot(1,2,1)
+for i = 1:length(unique(data.session))
+    y = data.values(data.session==i,:);
+    y = reshape(y,numel(y),1);
+    jitter = rand(length(y),1)-0.5;
+    x = i*ones(length(y),1)+jitter;
+    scatter(x,y,'o')
+    hold on
+end
+title('BDM points requested by session number')
+ylabel('BDM points')
+xlabel('Session (jittered for visibility)')
+ax = gca; fig = gcf;
+ax.FontSize = 12; fig.Color = 'w';
+
+subplot(1,2,2)
+%any subjects with high amounts of BDM variability? prune them from
+%statistical analysis?
+for i = 1:height(data)
+    dot = nanstd(data.values(i,:));
+    list(i,:) = [dot i];
+end
+list = sortrows(list,1,'Ascend');
+scatter(1:height(data),list(:,1))
+title('STD of BDM points requested per subject')
+ylabel('STD')
+xlabel('Subject')
+xticks([1:height(data)])
+xticklabels(num2str(list(:,2)))
+ax = gca; fig = gcf;
+ax.FontSize = 12; fig.Color = 'w';
+
+exclude = list(list(:,1)>1.5,2); %grab any subjects who have STD of BDMs>1.5
+data(exclude,:) = [];
+n = height(data);
+
 nbackacc = data.nbackacc;
 detectacc = data.detectacc;
 nswitch1acc = data.nswitch1acc;
@@ -60,6 +107,7 @@ BDM_rt = data.BDMrt;
 version = data.version;
 n1 = sum(version==1);
 n2 = sum(version==2); %specific n's for graphing/useful to have
+inattentive = perf_by_block<25;
 
 tasks_overall = [nanmean(data.detectacc,2) nanmean(data.nbackacc,2) nanmean(data.nswitch1acc,2) nanmean(data.nswitch9acc,2)];
 tasks_rts = [nanmean(data.detectrts,2) nanmean(data.nbackrts,2) nanmean(data.nswitch1rts,2) nanmean(data.nswitch9rts,2)];
@@ -71,6 +119,38 @@ for row = 1:n
     combineswitchcosts = [combineswitchcosts; nanmean(data.combineswitchcosts{row})];
     nswitchswitchcosts = [nswitchswitchcosts; nanmean(data.allnswitchcosts{row})];
 end
+
+%sanity check that tasks take the same amount of time
+figure
+subplot(1,2,1)
+y = TOT(task_progression==tasks(3));
+x = TOT(task_progression==tasks(4));
+scatter(ones(length(y),1),y)
+hold on
+scatter(2*ones(length(x),1),x)
+errorbar(1:2,[mean(y) mean(x)],[std(y)/sqrt(length(y)) std(x)/sqrt(length(x))],'ko')
+xlim([0.75 2.25])
+ylabel('Time on task (seconds)')
+xticks([1 2])
+xticklabels({'Nswitch0.1','Nswitch0.9'})
+ax = gca; fig = gcf;
+fig.Color = 'w';
+ax.FontSize = 12;
+
+subplot(1,2,2)
+y = sum(sum(task_progression==tasks(1)));
+x = sum(sum(task_progression==tasks(2)));
+w = sum(sum(task_progression==tasks(3)));
+z = sum(sum(task_progression==tasks(4)));
+%bar([y,x,w,z])
+bar([w,z])
+%xticklabels({'detection','combine','n-switch,p0.1','n-switchp0.9'})
+xticklabels({'n-switch,p0.1','n-switchp0.9'})
+ax = gca; fig = gcf;
+fig.Color = 'w';
+ax.FontSize = 12;
+title('# times each task completed across subjects')
+ylabel('Count')
 
 %% Plot some stuff
 figure
@@ -95,7 +175,7 @@ hold on
 errorbar(1:4,[nanmean(tasks_rts(:,1)) nanmean(tasks_rts(:,2)) nanmean(tasks_rts(:,3)) nanmean(tasks_rts(:,4))],[nanstd(tasks_rts(:,1))/sqrt(n1) nanstd(tasks_rts(:,2))/sqrt(n1) nanstd(tasks_rts(:,3))/sqrt(n2) nanstd(tasks_rts(:,4))/sqrt(n2)],'k*','LineWidth',2)
 xticklabels({'Detection','Combine','N-Switch p=0.1','N-Switch p=0.9'})
 xtickangle(45)
-title(['Mean log(RT) by task'])
+title('Mean RT by task')
 
 figure
 subplot(1,2,1)
@@ -119,7 +199,7 @@ for j = 1:n
     bundle(j,:,1) = bluevalues; bundle(j,:,2) = purplevalues; bundle(j,:,3) = redvalues;
 end
 
-%errorbar(nanmean(values),nanstd(values)/sqrt(n),'k','LineWidth',2)
+errorbar(nanmean(values),nanstd(values)/sqrt(n),'k','LineWidth',2)
 % too variable for now, too
 % lines for later, too messy now given how few data points we have in each
 % condition
@@ -172,6 +252,7 @@ for i = 1:n
     scatter(1:24,values(i,:),'o','Filled')
     hold on
 end
+errorbar(nanmean(values),nanstd(values)/sqrt(n2),'k','LineWidth',1)
 title('Mean fair wage per subject per block')
 fig = gcf; ax = gca;
 fig.Color = 'w';
@@ -179,7 +260,7 @@ ax.FontSize = 12;
 
 subplot(1,2,2)
 for i = 1:n
-    if group.version(i) == 1
+    if data.version(i) == 1
         color = 'r';
     else
         color = 'b';
@@ -226,7 +307,7 @@ ylabel('Mean log(RT) (ms)')
 
 figure
 for row = 1:n
-    init = NaN(12,1);
+    init = NaN(24,1);
     init(data.offers(row,:)>data.values(row,:)) = data.offers(row,data.offers(row,:)>data.values(row,:));
     init(data.values(row,:)>data.offers(row,:)) = 1;
     y = init;
@@ -268,7 +349,7 @@ subplot(3,2,2)
 for row = 1:n
     next_trial = find(task_progression(row,:)==tasks(4))+1;
     y = nswitch9acc(row,~isnan(nswitch9acc(row,:)));
-    y(next_trial==length(task_progression(row,:))+1) = []; %prune lists the same way as below
+    y(next_trial==default_length+1) = []; %prune lists the same way as below
     next_trial(next_trial == length(task_progression(row,:))+1) = []; %outside the index, 13th block of 12
     matrix = sortrows([y',values(row,next_trial)'],1);
     plot(matrix(:,1),matrix(:,2),'o')
@@ -325,7 +406,7 @@ subplot(3,2,5)
 % plot combine n-back hits versus BDM points requested
 for row = 1:n
     next_trial = find(task_progression(row,:)==tasks(2))+1;
-    y = data.nbackmatches{row};
+    y = data.nbackmatches{row}; %y(:,inattentive(row,:)) = NaN; %prune out blocks where subjects clearly weren't paying attention
     y(next_trial==length(task_progression(row,:))+1) = []; %prune lists the same way as below
     next_trial(next_trial == length(task_progression(row,:))+1) = []; %outside the index, 13th block of 12
     matrix = sortrows([y',values(row,next_trial)'],1);
@@ -344,15 +425,17 @@ xlabel('# of N-Back matches within Combine')
 
 %plot BDM request by previous task switches within pswitch 0.9
 subplot(3,2,6)
+matrix = [];
 for i=1:n
     task_list = data.task_progression(i,:);
     if ismember(categorical({'pswitch0.9'}),task_list) %version 2
-        hard = find(ismember(task_list,categorical({'pswitch0.9'})));
+        hard = find(ismember(task_list,categorical({'pswitch0.9'}))&~inattentive(i,:));
         next = hard+1;
         l = length(task_list);
         y = values(i,next(next~=(l+1)));
         x = data.nswitches(i,hard(hard~=l)); %exclude last trial for sizing reasons
-        plot(x,y,'o');
+        matrix = [matrix; y' x'];
+        scatter(x,y,'o','Filled');
         hold on
     end
 end
@@ -363,6 +446,23 @@ ax = gca; fig = gcf;
 fig.Color = 'w';
 ax.FontSize = 12;
 ylim([1 5.1])
+
+%is this significant?
+x = matrix(:,1);
+y = matrix(:,2);
+notvalid = isnan(y) | isnan(x);
+x(notvalid) = []; y(notvalid) = [];
+[r,p] = corr(x,y,'Type','Spearman');
+disp(['Nswitches vs. BDM request. \ Spearman rho: ' num2str(r) ', p value: ' num2str(p)])
+
+figure
+%make sure variables are normally distributed
+subplot(1,2,1)
+histogram(x)
+title('hist of BDM values')
+subplot(1,2,2)
+histogram(y)
+title('hist of #nswitches')
 
 %plot BDM request by previous offer
 figure
@@ -421,36 +521,6 @@ xlim([0.5 2.5])
 ax = gca; fig = gcf;
 fig.Color = 'w'; ax.FontSize = 12;
 
-%sanity check that tasks take the same amount of time
-figure
-subplot(1,2,1)
-y = TOT(task_progression==tasks(1));
-x = TOT(task_progression==tasks(2));
-scatter(ones(length(y),1),y)
-hold on
-scatter(2*ones(length(x),1),x)
-errorbar(1:2,[mean(y) mean(x)],[std(y)/sqrt(length(y)) std(x)/sqrt(length(x))],'ko')
-xlim([0.75 2.25])
-ylabel('Time on task (seconds)')
-xticks([1 2])
-xticklabels({'Detection','Combine'})
-ax = gca; fig = gcf;
-fig.Color = 'w';
-ax.FontSize = 12;
-
-subplot(1,2,2)
-y = sum(sum(task_progression==tasks(1)));
-x = sum(sum(task_progression==tasks(2)));
-w = sum(sum(task_progression==tasks(3)));
-z = sum(sum(task_progression==tasks(4)));
-bar([y,x,w,z])
-xticklabels({'detection','combine','n-switch,p0.1','n-switchp0.9'})
-ax = gca; fig = gcf;
-fig.Color = 'w';
-ax.FontSize = 12;
-title('# times each task completed across subjects')
-ylabel('Count')
-
 %plot late responses/changed responses by task
 figure
 subplot(1,2,1)
@@ -467,18 +537,191 @@ ylabel('mean late responses')
 ax.FontSize = 12;
 fig.Color = 'w';
 
-%% why high dropout rates?
+figure
+subplot(1,2,1)
+scatter(data.NFC,nswitchswitchcosts,'o','Filled')
+xlabel('Need for Cognition')
+ylabel('Mean Switch Cost (n-switch)')
+title('NFC versus Switch Cost')
+ax = gca; fig = gcf;
+ax.FontSize = 12; fig.Color = 'w';
+[r,p] = corr(data.NFC(~isnan(data.NFC)),nswitchswitchcosts(~isnan(data.NFC)),'Type','Spearman'); %correlation of switch costs with NFC scores
+
+subplot(1,2,2)
+matrix = [];
+for i=1:n
+    task_list = data.task_progression(i,:);
+    if ismember(categorical({'pswitch0.9'}),task_list) %version 2
+        hard = find(ismember(task_list,categorical({'pswitch0.9'}))&~inattentive(i,:));
+        next = hard+1;
+        l = length(task_list);
+        y = data.values(i,next(next~=(l+1)));
+        x = data.nswitches(i,hard(hard~=l)); %exclude last trial for sizing reasons
+        %costs = NFC_sigmoid(x,data.NFC(i));
+        matrix = [matrix; y' x'];
+        scatter(x,y,'o','Filled');
+        hold on
+    end
+end
+title('BDM value by prev. # switches')
+ylabel('BDM points')
+xlabel('# of switches in last block')
+ax = gca; fig = gcf;
+fig.Color = 'w';
+ax.FontSize = 12;
+ylim([1 5.1])
+
+%% deal with individual differences in perfectionism, NFC
 
 figure
 subplot(1,2,1)
-bar([sum(excluded.values(excluded.exp_version==1,1:4)) 0 n1])
-labels = [excluded.labels(1,1:4) ' ' 'finished'];
-xticklabels([labels])
-title('Dropout over course of experiment 1')
-ylabel('n')
+histogram(data.NFC)
+title('Hist of NFC scores (normalized)')
+subplot(1,2,2)
+histogram(data.SAPS)
+title('Hist of SAPS scores (normalized)')
+
+meanBDM = nanmean(data.values(:,2:end),2);
+
+figure
+subplot(1,2,1)
+%plot center BDM requested by NFC score
+scores = data.NFC;
+scatter(scores,meanBDM,'o','Filled')
+xlabel('Need for Cognition Score')
+ylabel('Center Mean BDM score')
+
+subplot(1,2,2)
+%median split SAPS scores
+split = NaN(length(data.SAPS),1);
+medi = median(data.SAPS(~isnan(data.SAPS)));
+split(data.SAPS>medi) = 2;
+split(data.SAPS<=medi) = 1;
+%plot accuracy by SAPS score
+
+for row = 1:n
+    hard = find(task_progression(row,:)==tasks(4));
+    next = hard+1; hard(next==default_length+1) = []; next(next==default_length+1) = [];
+    x = data.perf(row,hard); %x(24) = []; %last value doesn't have a corresponding BDM value
+    y = data.values(row,next); %y(1) = []; %what do they ask for next time? first value doesn't have a corresponding perf level
+    if split(row)==1
+        dots = 'or';
+    elseif split(row)==2
+        dots = 'ob';
+    else
+        dots = 'ok';
+    end
+    scatter(x,y,dots,'Filled')
+    hold on
+end
+legend({'High Perfectionism',' ','No Data','Low Perfectionism'},'Location','Best')
+legend('boxoff')
+xlabel('Accuracy')
+ylabel('BDM value')
+xlim([50 100])
+
+%median split NFC scores
+split = NaN(length(data.NFC),1);
+medi = median(data.NFC(~isnan(data.NFC)));
+split(data.NFC>medi) = 2;
+split(data.NFC<=medi) = 1;
+%plot nswitches vs. BDM as function of NFC score
+low = []; high = [];
+figure
+subplot(1,2,1)
+for row = 1:n
+    hard = find(task_progression(row,:)==tasks(4)); hard(ismember(hard,find(inattentive(row,:)))) = []; %prune blocks where subjects obviously weren't paying attention
+    next = hard+1; hard(next==default_length+1) = []; next(next==default_length+1) = [];
+    x = data.nswitches(row,hard); %x(24) = []; %last value doesn't have a corresponding BDM value
+    y = data.values(row,next); %y(1) = []; %what do they ask for next time? first value doesn't have a corresponding perf level
+    if split(row)==1
+        scatter(x,y,'o','Filled')
+        low = [low; x' y'];
+    end
+    hold on
+end
+title('Low NFC subjects')
 ax = gca; fig = gcf;
-ax.FontSize = 14;
+ax.FontSize = 12;
 fig.Color = 'w';
+xlabel('N Switches')
+ylabel('BDM value')
+
+subplot(1,2,2)
+for row = 1:n
+    hard = find(task_progression(row,:)==tasks(4)); hard(ismember(hard,find(inattentive(row,:)))) = []; %prune blocks where subjects obviously weren't paying attention
+    next = hard+1; hard(next==default_length+1) = []; next(next==default_length+1) = [];
+    x = data.nswitches(row,hard); %x(24) = []; %last value doesn't have a corresponding BDM value
+    y = data.values(row,next); %y(1) = []; %what do they ask for next time? first value doesn't have a corresponding perf level
+    if split(row)==2
+        scatter(x,y,'o','Filled')
+        high = [high; x' y'];
+    end
+    hold on
+end
+title('High NFC subjects')
+ax = gca; fig = gcf;
+ax.FontSize = 12;
+fig.Color = 'w';
+xlabel('N Switches')
+ylabel('BDM value')
+
+[r,p] = corr(high(~isnan(high(:,2)),1),high(~isnan(high(:,2)),2),'Type','Spearman'); %high NFC has no relationship of n switches vs. value
+[r,p] = corr(low(~isnan(low(:,2)),1),low(~isnan(low(:,2)),2),'Type','Spearman'); %low NFC has relationship p = 0.02 with n = 22
+
+%try to understand random effects by plotting one plot/subject, BDM vs.
+%nswitches, NFC as title %%%%%%%
+
+figure
+for row = 1:n
+    subplot(5,5,row)
+    hard = find(task_progression(row,:)==tasks(4)); hard(ismember(hard,find(inattentive(row,:)))) = []; %prune blocks where subjects obviously weren't paying attention
+    next = hard+1; hard(next==default_length+1) = []; next(next==default_length+1) = [];
+    x = data.nswitches(row,hard); %x(24) = []; %last value doesn't have a corresponding BDM value
+    y = data.values(row,next); %y(1) = []; %what do they ask for next time? first value doesn't have a corresponding perf level
+    if split(row)==2
+        color = 'oc';
+    elseif split(row) == 1
+        color = 'om';
+    else
+        color = 'ok';
+    end
+    scatter(x,y,color,'Filled')
+    title(num2str(data.NFC(row)))
+    ax = gca; fig = gcf;
+    ax.FontSize = 12;
+    fig.Color = 'w';
+    if row>(n-5)
+        xlabel('N Switches')
+    end
+    if mod(row,5)==1
+        ylabel('BDM value')
+    end
+end
+
+
+%% why high dropout rates?
+figure
+subplot(1,2,1)
+% plot for experiment 1, no longer relevant here
+% bar([sum(excluded.values(excluded.exp_version==1,1:4)) 0 n1])
+% labels = [excluded.labels(1,1:4) ' ' 'finished'];
+% xticklabels([labels])
+% title('Dropout over course of experiment 1')
+% ylabel('n')
+% ax = gca; fig = gcf;
+% ax.FontSize = 14;
+% fig.Color = 'w';
+for i = 1:height(excluded)
+    curve = excluded.practice_accuracy(i,:);
+    plot(1:length(curve),curve)
+    hold on
+end
+title('Accuracy by Practice #, for excluded subjects')
+ylabel('Accuracy')
+xlabel('Block #')
+ax = gca; fig = gcf;
+ax.FontSize = 12; fig.Color = 'w';
 
 subplot(1,2,2)
 bar([sum(excluded.values(excluded.exp_version==2,1:4)) 0 n2])
@@ -489,7 +732,5 @@ ylabel('n')
 ax = gca; fig = gcf;
 ax.FontSize = 14;
 fig.Color = 'w';
-
-
 
 

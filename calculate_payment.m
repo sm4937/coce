@@ -2,12 +2,13 @@
 % go file by file
 % not working yet
 
-filename = '13.02.2020_trial';
+clear all
+filename = '25.02.2020_trial';
 subjs = [];
 long_format = import_mturk_data(['./data/' filename '.csv']);
 %raw_data = load('11.02.2020.mat','Untitled');
 %long_format = raw_data.Untitled;
-subjs = unique(long_format.worker_ID);
+subjs = unique(string(long_format.worker_ID));
 subjs(subjs=='0?assignmentId') = [];
 subjs(subjs=='NULL') = []; %remove weird cases of data saving, debugging, etc
 
