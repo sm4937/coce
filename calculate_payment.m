@@ -3,7 +3,7 @@
 % not working yet
 
 clear all
-filename = '25.02.2020_trial';
+filename = '26.03.2020_trial';
 subjs = [];
 long_format = import_mturk_data(['./data/' filename '.csv']);
 %raw_data = load('11.02.2020.mat','Untitled');
@@ -23,6 +23,7 @@ for i = 1:length(subjs)
     end
     indexs = find(long_format.subjnum == subjnum);
     index = indexs(end);
+    if length(indexs)>5 %more than 5 trials completed
     subj_points = double(string(long_format.total_points(indexs)));
     points = unique(subj_points(~isnan(subj_points)));
     if sum(~isnan(subj_points))<1 %happens sometimes when pulling from trial and not from test
@@ -36,12 +37,13 @@ for i = 1:length(subjs)
     worker = split(string(worker),'?');
     workers = [workers; worker(1)];
     codes = [codes; subjnum];
-    bonus = (10*(TOT/60) + total_points(end)/100) - 2;
+    bonus = (10*(TOT/60) + total_points(end)/100) - 2.5;
     bonuses = [bonuses; bonus];
     disp(['Worker: ' + worker(1) + ' earned ' + points + ' points and spent ' + TOT + ' minutes on the task. Bonus worker $' + bonus])
     if repeatflag
         disp(['Worker ' + worker(1) + ' also restarted the task in the middle.'])
     end
+    end %end more than 5 trials if statement
 end
 
 %to do: print this all to a CSV for record keeping

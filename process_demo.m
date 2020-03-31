@@ -18,13 +18,30 @@ if responses=='NULL' %no demo data for this person
     return 
 end
 
-ageidx = find(contains(separated,'age'))+1;
-sexidx = find(contains(separated,'male','IgnoreCase',true));
-handidx = find(contains(separated,'handed'));
+if length(separated)>1
+    ageidx = find(contains(separated,'age'))+1;
+    sexidx = find(contains(separated,'male','IgnoreCase',true));
+    handidx = find(contains(separated,'handed'));
+    age = str2num(char(separated(ageidx(1))));
+    edu = separated(sexidx-2);
+    sex = find(separated(sexidx)==sexes);
+else %the columns didn't get condensed properly in jspsych
+    responsecol = find(ismember(raw_data.Properties.VariableNames,'responses'));
+    responsecols = [responsecol find(contains(raw_data.Properties.VariableNames,'VarName'))];
+    acrosscols = raw_data(end-8:end,responsecols);
+    acrosscols = [string(acrosscols.responses) table2array(acrosscols(:,2:end))]; %deal with disparate variable types
+    
+    ageidx = find(contains(acrosscols,'age')); ageidx = ageidx(1); %second one is the 'age' in 'fair wage'
+    sexidx = find(contains(acrosscols,'male','IgnoreCase',true));
+    handidx = find(contains(acrosscols,'handed'));
+    edu = NaN; %sexidx-1;
+    
+    age = acrosscols(ageidx); age = split(age,'":"'); number = split(age(2),'"'); age = str2num(char(number(1)));
+    sex = split(acrosscols(sexidx),':"'); sex = char(sex(2)); sex = split(sex,'"'); sex = sex(1);
+    sex = find(sexes==sex);
+    separated = acrosscols;
+end
 
-age = str2num(char(separated(ageidx(1))));
-edu = separated(sexidx-2);
-sex = find(separated(sexidx)==sexes);
 handedness = separated(handidx);
 
 expression = '\_handed';

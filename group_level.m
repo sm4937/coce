@@ -15,8 +15,9 @@ default_length = 24;
 % files = files(contains(files,'.mat'));
 %files = {'11.02.2020.mat','12.02.2020_trial.mat','13.02.2020_trial.mat'};
 %version 1 ^
-
-files = {'18.02.2020.mat','19.02.2020.mat','24.02.2020.mat','25.02.2020.mat'};
+%files = {'18.02.2020.mat','19.02.2020.mat','24.02.2020.mat','25.02.2020.mat'};
+%version 2
+files = {'19.03.2020.mat'};
 subjs = [];long_format = [];
 for i = 1:length(files)
     file = files{i};
