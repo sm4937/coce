@@ -22,8 +22,9 @@ if length(separated)<=1 %the columns didn't get condensed properly in jspsych
     end
     separated = cleanup;
     corr_flag = 0;
-    normalized_NFC = NaN; normalized_SAPS = NaN; %for now, leave scores out from people whose data didn't save properly
-    return
+    %normalized_NFC = NaN; normalized_SAPS = NaN; %for now, leave scores out from people whose data didn't save properly
+    %return
+    disp('missing data case')
 end
 
 % clean up separated a little
@@ -45,12 +46,12 @@ if ~isempty(screeners) %exclude screeners from each questionnaire
     for i = 1:length(screeners)
         screenidx = find(ismember(all_NFC_answers,screeners(i)+(corr_flag))); %trim screener from SAPS responses
         if ~isempty(screenidx)
-            passed_screeners(i) = screener_answers{1} == separated(all_NFC_answers(screenidx));
+            passed_screeners(i) = contains(separated(all_NFC_answers(screenidx)),screener_answers{1});
             all_NFC_answers(screenidx)=[]; %don't count screener
         end
         screenidx = find(ismember(all_SAPS_answers,screeners(i)+(corr_flag)));
         if ~isempty(screenidx)
-            passed_screeners(i) = screener_answers{2}==separated(all_SAPS_answers(screenidx));
+            passed_screeners(i) = contains(separated(all_SAPS_answers(screenidx)),screener_answers{2});
             all_SAPS_answers(screenidx)=[]; %don't count screener
         end
     end
@@ -63,29 +64,31 @@ end
 
 %% Grade NFC
 responses = {'extremelyuncharacteristicofme','somewhatuncharacteristicofme','uncertain','somewhatcharacteristicofme','extremelycharacteristicofme'};
-question_labels = separated(all_NFC_answers-1); 
+question_labels = separated(all_NFC_answers-(corr_flag)); 
 reverse = [3, 4, 5, 7, 8, 9, 12, 16, 17];
+doubledigits = false; %initialize as no
 
 for l = 1:length(question_labels)
     label = question_labels(l);
-    label = strsplit(label,'C'); 
-    if length(label)>1
-        label = str2num(char(label(2)));
-    else
+    match = regexp(label,'\d*','match','ForceCellOutput');
+    label = str2num(char(match{1}));
         if length(all_NFC_answers) == 18 %if the number of questions is right,
             label = l; %label according to order
-        else %if it's not, no NFC score
-            label = NaN;
-            break
-        end
-    end  
+            doubledigits = true;
+        else %if it's not, leave it
+            doubledigits(l) = label>10;
+        end  
     question_labels_2(l) = label;
 end
 
 totalNFC = 0; answered = 0;
 for q = 1:length(all_NFC_answers) %all questions, of 18        
     response = separated(all_NFC_answers(q));
-    grade = find(contains(responses,response));
+    for answer = 1:length(responses)
+        if contains(response,responses{answer})
+            grade = answer; %clunkier way to do this but more robust to formatting variations
+        end
+    end
     label = question_labels_2(q);
     if ismember(label,reverse)
        grade = 6 - grade;
@@ -99,16 +102,24 @@ end
 
 normalized_NFC = totalNFC/answered;%control for # questions answered
 
+if sum(doubledigits)==0
+    %question labels are incorrect, so reverse is probably incorrect
+    normalized_NFC = NaN;
+end
+
 %% grade SAPS now, I think it's just a sum??
 
 totalSAPS = 0; answered = 0;
-all_SAPS_answers = find(contains(separated,'agree')|contains(separated,'neutral'));
 
 responses = {'stronglydisagree', 'disagree', 'somewhatdisagree', 'neutral', 'somewhatagree', 'agree', 'stronglyagree'};
 
 for q = 1:length(all_SAPS_answers) %all questions, of 18        
     response = separated(all_SAPS_answers(q));
-    grade = find(ismember(responses,response));
+    for answer = 1:length(responses)
+        if contains(response,responses{answer})
+            grade = answer; %clunkier way to do this but more robust to formatting variations
+        end
+    end
     if isempty(grade)
         grade = 0;
     end

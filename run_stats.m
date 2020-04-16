@@ -1,23 +1,139 @@
-%% statistics
+%% V3 statistics
+%build model of BDM by the last time you performed that task
+%performance
+%matches
+%delay since then
+%subj as random effect
+%predicting BDM
+n = height(data);
+n1effect = []; n2effect = [];
+trim = [];
+for task = 1:2 %cycle through what is being displayed, display by what happened before
+    for subj = 1:n %go subject by subject
+        displayed = data.task_displayed(subj,:)+1;
+        idx = find(displayed == (task+1)); 
+        matches = data.nbackmatches{subj,:};
+        BDMs = data.values(subj,:);
+        completed = find(data.task_progression(subj,:)==tasks(task+1));
+        perf = data.perf(subj,:);
+        for trial = 1:length(idx)
+            now = idx(trial);
+            if sum(completed<now)>0 %they've done the last once before
+                last = completed(completed<now); last = last(end);
+                delay = now-last;
+                eval(['n' num2str(task) 'effect = [n' num2str(task) 'effect; perf(last) matches(last) delay subj BDMs(now)];'])
+            end
+        end %of trial loop
+    end %of subject loop
+    if sum(completed)==0
+        disp(['subj ' num2str(subj) ' didnt do this task'])
+        trim = [trim; subj];
+    end
+end
+
+
+task = 2;
+% change to change base data
+
+tasklabels = {'1-back','2-back'};
+if task == 1
+    torun = n1effect;
+elseif task == 2
+    torun = n2effect;
+end
+
+tbl = table;
+tbl.perf = torun(:,1)-nanmean(torun(:,1)); 
+tbl.matches = torun(:,2)-nanmean(torun(:,2)); %-min(long(:,2)); %or 0 baseline them?
+%-mean(long(:,2)); %negative correlation of intercept and slope, need to
+%center the n-switches column to prevent ill-fitting model?
+tbl.delay = torun(:,3)-nanmean(torun(:,3));
+tbl.subj = categorical(torun(:,4)); %tbl.sess = categorical(long(:,6)); 
+tbl.y = torun(:,5);
+
+n = length(unique(tbl.subj));
+
+no_random = fitlme(tbl,'y ~ 1 + matches + delay + perf');
+random_int = fitlme(tbl,'y ~ 1 + matches + delay + perf + ( 1 | subj)'); %random intercept of subj
+random_both = fitlme(tbl,'y ~ 1 + matches + delay + perf + ( 1 + matches | subj)');
+
+model_struct = struct;
+model_struct.m1 = no_random;
+model_struct.m2 = random_int;
+model_struct.m3 = random_both;
+
+AICs = [-no_random.LogLikelihood.*2+2.*0, ...
+    -random_int.LogLikelihood.*2+(2.*numel(random_int.covarianceParameters{1})), ...
+    -random_both.LogLikelihood.*2+(2.*numel(random_both.covarianceParameters{1}))];
+figure
+bar(AICs)
+hold on
+[score,which] = min(AICs);
+plot(which,score,'*k','LineWidth',1.5)
+title(['AIC by model, fit to real data from ' tasklabels{task}])
+ylabel('AIC')
+xlabel('Model')
+xticklabels({'No Random Effects','Random Intercept','Random Slope and Intercept'})
+xtickangle(45)
+
+% look into values for minimum model
+
+eval(['winner = model_struct.m' num2str(which)])
+
+[~,~,rEffects] = randomEffects(random_both);
+estimates_inter = fixedEffects(random_both);
+figure
+subplot(1,3,1)
+scatter(rEffects.Estimate(1:2:n*2)+estimates_inter(1),rEffects.Estimate(2:2:n*2)+estimates_inter(2))
+title('Slope vs. Intercept in Interacting Slope/Inter Model')
+[r,p] = corr(rEffects.Estimate(1:2:n*2),rEffects.Estimate(2:2:n*2));
+if p<0.05
+    lsline
+end
+ylabel('Slope')
+xlabel('Intercept')
+
+subplot(1,3,2)
+intercepts = rEffects.Estimate(1:2:n*2)+estimates_inter(1);
+scatter(1:n,rEffects.Estimate(1:2:n*2)+estimates_inter(1))
+title('Fit Intercepts in Interacting Slope/Inter Model')
+xlabel('Subject')
+ylabel('Fit Intercepts')
+
+subplot(1,3,3)
+slopes = rEffects.Estimate(2:2:n*2)+estimates_inter(2);
+scatter(1:n,slopes)
+title('Fit Slopes in Interacting Slope/Inter Model')
+xlabel('Subject')
+ylabel('Fit Slopes')
+
+NFCs = data.NFC;
+NFCs(trim) = []; %exclude subjects who didn't get this model fit to them because they didn't do this task at all
+slopes(isnan(NFCs)) = []; intercepts(isnan(NFCs)) = [];
+NFCs(isnan(NFCs)) = []; %also missing data 
+[r,p] = corr(NFCs,slopes,'Type','Spearman');
+[r,p] = corr(NFCs,intercepts,'Type','Spearman');
+
+%% V1 and V2 statistics
 % build model of BDM value by
 % 1. accuracy on last run-through of that task
-% 2. n-switches on last run-through of that task (too correlated with 1?)
+% 2. n-matches on last run-through of that task (too correlated with 1?)
 % 3. NFC
 % 4. SAPS
 
 long = [];
 for subj = 1:n
-    hard = find(data.task_progression(subj,:)==tasks(4));
+    hard = find(data.task_progression(subj,:)==tasks(2)|data.task_progression(subj,:)==tasks(3));
     next = hard+1; 
     %easy = find(data.task_progression(subj,:)==tasks(3));
     hard(next==default_length+1) = []; next(next==default_length+1) = []; %trim last trials, no final BDM to measure response to perf
-    short = [data.perf(subj,hard)' data.nswitches(subj,hard)' repmat(data.NFC(subj),length(hard),1) repmat(data.SAPS(subj),length(hard),1) data.allnswitchcosts{subj,:}(:,hard)' data.values(subj,next)'];
+    short = [data.perf(subj,hard)' data.nbackmatches{subj}(hard)' repmat(data.NFC(subj),length(hard),1) repmat(data.SAPS(subj),length(hard),1) data.values(subj,next)'];
     long = [long; short];
 end
 
 inter = [long(:,1:4) long(:,2).*long(:,3) long(:,5)];
 
-fitlm(long(:,1:5),long(:,6)) %linear regression of 4 predictors, predicting BDM value
+fitlm(long(:,1:4),long(:,5)) %linear regression of 4 predictors, predicting BDM value
 
 %fitlm(inter(:,1:5),inter(:,6)) %linear regression of 5 predictors, including an interaction term, predicting BDM value
 
@@ -32,11 +148,12 @@ fitlm(long(:,1:5),long(:,6)) %linear regression of 4 predictors, predicting BDM 
 
 long = [];
 for subj = 1:n
-    hard = data.task_progression(subj,:)==tasks(4); hard(inattentive(subj,:)) = false; %remove trials where subjects were not paying attention
+    hard = find(data.task_progression(subj,:)==tasks(2)|data.task_progression(subj,:)==tasks(3));
+    hard(inattentive(subj,:)) = false; %remove trials where subjects were not paying attention
     hard = find(hard); %turn into workable index
     next = hard+1; 
     hard(next==default_length+1) = []; next(next==default_length+1) = []; %trim last trials, no final BDM to measure response to perf
-    short = [data.perf(subj,hard)' data.nswitches(subj,hard)' repmat(data.NFC(subj),length(hard),1) repmat(data.SAPS(subj),length(hard),1) repmat(subj,length(hard),1) repmat(data.session(subj),length(hard),1) data.values(subj,next)'];
+    short = [data.perf(subj,hard)' data.nbackmatches{subj}(hard)' repmat(data.NFC(subj),length(hard),1) repmat(data.SAPS(subj),length(hard),1) repmat(subj,length(hard),1) repmat(data.session(subj),length(hard),1) data.values(subj,next)'];
     long = [long; short];
 end
 
@@ -177,16 +294,19 @@ xticklabels({'No Random Effects','Random Intercept','Random Slope','Random Slope
 xtickangle(45)
 
 figure
-[~,~,rEffects] = randomEffects(subj_random_intercept);
-estimates = fixedEffects(subj_random_intercept);
+subplot(1,2,1)
+[~,~,rEffects] = randomEffects(subj_intercept_slope);
+intercepts = rEffects.Estimate(1:2:end);
+slopes = rEffects.Estimate(2:2:end);
+estimates = fixedEffects(subj_intercept_slope);
 medi = median(data.NFC(~isnan(data.NFC)));
 for row = 1:n
     if data.NFC(row)>medi
-       color = 'or';
+       color = 'r';
     else
-       color = 'ob';
+       color = 'b';
     end
-    scatter(row,rEffects.Estimate(row)+estimates(1),'k','Filled')
+    scatter(row,intercepts(row,:)+estimates(1),'k','Filled')
     hold on
 end
 xlabel('Subject Number')
@@ -194,6 +314,22 @@ ylabel('Fit Intercept')
 ax = gca; fig = gcf;
 ax.FontSize = 12; fig.Color = 'w';
 title('Winning model, subject by intercept value')
+
+subplot(1,2,2)
+for row = 1:n
+    if data.NFC(row)>medi
+       color = 'r';
+    else
+       color = 'b';
+    end
+    scatter(row,slopes(row,:)+estimates(1),'k','Filled')
+    hold on
+end
+xlabel('Subject Number')
+ylabel('Fit Slope')
+ax = gca; fig = gcf;
+ax.FontSize = 12; fig.Color = 'w';
+title('Winning model, subject by slope value')
 
 %% make fake data and try to fit it
 % generate and recover

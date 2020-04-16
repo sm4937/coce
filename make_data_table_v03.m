@@ -106,7 +106,7 @@ task_trials = ismember(task_list,tasks)&main_task; %relevant trials. break into 
 trials = find(task_trials);
 first_trials = trials(1:15:end);
 last_trials = trials(15:15:end); %is this the solution? lol, no
-if length(last_trials)<24 %subject data got cut off for some unknown reason
+if length(last_trials)<default_length %subject data got cut off for some unknown reason
     last_trials(end+1) = trials(end); %arbitrary last trial, since actual identity is unimportant
 end
 
@@ -177,9 +177,10 @@ end
 
 %% look into characteristics of individual task completion (e.g. mean switch costs during a round of the combine)
 init = NaN(1,length(task_progression));
-swrts = NaN(default_length,2); blrts = NaN(default_length,2); %task switch rts, baseline rts for each task (detect, then nback)
+swrts = NaN(default_length,2); blrts = NaN(default_length,2);  %task switch rts, baseline rts for each task (detect, then nback)
 %detectrts = [];
-matchcount = NaN(1,default_length); nswitches = NaN(1,default_length);
+matchcount = NaN(1,default_length); missedmatches = NaN(1,default_length); nmatches = NaN(1,default_length); 
+nswitches = NaN(1,default_length);
 nswitchrts = NaN(2,default_length);
 % look into dual task cost in RT (so mean hit rts in combine - detect)
 for trial = 1:length(first_trials)
@@ -219,11 +220,51 @@ for trial = 1:length(first_trials)
     elseif task == tasks(4)
         nback = table2array(raw_data(first:last,nbackidx)) == '1'; %make sure that this is 1, or 'true' or something
         accurate = raw_data.new_correct(first:last);
+        nmatches(trial) = nansum(nback);
+        missedmatches(trial) = nansum(nback&~accurate);
         matchcount(trial) = nansum(nback&accurate);
     end
 end
 
 nbackmatches{1} = matchcount; %count number of matches, n
+
+%% Calculate "effect" of n-back matches on BDM value (like set size effect)
+
+%pick out individual tasks for match effect calculations
+tasks = [categorical({'n1'}),categorical({'n2'})];
+n1effect = []; n2effect = []; % keep track of numbers pulled out here for stats later
+for task = 1:2 %cycle through 1- and 2-back
+    idx = find(displayed == task); 
+    completed = find(task_progression==tasks(task));
+    for trial = 1:length(idx)
+        now = idx(trial);
+        if sum(completed<now)>0 %they've done the last once before
+            last = completed(completed<now); last = last(end);
+            delay = now-last;
+            eval(['n' num2str(task) 'effect = [n' num2str(task) 'effect; matchcount(last) delay values(now) perf_by_block(now)];'])
+        end
+    end
+end
+
+range = 3:5;
+n1matcheffect = NaN(1,length(range)); n2matcheffect = NaN(1,length(range));
+for i = 1:length(range)
+    match = range(i);
+    idx = matchcount == match;
+    idx(end) = []; idx = [false idx];
+    idx2 = missedmatches == match-1;
+    idx2(end) = []; idx2 = [false idx2];
+    matcheffect(i) = nanmean(values(idx));
+    missedeffect(i) = nanmean(values(idx2));
+    existlogical = [~isempty(n1effect) ~isempty(n2effect)]; %sum(n1effect(:,1)==match)>0 sum(n2effect(:,1)==match)>0
+    if existlogical(1)
+        n1matcheffect(i) = nanmean(n1effect(n1effect(:,1)==match,3)); %pull out BDM in n1 when preceding matches was match
+    end
+    if existlogical(2)
+        n2matcheffect(i) = nanmean(n2effect(n2effect(:,1)==match,3));
+    end
+end
+
 
 %% look into frustration effects, changed answers, missed trials
 % block by block
@@ -261,6 +302,12 @@ data.n2rts = nbackmeanrts(2,:);
 data.detectrts = detectrts;
 data.BDMrt = BDM_rt';
 data.nbackmatches = nbackmatches;
+data.nbackmisses = missedmatches;
+data.intendednbackmatches = nmatches;
+data.matcheffect = matcheffect;
+data.n1matcheffect = n1matcheffect;
+data.n2matcheffect = n2matcheffect;
+data.missedeffect = missedeffect;
 data.offers = offers';
 %data.BDMmimicry = BDMmimicry;
 data.failed = failed;
