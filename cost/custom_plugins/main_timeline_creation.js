@@ -10,7 +10,7 @@ function create_main_timeline(blocknums, task_list){
     srt_point = Math.random()*100;
     points = 0; //updated every BDM loop
     task_ID = task_list[loopi];
-    var BDM_trial = [{stimulus: fractals[task_ID], data: {task: 'BDM', task_displayed: task_ID, tasknum: loopi, slider_start: srt_point}}];//initialize BDM trial parameters
+    var BDM_trial = [{stimulus: fractals[task_ID]+'" width="'+fractal_size+'" height ="'+fractal_size+'"', data: {task: 'BDM', task_displayed: task_ID, tasknum: loopi, slider_start: srt_point}}];//initialize BDM trial parameters
     var BDM = {
       timeline: [{
         type: "html-slider-response",
@@ -32,7 +32,7 @@ function create_main_timeline(blocknums, task_list){
         stimulus: function(data){
           data = getBDMresponse();
           points = data['points']; offer = data['offer']; value_list = data['value_list']; //not getting returned but still important
-          BDM_output = runBDM(points,offer,task_ID);
+          BDM_output = runBDM(points,offer,task_ID,fractal_size);
           BDM_message = BDM_output['BDM_message'];
           points_list = BDM_output['points_list']; offer_list = BDM_output['offer_list'];
           return BDM_message;
@@ -64,7 +64,7 @@ function create_main_timeline(blocknums, task_list){
     };
 
     var run_easy_task = {
-      timeline: run_task_by_ID(task_ID+1,loopi),
+      timeline: run_task_by_ID(easy_task_ID,loopi), //fixed for version 3
       conditional_function: function(){
         if(points>offer || points==null){ //didn't do hard n-back
           points = 1;

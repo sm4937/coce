@@ -7,17 +7,25 @@ function setup_practice_nBack(n){
 
   var prob_n_back = 0.20; //kool botvinick 2014
 
+  var answer_key_names = [universal_key,'H'];
+  var answer_keys = [jsPsych.pluginAPI.convertKeyCharacterToKeyCode(answer_key_names[0]),jsPsych.pluginAPI.convertKeyCharacterToKeyCode('z'),jsPsych.pluginAPI.convertKeyCharacterToKeyCode(answer_key_names[1])];
+
+  taskID = 0;
+  var stamp = '<div style="position: absolute; left: 5px; top: 5px;">';
+  stamp += fractals[0] + ' width="'+stamp_size+'" height ="'+stamp_size+'">';
+  stamp += '</div>';
+
    var presentation_screen = {
       timeline: [{
         type: "html-keyboard-response",
-        stimulus: fractals[2],
-        prompt: '<p>Practice game.</p><p>This picture will always be associated with the following task, like a picture label.</p><p>You will now learn the rules of this task and get a chance to practice.</p><p>Press the space bar to continue.</p>'
+        stimulus: '<p> Task: </p> ' + fractals[n]+' width="'+fractal_size+'" height ="'+fractal_size+'"',
+        prompt: '<p>This picture will always be associated with the following task, like a picture label.</p><p>You will now learn the rules of this task and get a chance to practice.</p><p>Press any key to continue.</p>'
       }]
     };
 
   var back_rule = '<strong>' + String(n) + '</strong> letters ago';
   if(n==1){
-    back_rule = '<strong>' + String(n) + '</strong> letters ago';
+    back_rule = '<strong>' + String(n) + '</strong> letter ago';
   }
 
   var back_diagram = "./static/img/"+String(n)+"-back.png";
@@ -27,29 +35,24 @@ function setup_practice_nBack(n){
     timeline: [{
       type: "html-keyboard-response",
       stimulus: function(){
-        var n_back_instructs = '<p>In this task, you will need to press <strong>' + answer_key_names[0] + '</strong> every time you see the same letter you saw ' + back_rule + '.</p> <p>If the letter on screen was not the one you saw ' + back_rule + ', do not press anything.</p><p>Pay attention! If you are not at least ' + String(cutoff_percent) + '% accurate by the last practice game, you will not progress to the real experiment.</p>'
+        var n_back_instructs = '<p>In this task, you will need to press <strong>' + answer_key_names[0] + '</strong> every time you see the same letter you saw ' + back_rule + '.</p> <p>If the letter on screen was not the one you saw ' + back_rule + ', do not press anything.</p><p>There might be multiple matches in a row. You must respond to every match you see.</p><p>Pay attention! If you are not at least ' + String(cutoff_percent) + '% accurate by the last practice game, you will not progress to the real experiment.</p>'
         n_back_instructs += '<img src='+back_diagram+'>';
-        n_back_instructs += '<p>Press space to begin.</p>';
+        n_back_instructs += '<p>Press any key to begin.</p>';
         return n_back_instructs;
-      }
+      },
+      data: {task: 'instructions'}
     }]
   };
   
   ntrials = 10;
-
-  trial_type = [1, 1, 0, 0, 0, 0, 0, 0, 0, 0];
-  indices = [0,1,2,3,4,5,6,7,8,9];
-  trial_list = [];
-
-  for(var trial = 0; trial < ntrials; trial++){
-    rand = Math.floor(Math.random()*indices.length);
-    //console.log(rand)
-    idx = indices[rand];
-    //console.log(idx)
-    trial_list.push(trial_type[idx]);
-    //console.log(trial_type)
-    indices.splice(rand,1);//randomly index into indices, use that to reference trial_type, then delete the value
-  }
+  nmatches = 3;
+  var trial_type = new Array(ntrials-n);
+  trial_type.fill(0);
+  trial_type.fill(1,0,nmatches);
+  //trial_type = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; //add 2's in to make this the combine
+  var temp = new Array(n);
+  temp.fill(0);
+  var trial_list = temp.concat(randomizeList(trial_type));
 
   for(var trial = 0; trial < ntrials; trial++){
     stimnum = Math.floor(Math.random()*num_stim);
@@ -64,7 +67,17 @@ function setup_practice_nBack(n){
     }
     // n-backs may happen organically, so make sure this is accounted for
     if(stimnum==stimold){
-      answer_key = answer_keys[0];
+      if(trial_list[trial]==1){
+        answer_key = answer_keys[0];
+      }
+      if(trial_list[trial]==0){
+        answer_key = answer_keys[1]; //placeholder key
+        var stimnums = range(0,num_stim-1,1)
+        var idx = stimnums.indexOf(stimold); //remove this stimulus from the list of possible stimuli
+        stimnums.splice(idx,1);
+        rand = Math.floor(Math.random()*(stimnums.length));
+        stimnum = stimnums[rand];
+      } // change the stimnum so it's not a match, thereby standardizing the number of matches each round
     }
     stimnum_list.push(stimnum);
     data_list.push(stimnum==stimold);
@@ -81,11 +94,12 @@ function setup_practice_nBack(n){
     type: "html-keyboard-response",
     data: function(){
       accuracy = accuracyNback();
-      return {practice_accuracy: accuracy, practice: true}
+      return {practice_accuracy: accuracy, practice: true, task: 'debrief'}
     },
     stimulus: function(){
       accuracy = accuracyNback(); 
-      return "<p>Your accuracy was <strong>" + accuracy + "%</strong>.</p><p>You will need to be at least " + String(cutoff_percent) + "% accurate during the study to earn points.</p><p>Please remember that you will not receive feedback like this during the real experiment.</p><p>Press the space bar to continue.</p>";
+      //return "<p>Your accuracy was <strong>" + accuracy + "%</strong>.</p><p>You will need to be at least " + String(cutoff_percent) + "% accurate during the study to earn points.</p><p>Please remember that you will not receive feedback like this during the real experiment.</p><p>Press the space bar to continue.</p>";
+      return "<p>Your accuracy was <strong>" + accuracy + "%</strong>.</p><p>Please remember that you will not receive feedback like this during the real experiment.</p><p>Press any key to continue.</p>";    
     }
   };
 
@@ -128,14 +142,14 @@ function setup_practice_nBack(n){
           if(response==answer){
             return "Correct!"
           }
-          if(!answer_keys.includes(response)){ // didn't press a valid key
-            return "Please press " + answer_key_names[0] + "."
-          }
           if(nback){ //n-back match but missed
-            return "Press <strong>" + answer_key_names[0] + "</strong> when you see a match."
+            return "<p>You missed a match!</p><p>Press <strong>" + answer_key_names[0] + "</strong> when you see a match.</p>"
           }
           if(!nback){ //not an n-back trial
             return "Not a match! Press nothing."
+          }
+          if(!answer_keys.includes(response)&response!=null){ // didn't press a valid key
+            return "Please press " + answer_key_names[0] + "."
           }
         } 
       },
@@ -172,11 +186,14 @@ function setup_practice_combo(){
   var n = 3; //set how many back they're looking for
   // it's a 3-back in Kool Botvinick 2014
 
+  var answer_key_names = [universal_key,'H'];
+  var answer_keys = [jsPsych.pluginAPI.convertKeyCharacterToKeyCode(answer_key_names[0]),jsPsych.pluginAPI.convertKeyCharacterToKeyCode('z'),jsPsych.pluginAPI.convertKeyCharacterToKeyCode(answer_key_names[1])];
+
   var presentation_screen = {
     timeline: [{
       type: "html-keyboard-response",
-      stimulus: fractals[0],
-      prompt: '<p>Practice game.</p><p>This picture will always be associated with this task, like a picture label.</p><p>Press the space bar to continue.</p>'
+      stimulus: '<p> Task: </p> ' + fractals[0],
+      prompt: '<p>This picture will always be associated with this task, like a picture label.</p><p>Press any key to continue.</p>'
     }]
   };
 
@@ -184,10 +201,11 @@ function setup_practice_combo(){
     timeline: [{
       type: "html-keyboard-response",
       stimulus: function() {
-        var n_back_instructs = '<p>This task is a combination of the two tasks you just practiced.</p><p>In this task, you will need to press <strong>' + answer_key_names[0] + '</strong> every time you see the same letter you saw ' + String(n) + ' letters ago (we call this a "3-back match").</p> <p>If the letter on screen was not the one you saw ' + String(n) + ' trials ago (not a "3-back match"), do not press anything.</p><p>If you see a T, press <strong>'+ answer_key_names[1] + '</strong> as fast as you can.</p><p>T\'s count in the sequence of letters for a 3-back match.</p><p>A T might be a 3-back match, but ignore that. Just press ' + answer_key_names[1] + ' when you see a T.</p><p>You will now be given six chances to practice this task until you are at least ' + String(cutoff_percent) + '% accurate on it.</p><p>If you don\'t reach ' +String(cutoff_percent)+ '% accuracy in six attempts, you will not move on to the real experiment.</p><p>Press space to begin.</p>';
+        var n_back_instructs = '<p>This task is a combination of the two tasks you just practiced.</p><p>In this task, you will need to press <strong>' + answer_key_names[0] + '</strong> every time you see the same letter you saw ' + String(n) + ' letters ago (we call this a "3-back match").</p> <p>If the letter on screen was not the one you saw ' + String(n) + ' trials ago (not a "3-back match"), do not press anything.</p><p>If you see a T, press <strong>'+ answer_key_names[1] + '</strong> as fast as you can.</p><p>T\'s count in the sequence of letters for a 3-back match.</p><p>A T might be a 3-back match, but ignore that. Just press ' + answer_key_names[1] + ' when you see a T.</p><p>You will now be given six chances to practice this task until you are at least ' + String(cutoff_percent) + '% accurate on it.</p><p>If you don\'t reach ' +String(cutoff_percent)+ '% accuracy in six attempts, you will not move on to the real experiment.</p><p>Press any key to begin.</p>';
           //return "<p style='font-size:25px'>" + n_back_instructs + " </p>";
         return n_back_instructs;
-      }
+      },
+      data: {task: 'instructions'}
     }]
   };
   
@@ -245,14 +263,16 @@ function setup_practice_combo(){
     type: "html-keyboard-response",
     data: function(){
       accuracy = accuracyCombine();
-      return {task: 'debrief',practice_accuracy: accuracy, practice: true}
+      return {task: 'debrief', practice_accuracy: accuracy, practice: true}
     },
     stimulus: function() {
       overall = accuracyCombine();
       if(overall>=cutoff){
-        return "<p>Your accuracy was <strong>" + overall + "%</strong>.</p><p>You will need to be at least " + String(cutoff_percent) + "% accurate during the study to earn points.</p><p>Please remember that you will not receive feedback like this during the real experiment.</p><p>Press the space bar to continue.</p>";
+        //return "<p>Your accuracy was <strong>" + overall + "%</strong>.</p><p>You will need to be at least " + String(cutoff_percent) + "% accurate during the study to earn points.</p><p>Please remember that you will not receive feedback like this during the real experiment.</p><p>Press the space bar to continue.</p>";
+        return "<p>Your accuracy was <strong>" + overall + "%</strong>.</p><p>Please remember that you will not receive feedback like this during the real experiment.</p><p>Press any key to continue.</p>";
       } else {
-        return "<p>Your accuracy was <strong>" + overall + "%</strong>.</p><p>You will need to be at least " + String(cutoff_percent) + "% accurate during the study to earn points.</p><p>Please remember that you will not receive feedback like this during the real experiment.</p><p>Press the space bar to practice this again.</p>";
+        //return "<p>Your accuracy was <strong>" + overall + "%</strong>.</p><p>You will need to be at least " + String(cutoff_percent) + "% accurate during the study to earn points.</p><p>Please remember that you will not receive feedback like this during the real experiment.</p><p>Press the space bar to practice this again.</p>";
+        return "<p>Your accuracy was <strong>" + overall + "%</strong>.</p><p>Please remember that you will not receive feedback like this during the real experiment.</p><p>Press any key to practice this again.</p>";
       } // end of n == 3 conditional
     }
   }]

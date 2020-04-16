@@ -1,7 +1,7 @@
 // functions and such just for n-back creation 
 // set up the n-back task parameters and stimulus list
 function bdmQuiz(){
-  space_bar_message = "<p>[Press the space bar to continue.]</p>";
+  space_bar_message = "<p>[Press any key to continue.]</p>";
 
   screen1 = {
     timeline: [{
@@ -103,6 +103,26 @@ function bdmQuiz(){
       }
     }]
   };
+
+  var pages = ['<p>Please read these instructions carefully, as you will be tested on your understanding of them.</p><p>Before each round begins, you will be asked how many points is a fair wage to complete that particular round of one of the tasks you just practiced.</p><p>We will explain what we mean by "fair wage" on the next screen.</p>'+
+    '<p>This means that <strong>you have some control over what you will be paid</strong> at the end of the experiment.</p><p>We want you to tell us truthfully how many points is a fair wage, and so we are using a payment process where <strong>telling the truth is the best strategy.</strong></p>'+
+    '<p>Whenever given a choice, <strong> the best thing you can do is to always ask for what you consider to be a fair wage to complete that particular round of that task.</strong></p>'+
+    '<p>What do we mean by "fair wage"?</p><p>When you get hired to complete some work, you may ask for more or less payment based on how much you would enjoy doing that work.</p><p>For example, on some days, you might dislike mowing the lawn more than watering the garden, and may ask for more in return for mowing the lawn.</p>'+
+    '<p>On other days, you might enjoy mowing the lawn more (perhaps because the weather is nicer), and may ask for less in return.</p><p>A fair wage on a particular round is the amount of points you think it would be fair for you to receive in exchange for your completion of that round.</p>'+
+    '<p>Your fair wage may also change with time.</p>',
+    '<p>While you won\'t get paid exactly what you ask for, the best strategy is to ask for what you truly believe is a fair wage for you.</p><p>In short, once you report your fair wage, the computer will present you with a <strong> random offer.</strong></p>'+
+    '<p>If you ask for fewer points than the computer offers you, then you will complete that round and be given the points the computer offered.</p><p>Say you ask for 3 points and the computer offers 4, then if you complete that round, you will be given 4 points.</p>'+
+    '<p>If you ask for more points than the computer offers you, then you will do a different task on that round. The alternate task is worth <strong>1 point.</strong></p><p>For example, if you ask for 5 points and the computer offers 4 points, then you will do something else and be given 1 point.</p>'+
+    '<p>The number of points you ask for for completing that round of a task therefore influences both how many points you actually earn and how likely you are to complete that task.</p><p>If your fair wage for a particular round of a task is the maximum number of points you can earn (5), then the chances you have to do that task are very low and you\'re more likely to earn 1 point instead.</p>'];
+
+  var BDM_initial_instructs = {
+      timeline: [{
+        type: 'instructions',
+        pages: pages,
+        allow_backward: true,
+        show_clickable_nav: true
+      }]
+    }
 
   screen6 = {
     timeline: [{
@@ -289,7 +309,7 @@ function moreBDMexplanation(){
   screen12 = {
     timeline: [{
       type: "html-keyboard-response",
-      stimulus: "<p>We hope this explanation has cleared things up.</p><p>Press the space bar to continue.</p>"
+      stimulus: "<p>We hope this explanation has cleared things up.</p><p>Press any key to continue.</p>"
     }]
   }
 
@@ -297,7 +317,7 @@ function moreBDMexplanation(){
 }
 
 function exampleBDM(){
-  var BDM_trial = [{stimulus: fractals[2], data: {task: 'instructs'}}];//initialize BDM trial parameters
+  var BDM_trial = [{stimulus: fractals[6]+' width="'+fractal_size+'" height ="'+fractal_size+'"', data: {task: 'instructs'}}];//initialize BDM trial parameters
   var BDM1 = {
     timeline: [{
       type: "html-slider-response",
@@ -323,7 +343,7 @@ function exampleBDM(){
         points = 1+points*0.04;
         points = Number.parseFloat(points).toFixed(2);
         //message = "<p>You asked for " + String(points) + " points.</p><p>The computer offered " + String(offer) + " points.</p><p>Because the computer's offer is larger, you would move onto the pictured task and, if you achieved " + String(cutoff_percent) + "% accuracy on this task, you would be given " + String(offer) + " points at the end.</p><p>Press the space bar to continue.</p>"
-        message = "<p>You asked for " + String(points) + " points.</p><p>The computer offered " + String(offer) + " points.</p><p>Because the computer's offer is larger, you would complete the pictured task and be given " + String(offer) + " points at the end.</p><p>Press the space bar to continue.</p>"
+        message = "<p>You asked for " + String(points) + " points.</p><p>The computer offered " + String(offer) + " points.</p><p>Because the computer's offer is larger, you would complete the pictured task and be given " + String(offer) + " points at the end.</p><p>Press any key to continue.</p>"
         return message;      
       },
       trial_duration: instructs_timing
@@ -355,7 +375,7 @@ function exampleBDM(){
         points = 1+points*0.04;
         points = Number.parseFloat(points).toFixed(2);
         //message = "<p>You asked for " + String(points) + " points.</p><p>The computer offered " + String(offer) + " points.</p><p>Because the computer's offer is smaller, you would skip the pictured task and, if you achieved " + String(cutoff_percent) + "% accuracy on an alternate task, you would be given 1 point at the end.</p><p>Press the space bar to continue.</p>"
-        message = "<p>You asked for " + String(points) + " points.</p><p>The computer offered " + String(offer) + " points.</p><p>Because the computer's offer is smaller, you would skip the pictured task and complete an alternate task. You would be given 1 point at the end.</p><p>Press the space bar to continue.</p>"        
+        message = "<p>You asked for " + String(points) + " points.</p><p>The computer offered " + String(offer) + " points.</p><p>Because the computer's offer is smaller, you would skip the pictured task and complete an alternate task. You would be given 1 point at the end.</p><p>Press any key to continue.</p>"        
         return message;      
       },
       trial_duration: instructs_timing

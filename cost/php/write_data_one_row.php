@@ -31,7 +31,8 @@ try {
   $sql .= ");";
   $insertstmt = $conn->prepare($sql);
   //for($i=0; $i < count($data_array); $i++){
-  $i = count($data_array)-1;
+  //$i = (count($data_array))-1; //php bug here //added extra parentheses to see whether this helps
+  $i = (!empty($data_array) ? count($data_array)-1 : 0);
     for($j = 0; $j < count($col_names); $j++){
       $colname = $col_names[$j];
       if(!isset($data_array[$i][$colname])){
@@ -48,6 +49,8 @@ try {
 } catch(PDOException $e) {
   echo '{"success": false, "message": ' . $e->getMessage() . '}. ';
   //echo ' spit out : ' . $data_array[50][$col_names[40]];
+  echo 'i is' . $i ;
+  echo ' count output is ' . count($data_array) ;
   // to try: go row by row
 }
 $conn = null;

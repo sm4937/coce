@@ -8,13 +8,21 @@ function setup_detection(practice,loopi){
   var data_list = []; var key_list = []; //initialize empty lists for task parameters
 
   var response_color = 'red'; //black to red upon response in n-back, detection
+
+  var answer_key_names = [universal_key,'H'];
+  var answer_keys = [jsPsych.pluginAPI.convertKeyCharacterToKeyCode(answer_key_names[0]),jsPsych.pluginAPI.convertKeyCharacterToKeyCode('z'),jsPsych.pluginAPI.convertKeyCharacterToKeyCode(answer_key_names[1])];
   
+  var stamp = '<div style="position: absolute; left: 5px; top: 5px">';
+  stamp += fractals[easy_task_ID]+' width="'+stamp_size+'" height ="'+stamp_size+'"';
+  stamp += '</div>';
+
   if(!practice){ //regular task
     var instructs = {
       timeline: [{
         type: "html-keyboard-response",
         stimulus: function() {
-          var initial_instructs = '<p>In this task, you will need to press <strong>' + answer_key_names[1] + '</strong> every time you see the target letter <strong>' + detection_target + '</strong>. </p><p>You must respond while the letter is on screen or your answer will not count.</p><p> Pay attention! If you are not at least ' + String(cutoff_percent) + '% accurate, you will not earn points for completing this task.</p> <p>Press space to begin.</p>';
+          //var initial_instructs = '<p>In this task, you will need to press <strong>' + answer_key_names[1] + '</strong> every time you see the target letter <strong>' + detection_target + '</strong>. </p><p>You must respond while the letter is on screen or your answer will not count.</p><p> Pay attention! If you are not at least ' + String(cutoff_percent) + '% accurate, you will not earn points for completing this task.</p> <p>Press space to begin.</p>';
+          var initial_instructs = '<p>In this task, you will need to press <strong>' + answer_key_names[0] + '</strong> every time you see the target letter <strong>' + detection_target + '</strong>. </p><p>You must respond while the letter is on screen or your answer will not count.</p> <p>Press space to begin.</p>';          
            //return "<p style='font-size:25px'>" + n_back_instructs + " </p>";
           return initial_instructs;
         },
@@ -63,7 +71,7 @@ function setup_detection(practice,loopi){
     //make it flexible
     if(trial_list[trial]==1){ //force it to be a detection trial
       stimnum = num_stim;
-      answer_key = answer_keys[2];
+      answer_key = answer_keys[0];
     }
     if(trial_list[trial]==0){
       answer_key = answer_keys[1]; //placeholder key
@@ -79,7 +87,7 @@ function setup_detection(practice,loopi){
     }; 
 
   var detect = {
-    timeline: create_color_change_timeline(test_stimuli,"")
+    timeline: create_color_change_timeline(test_stimuli,"",stamp)
   }
 
   } else { // make a practice task
@@ -87,9 +95,9 @@ function setup_detection(practice,loopi){
     var presentation_screen = {
       timeline: [{
         type: "html-keyboard-response",
-        stimulus: fractals[1],
-        prompt: '<p>Practice task.</p><p>This picture will always be associated with the following task, like a picture label.</p><p>You will now learn the rules of this task and get a chance to practice.</p><p>Press the space bar to continue.</p>'
-          }]
+        stimulus: '<p> Task: </p>' + fractals[easy_task_ID]+' width="'+fractal_size+'" height ="'+fractal_size+'"',
+        prompt: '<p>This picture will always be associated with the following task, like a picture label.</p><p>You will now learn the rules of this task and get a chance to practice.</p><p>Press the space bar to continue.</p>'
+        }]
       };
 
     var instructs = {
@@ -97,7 +105,7 @@ function setup_detection(practice,loopi){
         type: "html-keyboard-response",
           stimulus: function() {
             //var initial_instructs = '<p>In this task, you will need to press <strong>' + answer_key_names[1] + '</strong> every time you see the target letter <strong>' + detection_target + '</strong>. </p><p>You must respond while the letter is on screen or your answer will not count.</p><p> Pay attention! If you are not at least ' + String(cutoff_percent) + '% accurate, you will not earn points for completing this round.</p> <p>Press space to begin.</p>';
-            var initial_instructs = '<p>In this task, you will need to press <strong>' + answer_key_names[1] + '</strong> every time you see the target letter <strong>' + detection_target + '</strong>. </p><p>You must respond while the letter is on screen or your answer will not count.</p><p>Press space to begin.</p>';            
+            var initial_instructs = '<p>In this task, you will need to press <strong>' + answer_key_names[0] + '</strong> every time you see the target letter <strong>' + detection_target + '</strong>. </p><p>You must respond while the letter is on screen or your answer will not count.</p><p>Press space to begin.</p>';            
              //return "<p style='font-size:25px'>" + n_back_instructs + " </p>";
             return initial_instructs;
               },
@@ -109,7 +117,7 @@ function setup_detection(practice,loopi){
        type: "html-keyboard-response",
        stimulus: function() {
          overall = accuracyDetection();
-         return "<p>Your accuracy was <strong>" + overall + "%</strong>.</p><p>You will need to be at least " + String(cutoff_percent) + "% accurate to progress to the main experiment.</p><p>In the main experiment, you will not receive the same feedback as during practice.</p><p>Press the space bar to continue. </p>";
+         return "<p>Your accuracy was <strong>" + overall + "%</strong>.</p><p>You will need to be at least " + String(cutoff_percent) + "% accurate to progress to the main experiment.</p><p>In the main experiment, you will not receive the same feedback as during practice.</p><p>Press the space bar to continue. </p>";        
         },
         data: function(){
           accuracy = accuracyDetection();
@@ -119,7 +127,7 @@ function setup_detection(practice,loopi){
 
     ntrials = 10;
 
-    trial_type = [1, 1, 0, 0, 0, 0, 0, 0, 0, 0];
+    trial_type = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0];
     indices = [0,1,2,3,4,5,6,7,8,9];
     trial_list = [];
 
@@ -138,7 +146,7 @@ function setup_detection(practice,loopi){
       //make it flexible
       if(trial_list[trial]==1){ //force it to be a detection trial
         stimnum = num_stim;
-        answer_key = answer_keys[2];
+        answer_key = answer_keys[0];
       }
       if(trial_list[trial]==0){
         answer_key = answer_keys[1]; //placeholder key
@@ -183,7 +191,7 @@ function setup_detection(practice,loopi){
           detect = jsPsych.data.getLastTrialData().select("detect").values;
           detect = detect[0];
           if(correct){
-            return "Correct!"
+             return "Correct!"
           }else{
             if(answer==answer_keys[1]&response==null){
               return " "
@@ -193,15 +201,15 @@ function setup_detection(practice,loopi){
               return "Correct!"
             }
             if(!answer_keys.includes(response)){ // didn't press a valid key
-              return "Please press " + answer_key_names[1] + "."
+              return "Press <strong>" + answer_key_names[0] + "</strong> when you see a T."
             }
             if(detect){
-              return "Press <strong>" + answer_key_names[1] + "</strong> when you see a T."
+              return "Press <strong>" + answer_key_names[0] + "</strong> when you see a T."
             }
             if(!detect){ //not an n-back trial
               return "Not a match! Press nothing."
             }
-          } 
+          }
         },
         stimulus_duration: feedback_timing,
         trial_duration: feedback_timing,
@@ -233,15 +241,15 @@ function accuracyDetection(data){ //calculate accuracy for detection task (0-bac
   for(var trial = 0; trial < ntrials; trial++){
     if(detect[trial]){//yes it's a detection
       detect_num += 1;
-      if(buttons[trial] == answer_keys[2]){
-       correct_num+=4
+      if(buttons[trial] == answer_keys[0]){
+       correct_num+=3
       }
     } else { //not a detection trial
         if(buttons[trial]==null){
          correct_num+=1}
       }
     }
-  ntrials = ntrials + detect_num*3; //weighted average (i.e. detection trials count for more)
+  ntrials = ntrials + detect_num*2; //weighted average (i.e. detection trials count for more)
   overall = (correct_num/ntrials)*100; 
   overall = Number.parseFloat(overall).toFixed(2);
   return overall;

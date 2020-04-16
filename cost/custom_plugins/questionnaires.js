@@ -41,17 +41,17 @@ function create_need_for_cognition(){
   ends = [question_list.length/npages, 2*(question_list.length/npages), question_list.length];
   formattedqs1 = [];
   for(var q=0; q<ends[0]; q++){
-    formattedqs1.push({prompt: "<strong>" + question_list[q] + "</strong>", options: options, required:false, horizontal:true});
+    formattedqs1.push({prompt: "<strong>" + question_list[q] + "</strong>", options: options, required:false, horizontal:true, name:"NFC"+question_list[q][0]+question_list[q][1]});
   }
   //add a Screener question
   formattedqs1.push({prompt: "<strong>7. Please select 'extremely characteristic of me' if you've read this question.</strong>", options: options, required:false, horizontal:true,name:'screener'})
   formattedqs2 = [];
   for(var q=ends[0]; q<ends[1]; q++){
-    formattedqs2.push({prompt: "<strong>" + question_list[q] + "</strong>", options: options, required:false, horizontal:true});
+    formattedqs2.push({prompt: "<strong>" + question_list[q] + "</strong>", options: options, required:false, horizontal:true, name:"NFC"+question_list[q][0]+question_list[q][1]});
   }
   formattedqs3 = [];
   for(var q=ends[1]; q<ends[2]; q++){
-    formattedqs3.push({prompt: "<strong>" + question_list[q] + "</strong>", options: options, required:false, horizontal:true});
+    formattedqs3.push({prompt: "<strong>" + question_list[q] + "</strong>", options: options, required:false, horizontal:true, name:"NFC"+question_list[q][0]+question_list[q][1]});
   }
     // standards['prompt'] = "This is a question?"
 
@@ -143,21 +143,21 @@ function create_SAPS(){
     "4. I often feel disappointment after completing a task because I know I could have done better.",
     "5. I have a strong need to strive for excellence.",
     //screener
-    "7. My performance rarely measures up to my standards.",
-    "8. I expect the best from myself.",
-    "9. I am hardly ever satisfied with my performance."]
+    "6. My performance rarely measures up to my standards.",
+    "7. I expect the best from myself.",
+    "8. I am hardly ever satisfied with my performance."]
 
     // make a list of dictionaries [{},{},{}] with standard settings
 
   ends = [5, 8];
   formattedqs1 = [];
   for(var q=0; q<ends[0]; q++){
-    formattedqs1.push({prompt: "<strong>" + question_list[q] + "</strong>", options: options, required:false, horizontal:true});
+    formattedqs1.push({prompt: "<strong>" + question_list[q] + "</strong>", options: options, required:false, horizontal:true, name:"SAPS"+question_list[q][0]+question_list[q][1]});
   }
   formattedqs2 = [];
   formattedqs2.push({prompt: "<strong>6. Please select 'somewhat agree' if you've read this question.</strong>", options: options, required:false, horizontal:true, name:'screener'})
   for(var q=ends[0]; q<ends[1]; q++){
-    formattedqs2.push({prompt: "<strong>" + question_list[q] + "</strong>", options: options, required:false, horizontal:true});
+    formattedqs2.push({prompt: "<strong>" + question_list[q] + "</strong>", options: options, required:false, horizontal:true, name:"SAPS"+question_list[q][0]+question_list[q][1]});
   }
   // standards['prompt'] = "This is a question?"
 

@@ -150,7 +150,7 @@ disp ('t-test task 1 versus task 2 BDM values') %task 1 values versus task 2 val
 
 subplot(2,2,3)
 n1subjlearning = NaN(n,default_length+1); n2subjlearning = NaN(n,default_length+1);
-n1subjv alue = NaN(n,default_length+1); n2subjvalue = NaN(n,default_length+1);
+n1subjvalue = NaN(n,default_length+1); n2subjvalue = NaN(n,default_length+1);
 for row = 1:n %cycle through subjects
     for task = 1:2 %cycle through tasks
         for trial = 2:default_length

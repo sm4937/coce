@@ -41,19 +41,17 @@
     </body>
     <script>
 
-      exp_version = 2; //Math.ceil(Math.random()*2); //randomize for simplicity of running from home
+      var exp_version = 3; //Math.ceil(Math.random()*2); //randomize for simplicity of running from home
       // we're fixing to 2, because version 1 is two extremes rather than version 2, which is a better balance of task difficulties
       // 1 is the combine, detection version
       // 2 is the n-switch version
+      // 3 is the n-back version
       var subjnum = String(exp_version) + String(Math.round(Math.random()*10**7)); //eight numbers should suffice?
 
-      var debug = true;
+      var debug = false;
 
-      // set up initial global variables
-      answer_key_names = ['H','K'];
-      if(Math.random()<0.5){ //50-50 shot, counterbalancing across subjects
-        answer_key_names = ['K','H'];
-      }
+      var universal_key = 'K';
+      var answer_key_names = [universal_key,'H'];
       var answer_keys = [jsPsych.pluginAPI.convertKeyCharacterToKeyCode(answer_key_names[0]),jsPsych.pluginAPI.convertKeyCharacterToKeyCode('z'),jsPsych.pluginAPI.convertKeyCharacterToKeyCode(answer_key_names[1])];
 
       var cutoff = 80; //set up the accuracy cutoffs, applied for now only in training phase
@@ -78,9 +76,19 @@
       }
       var rule_names = ['magnitude (less than or greater than 5?)','parity (even or odd?)']
 
-      /*var fb_img_paths = ["<p 'font-size':100px 'font-color':'blue'> E </p>", "<p 'font-size':100px 'font-color':'blue'> R </p>", "<p 'font-size':100px 'font-color':'blue'> T </p>"];*/
-      var fractals = ['<img src="./static/img/fractal1.jpg" width="250" height="250"','<img src="./static/img/fractal2.png" width="250" height="250"', '<img src="./static/img/fractal3.jpg" width="250" height="250"',
-      '<img src="./static/img/fractal4.png" width="250" height="250"', '<img src="./static/img/fractal5.jpg" width="250" height="250"']; //list out img sources 
+      var fractal_size = "250";
+      var stamp_size = "100";
+      var fractal_locs = './static/img/';
+      var fractals_imgs = ['fractal1.jpg','fractal2.png','fractal3.jpg','fractal4.png','fractal5.jpg','fractal6.jpg','fractal7.png'];
+      /*var fractals = ['<img src="./static/img/fractal1.jpg" width="150" height="150" location="center"','<img src="./static/img/fractal2.png" width='+fractal_size+' height='+fractal_size+'', '<img src="./static/img/fractal3.jpg" width="150" height="150"',
+      '<img src="./static/img/fractal4.png" width="150" height="150"', '<img src="./static/img/fractal5.jpg" width="150" height="150"',
+      '<img src="./static/img/fractal6.jpg" width="150" height="150"', '<img src="./static/img/fractal7.png" width="150" height="150"']; //list out img sources */
+      fractals = [];
+      for(i=0;i<fractals_imgs.length;i++){
+        //var fractal = '<img src="' + fractal_locs + fractals_imgs[i] + '" width="' + fractal_size + '" height ="' + fractal_size + '" location="center"';
+        var fractal = '<img src="' + fractal_locs + fractals_imgs[i] + '"';
+        fractals.push(fractal);
+      }
       var all_images = [];
       all_images.push(fractals);
       
@@ -101,9 +109,9 @@
       var kill_check = false;
 
       // SET NUMBER OF BLOCKS HERE
-      var n_repetitions = 24;
+      var n_repetitions = 32;
       if(debug){
-        n_repetitions = 2;
+        n_repetitions = 8;
       }
       //SET NUMBER OF BLOCKS HERE
       //task list 
@@ -115,8 +123,17 @@
       var task_list = new Array(n_repetitions);
       task_list.fill(0);
       if(exp_version==2){
-        task_list.fill(3);
+        task_list.fill(4);
+        easy_task_ID = 5; //easy n-switch, p(switch)=0.1
       }
+      if(exp_version==3){
+        task_list.fill(1,0,(n_repetitions/2)); //6, 7
+        task_list.fill(2,n_repetitions/2,n_repetitions);
+        task_list = randomizeList(task_list);
+        easy_task_ID = 0; //0-back (detection)
+      }
+      const uniqueValues = task_list.filter(unique);
+      var n_tasks = uniqueValues.length+1;
       var blocknums = [];
       blocknums.push([0,(n_repetitions/4)-1]);
       blocknums.push([n_repetitions/4,((2*n_repetitions)/4)-1]); //to feed into main timeline creation loop
@@ -155,13 +172,6 @@
         //this function does it all: game instructions, practice games, BDM instructions, BDM quiz, transition to real task
       };
 
-      if(!debug){
-        temp_timeline.push({
-          type: 'fullscreen',
-          fullscreen_mode: true
-        });
-      }
-
       temp_timeline.push(experiment_instructions); //initialize timeline with just instructions
 
       //break the task into quarters for kicking people out who aren't even at 50% accuracy
@@ -178,8 +188,8 @@
               return accuracy>65;
             }
             if(!practice_just_ended){
-              accuracy = keepTrackofPerformance();
-              return accuracy>50; //make sure people are at least above chance
+              accuracy = monitorPerformance();
+              return accuracy>60; //make sure people are at least above chance
             }
           }
         }
@@ -246,20 +256,22 @@
           timeline: [{
             type: "html-keyboard-response",
             stimulus: function(){
-              points = sumPoints(points_list);
-              message = "<p>Thank you for your participation! This experiment is now over.</p><p>You earned " + String(points) + " points total.</p><p>Please submit your work with your personal code and we will bonus you within 48 hours.</p><p>Your personal code is on the next page.</p><p>[<strong>Press any key to reveal your personal code.</strong>]</p>"
+              points_total = sumPoints(points_list);
+              payment_message = calculatePayment();
+              message = "<p>Thank you for your participation! This experiment is now over.</p><p>You earned " + String(points_total) + " points total.</p>" + payment_message + "<p>Please submit your work with your personal code and we will bonus you within 48 hours.</p><p>Your personal code is on the next page.</p><p>[<strong>Press any key to reveal your personal code.</strong>]</p>"
               return message;
             },
             data: function(){
               TOT = jsPsych.data.get().select("time_elapsed").values;
               TOT = TOT.slice(-1)[0]; //total time on experiment in milliseconds
-              overall = keepTrackofPerformance();
-              points = sumPoints(points_list);
-              var interaction_data = jsPsych.data.getInteractionData();
-              questionnaire_answers = parseQuestionText();
-              dict = {TOT: TOT, overall: overall, total_points: points, exp_version: exp_version, n_switch_rule_sides: n_switch_rule_sides, subjnum: subjnum*1}; //make subjnum a number, not a string
+              overall = printOverallAccuracy();
+              points_total = sumPoints(points_list);
+              var interaction_data = parseInteractionData();
+              var questionnaire_answers = parseQuestionText();
+              dict = {TOT: TOT, overall: overall, total_points: points_total, exp_version: exp_version, n_switch_rule_sides: n_switch_rule_sides, success: 0, subjnum: subjnum*1}; //make subjnum a number, not a string
+              //hard code that this is not a version with fullscreen mode in it with the "success" variable
               jsPsych.data.addProperties(dict);
-              return {interaction_data: interaction_data.values(), responses: questionnaire_answers}; //so the data saved in the ending is the interaction data. the data files get the dict added as properties, changing how the data is structured for analysis of non-pilots
+              return {interaction_data: interaction_data, responses: questionnaire_answers}; //so the data saved in the ending is the interaction data. the data files get the dict added as properties, changing how the data is structured for analysis of non-pilots
             }
           }]
         };
@@ -270,7 +282,7 @@
           timeline: [{
             type: "html-keyboard-response",
             stimulus: function (){
-              message = "<p>Your personal code is <strong>" + subjnum + "</strong>.</p><p>Thank you for completing my experiment!</p>";
+              message = "<p>Your personal code is <strong>" + subjnum + "</strong>.</p><p>Thank you for completing my experiment!</p><p>If you have any additional comments or questions, don't hesitate to email me (Sarah) at kyblab.tuebingen@gmail.com</p>";
               saveDataToDb(); //sneak this in here
               return message;
             },
@@ -280,11 +292,6 @@
         };
 
         temp_timeline.push(personal_code);
-        
-        temp_timeline.push({
-          type: 'fullscreen',
-          fullscreen_mode: false
-        });
 
         function saveDataToDb_trial() {
           //jspsych-written

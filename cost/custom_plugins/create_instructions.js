@@ -2,19 +2,20 @@
 // set up the n-back task parameters and stimulus list
 function create_experiment_instructions(){
 
-  space_bar_message = "<p>[Press the space bar to continue.]</p>";
+  space_bar_message = "<p>[Press any key to continue.]</p>";
 
   instructs = {
     timeline: [{
       type: "html-keyboard-response",
       stimulus: function() {
-        experiment_instructs = '<p>In this experiment, you\'ll complete up to ' + String(n_repetitions) + ' short rounds of two tasks.</p>'
+        experiment_instructs = '<p>In this experiment, you\'ll learn how to complete ' + String(n_tasks) + ' different tasks.</p>'
+        experiment_instructs += '<p>You\'ll then complete up to ' + String(n_repetitions) + ' short rounds of these tasks, selecting between them.</p>'
         //experiment_instructs +='<p>If you are ' + String(cutoff_percent) + '% correct or better during one round of a task, then you pass that round and earn bonus points for it. If you are less than ' + String(cutoff_percent) + '% correct, you will not earn any points for that round.</p>'
         //experiment_instructs +='<p>Keep in mind that you should be about ' + String(cutoff_percent) + '% accurate for up to ' + String(n_repetitions) + ' rounds.</p>'        
         experiment_instructs +='<p>You can earn 1 to 5 points each round.</p>';
         experiment_instructs +='<p>At the end of the experiment, the points you earned will be added up and turned into a bonus payment. $$ The more points you earn, the more money you will be paid. $$</p>'
         experiment_instructs +='<p>We can tell if you\'re not paying attention; if you\'re not, then this experiment will end early and you will earn a smaller payment. $</p>'
-        experiment_instructs +='<p>[Press space to continue.]</p>';
+        experiment_instructs +='<p>[Press any key to continue.]</p>';
         //return "<p style='font-size:25px'>" + n_back_instructs + " </p>";
         return experiment_instructs;
       },
@@ -53,7 +54,7 @@ function create_experiment_instructions(){
       type: "html-keyboard-response",
       stimulus: function() {
         experiment_instructs = '<p>The real experiment will now start. </p>'
-        experiment_instructs += '<p>For each round of the experiment, you will be asked how many points you would like to earn to complete a task.</p>'
+        experiment_instructs += '<p>For each round of the experiment, you will be asked how many points you would like to earn to complete that round of a task.</p>'
         experiment_instructs += '<p>If you ask for more points than a randomly generated number, you will not complete that task. </p>'
         experiment_instructs += '<p>Instead, you will complete a different task and earn 1 point.</p>'
         experiment_instructs += '<p>At the end of the experiment, the points you earn will be counted and turned into a bonus payment. $$</p>'
@@ -79,7 +80,7 @@ function create_experiment_instructions(){
         experiment_instructs += '<p>If you press a button, the stimulus on screen will change color to show you that the computer registered your response.</p>'
         experiment_instructs += '<p>At the end of the experiment, we\'ll ask you to complete some optional survey questions.</p>'
         experiment_instructs += '<p>If we can tell that you are not paying attention (not accurate enough or not responding quickly enough), then this experiment will end early and you will earn a smaller payment. $</p>'
-        experiment_instructs += '<p>[Press the space bar to begin the real experiment.]</p>'
+        experiment_instructs += '<p>[Press any key to begin the real experiment.]</p>'
         return experiment_instructs;
         },
       data: {task: 'instructions'},
@@ -102,7 +103,7 @@ return timeline = [instructs, full_combine_practice, BDM_quiz, debrief1, debrief
 //create dynamic practice for different versions of the experiment 
 
 function create_practice_tasks(exp_version){
-  if(exp_version==1){
+  if(exp_version!=2){ //for now, versions 1 and 3
     practice_flag = true;
 
     practice_detection = {
@@ -121,6 +122,91 @@ function create_practice_tasks(exp_version){
       timeline: setup_practice_nBack(3)
     };
 
+    max_repeats = 9;
+    n_back_practice_timeline = [practice_2_back];
+    for(var reps=0;reps<max_repeats;reps++){
+    starter_message = '<p>You are not at ' + String(cutoff_percent) + '% accuracy yet.</p><p>Let\'s try this task again.</p>';
+    var notice = {
+      timeline: [{
+        type: "html-keyboard-response",
+        stimulus: function(){
+          accuracy = accuracyfinalNback();
+          message = '<p> You were ' + String(accuracy) + '% accurate.</p>';
+          message += starter_message;
+          message += space_bar_message;
+          return message;
+        },
+        data: function(){
+          accuracy = accuracyfinalNback();
+          return {practice_accuracy: accuracy}
+        }
+      }],
+      conditional_function: function(){
+        accuracy = accuracyfinalNback();
+        if(accuracy<cutoff){
+          return true;
+        }else{
+          return false;
+        }
+      }
+    }
+
+    var log = {
+      timeline: [{
+        type: "html-keyboard-response",
+        data: {number_practice_hard: reps+1},
+        trial_duration: instructs_timing,
+        stimulus: '<p>You will get ' + String(max_repeats-reps) + ' more tries to get to ' + String(cutoff_percent) + '% accuracy on this task.</p><p>Don\'t worry, most subjects need a few rounds of practice on this task.</p><p>If the feedback is more distracting than helpful, try your best to just ignore it.</p><p>[Press any key to try again.]</p>',
+        response_ends_trial: true
+      }],
+      conditional_function: function(){
+        accuracy = accuracyfinalNback();
+        if(accuracy<cutoff){
+          return true;
+        }else{
+          return false;
+        }
+      }
+    }
+
+    var repeat_nback = {
+      timeline: setup_practice_nBack(2),
+      conditional_function: function(){
+        accuracy = accuracyfinalNback();
+        if(accuracy<cutoff){
+          return true;
+        }else{
+          return false;
+        }
+      }
+    }
+    
+    n_back_practice_timeline.push(notice);
+    n_back_practice_timeline.push(log);
+    n_back_practice_timeline.push(repeat_nback);
+      //combine_practice_timeline.push(reach_asymptote)
+    }
+
+    var wrap_it_up = {
+      timeline: [{
+        type: "html-keyboard-response",
+        data: {task: 'debrief'},
+        stimulus: function(){
+          if(accuracy>=cutoff){
+            return "<p>Good job! You have reached " + String(cutoff_percent) + "% accuracy on this practice task. We will now explain how the payment process for this experiment will work.</p><p>[Press the any key to continue.]</p>"
+          }else{
+            return "<p>Sorry, but you haven't reached " + String(cutoff_percent) + "% accuracy on this practice task.</p><p>You will not be moving forward into the real experiment.</p><p>[Press the any key to continue.]</p>"
+          }
+        }   
+      }]
+    }
+
+    n_back_practice_timeline.push(wrap_it_up);
+    var full_nback_practice = {
+      timeline: n_back_practice_timeline
+    }
+
+// necessary code for combine version (exp_version 1)
     var check_accuracy = {
       timeline: [{
         type: "html-keyboard-response",
@@ -128,14 +214,15 @@ function create_practice_tasks(exp_version){
         stimulus: function(){
           accuracy = accuracyfinalNback();
           if(accuracy>=cutoff){
-            return "<p>Good job! You have reached " + String(cutoff_percent) + "% accuracy on this practice task. We will now move on.</p><p>[Press the space bar to continue.]</p>"
+            return "<p>Good job! You have reached " + String(cutoff_percent) + "% accuracy on this practice task. We will now move on.</p><p>[Press any key to continue.]</p>"
           } else {
-            return "<p>Let's try this practice task once more. You have to be " + String(cutoff_percent) + "% accurate to progress to the real experiment.</p><p>[Press the space bar to continue.]</p>"
+            return "<p>Let's try this practice task once more. You have to be " + String(cutoff_percent) + "% accurate to progress to the real experiment.</p><p>[Press any key to continue.]</p>"
           }
         }
       }]
     }
 
+// necessary code for combine version (exp_version 1)
     var repeat_3_back = {
       timeline: setup_practice_nBack(3),
       conditional_function: function(){
@@ -148,14 +235,16 @@ function create_practice_tasks(exp_version){
       }
     };
 
+// necessary code for combine version (exp_version 1)
     var practice_combine = {
       timeline: setup_practice_combo()
     }  
 
+// necessary code for combine version (exp_version 1)
     var reach_asymptote = {
       timeline: [{
         type: "html-keyboard-response",
-        stimulus: "<p>You're not at " + String(cutoff_percent) + "% accuracy on this task.</p><p>Let's try one more time. Try your best! If we can't reach " + String(cutoff_percent) + "% accuracy, then this experment will end.</p><p>[Press the space bar to continue.]</p>",
+        stimulus: "<p>You're not at " + String(cutoff_percent) + "% accuracy on this task.</p><p>Let's try one more time. Try your best! If we can't reach " + String(cutoff_percent) + "% accuracy, then this experment will end.</p><p>[Press any key to continue.]</p>",
         data: {practice_accuracy: accuracyFinalCombine(), number_practice_hard: 0, task: 'instructions'}
       }],
       conditional_function: function(){
@@ -203,7 +292,7 @@ function create_practice_tasks(exp_version){
         type: "html-keyboard-response",
         data: {number_practice_hard: reps+1},
         trial_duration: instructs_timing,
-        stimulus: '<p>You will get ' + String(max_repeats-reps) + ' more tries to get to ' + String(cutoff_percent) + '% accuracy on this task.</p><p>Don\'t worry, most subjects need a few rounds of practice on this task.</p><p>If the feedback is more distracting than helpful, try your best to just ignore it.</p><p>[Press space bar to try again.]</p>',
+        stimulus: '<p>You will get ' + String(max_repeats-reps) + ' more tries to get to ' + String(cutoff_percent) + '% accuracy on this task.</p><p>Don\'t worry, most subjects need a few rounds of practice on this task.</p><p>If the feedback is more distracting than helpful, try your best to just ignore it.</p><p>[Press any key to try again.]</p>',
         response_ends_trial: true
       }],
       conditional_function: function(){
@@ -233,28 +322,18 @@ function create_practice_tasks(exp_version){
     combine_practice_timeline.push(repeat_combine);
       //combine_practice_timeline.push(reach_asymptote)
     }
-
-    var wrap_it_up = {
-      timeline: [{
-        type: "html-keyboard-response",
-        data: {task: 'debrief'},
-        stimulus: function(){
-          if(accuracy>=cutoff){
-            return "<p>Good job! You have reached " + String(cutoff_percent) + "% accuracy on this practice task. We will now explain how the payment process for this experiment will work.</p><p>[Press the space bar to continue.]</p>"
-          }else{
-            return "<p>Sorry, but you haven't reached " + String(cutoff_percent) + "% accuracy on this practice task.</p><p>You will not be moving forward into the real experiment.</p><p>[Press the space bar to continue.]</p>"
-          }
-        }   
-      }]
-    }
-
     combine_practice_timeline.push(wrap_it_up);
 
     var full_combine_practice = {
       timeline: combine_practice_timeline
     }
 
-    return temp = [practice_detection, practice_1_back, practice_2_back, practice_3_back, check_accuracy, repeat_3_back, full_combine_practice];
+    if(exp_version==1){
+      return temp = [practice_detection, practice_1_back, practice_2_back, practice_3_back, check_accuracy, repeat_3_back, full_combine_practice];
+    }
+    if(exp_version==3){
+      return temp = [practice_detection, practice_1_back, full_nback_practice];
+    }
   }
   // n-switch version of the instructions
   if(exp_version==2){
@@ -266,7 +345,7 @@ function create_practice_tasks(exp_version){
           initial_instructs += '<p style="color: '+ n_switch_colors[0] + '">If the number is ' + n_switch_colors[0] + ', you will need to respond to its ' + rule_names[0] + '.</p>';
           initial_instructs += '<p style="color: '+ n_switch_colors[1] + '">If the number is ' + n_switch_colors[1] + ', you will need to respond to its ' + rule_names[1] + '.</p>';
           initial_instructs += '<p>Let\'s practice responding to these rules, one at a time.</p>'
-          initial_instructs += '<p>[Press the space bar to continue.]</p>'
+          initial_instructs += '<p>[Press any key to continue.]</p>'
           //return "<p style='font-size:25px'>" + n_back_instructs + " </p>";
           return initial_instructs;
         },
@@ -288,6 +367,9 @@ function create_practice_tasks(exp_version){
     var together = {
       timeline: setup_nswitch(true,-1,2) //easy block
     }
+    var middle = {
+      timeline: setup_nswitch(true,-1,3) //middle difficulty block
+    }
     var practice_hard = {
       timeline: setup_nswitch(true,-1,1) //hard block
     }
@@ -295,6 +377,9 @@ function create_practice_tasks(exp_version){
 
     max_repeats = 9;
     practice_timeline.push(together)
+    if(exp_version==3){
+      practice_timeline.push(middle)
+    }
     practice_timeline.push(practice_hard)
     for(var reps=0;reps<max_repeats;reps++){
     starter_message = '<p>You are not at ' + String(cutoff_percent) + '% accuracy yet.</p><p>Let\'s try this task again.</p>';
@@ -328,7 +413,7 @@ function create_practice_tasks(exp_version){
         type: "html-keyboard-response",
         data: {number_practice_hard: reps+1},
         trial_duration: instructs_timing,
-        stimulus: '<p>You will get ' + String(max_repeats-reps) + ' more tries to get to ' + String(cutoff_percent) + '% accuracy on this task.</p><p>Don\'t worry, most subjects need a few rounds of practice on this task.</p><p>If the feedback is more distracting than helpful, try your best to just ignore it.</p><p>[Press space bar to try again.]</p>',
+        stimulus: '<p>You will get ' + String(max_repeats-reps) + ' more tries to get to ' + String(cutoff_percent) + '% accuracy on this task.</p><p>Don\'t worry, most subjects need a few rounds of practice on this task.</p><p>If the feedback is more distracting than helpful, try your best to just ignore it.</p><p>[Press any key to try again.]</p>',
         response_ends_trial: true
       }],
       conditional_function: function(){
@@ -365,9 +450,9 @@ function create_practice_tasks(exp_version){
         data: {task: 'debrief'},
         stimulus: function(){
           if(accuracy>=cutoff){
-            return "<p>Good job! You have reached " + String(cutoff_percent) + "% accuracy on this practice task. We will now explain how the payment process for this experiment will work.</p><p>[Press the space bar to continue.]</p>"
+            return "<p>Good job! You have reached " + String(cutoff_percent) + "% accuracy on this practice task. We will now explain how the payment process for this experiment will work.</p><p>[Press any key to continue.]</p>"
           }else{
-            return "<p>Sorry, but you haven't reached " + String(cutoff_percent) + "% accuracy on this practice task.</p><p>You will not be moving forward into the real experiment.</p><p>[Press the space bar to continue.]</p>"
+            return "<p>Sorry, but you haven't reached " + String(cutoff_percent) + "% accuracy on this practice task.</p><p>You will not be moving forward into the real experiment.</p><p>[Press any key to continue.]</p>"
           }
         }   
       }]
@@ -377,6 +462,7 @@ function create_practice_tasks(exp_version){
 
     return practice_timeline;
   }
+
 }
 
 // code graveyard - counterbalance practice games for random presentation order

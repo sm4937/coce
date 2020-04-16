@@ -21,19 +21,21 @@ function generateOffer(){
   return computer;
 }
 
-function runBDM(points,offer,task_ID){
+function runBDM(points,offer,task_ID,fractal_size){
   var BDM_message = "<p style='font-size':25px> You want <strong> " + String(points) + " </strong> points. </p> <p> The computer offers <strong>" + String(offer) + "</strong> points. </p>"
   timeoutflag = points==null;
   if(points <= offer){
+    lasttrial = jsPsych.data.getLastTrialData();
+    task_ID = lasttrial.select('task_displayed').values; //dynamic
     //BDM_message += "<p> You will be given " + String(offer) + " points if you achieve at least " + String(cutoff_percent)  + "% accuracy on this task. </p>" + fractals[task_ID] + " location='center'></img>";
-    BDM_message += "<p> You will be given " + String(offer) + " points for completing this task. </p>" + fractals[task_ID] + " location='center'></img>";
+    BDM_message += '<p> You will be given ' + String(offer) + ' points for completing this task. </p>'+fractals[task_ID]+' width="'+fractal_size+'" height ="'+fractal_size+'"></img>';
     points = offer; 
   } else {
-    BDM_message += "<p> You will do the following task instead to earn 1 point. </p> " + fractals[task_ID+1] + " location='center'></img>";
+    BDM_message += "<p> You will do this task instead to earn 1 point. </p> " + fractals[easy_task_ID]+' width="'+fractal_size+'" height ="'+fractal_size+'"></img>';
     points = 1; 
   }
   if(timeoutflag){
-    BDM_message = "<p> You did not respond in time. You will do the following task to earn 1 point. </p>" + fractals[task_ID+1] + "location='center'></img>";
+    BDM_message = "<p> You did not respond in time. You will do this task to earn 1 point. </p>" + fractals[easy_task_ID]+' width="'+fractal_size+'" height ="'+fractal_size+'"></img>';
     points = 1;
   }
   BDM_message += "<p>[Press the space bar to continue.]</p>"
@@ -69,7 +71,29 @@ function turnLogicalIntoAccuracy(input){
   return accuracy;
 };
 
-function keepTrackofPerformance(){
+function monitorPerformance(){
+  sum = 0; quarter = (n_repetitions/4)-1; BDM_list = [];
+  lasttrial = jsPsych.data.getLastTimelineData();
+  tasknum = lasttrial.select("tasknum").values;
+  tasknum = tasknum[0];
+  rts_list = jsPsych.data.get();
+  rts_list = rts_list.filter({task: 'BDM'}).select('rt').values;
+  for(var i = tasknum-quarter; i < tasknum; i++){
+    sum += parseInt(performance_list[i]);
+    BDM_list.push(rts_list[i]==null);
+  }
+  overall = sum/(quarter+1);
+  //console.log(performance_list)
+  //console.log(sum)
+  BDMs_unanswered = 100-(turnLogicalIntoAccuracy(BDM_list)*100);
+  //console.log(BDM_list)
+  final = Math.min(overall,BDMs_unanswered)
+  //console.log(overall)
+  //console.log(BDMs_unanswered)
+  return final;
+};
+
+function printOverallAccuracy(){
   sum = 0;
   for(i = 0; i < performance_list.length; i++){
     sum += parseInt(performance_list[i]);
@@ -92,6 +116,20 @@ function sumPoints(input){
     sum += point;
   }
   return sum;
+}
+
+function calculatePayment(){
+  base = 2.5;
+  TOT = jsPsych.data.get().select("time_elapsed").values;
+  TOT = TOT.slice(-1)[0]; //total time on experiment in milliseconds
+  points = (sumPoints(points_list))/100; //points = cents
+  hourly = (TOT/3600000)*10; //10 dollars an hour
+  payment = (points+hourly);
+  if(points==0){
+    payment = base;
+  }
+  payment = Number.parseFloat(payment).toFixed(2);
+  return message = '<p>Your payment should come out to approximately $' + String(payment) + ', including both the base payment for this experiment and your individual bonus.</p>'
 }
 
 var range = function(start, end, step) {
@@ -131,7 +169,7 @@ var range = function(start, end, step) {
     return range;
 }
 
-function create_color_change_timeline(test_stimuli,key_presses){
+function create_color_change_timeline(test_stimuli,key_presses,stamp){
   test = []; // empty test variable for practice, build more dynamic feedback by hijacking the plugins
     for(var i = 0; i < test_stimuli.length; i++){
       var stimulus_screen = {
@@ -139,7 +177,7 @@ function create_color_change_timeline(test_stimuli,key_presses){
         stimulus: '<p style="color: ' + test_stimuli[i]['color'] + '" >' + test_stimuli[i]['stimulus'] + '</p>',
         data: test_stimuli[i]['data'],
         key_answer: test_stimuli[i]['correct_key'],
-        prompt: key_presses,
+        prompt: key_presses + stamp, //stamp here for now
         stimulus_duration: stim_timing,
         trial_duration: stim_timing,
         show_feedback_on_timeout: false,
@@ -153,14 +191,14 @@ function create_color_change_timeline(test_stimuli,key_presses){
 
       var feedback_screen = {
         type: "html-keyboard-response",
-        stimulus: '<p style="color: ' + test_stimuli[i]['response_color'] + '">' + test_stimuli[i]['stimulus'] + '</p>',
+        stimulus: '<p style="color: ' + test_stimuli[i]['response_color'] + '">' + test_stimuli[i]['stimulus'] + '</p>' + stamp,
         trial_duration: function(){
           grab = jsPsych.data.getLastTrialData();
           RT = grab.select('rt').values;
           if(RT[0]!=null){
             duration = stim_timing-RT[0];
           }else{
-            duration = 0;
+            duration = 0.5;
           }
           return duration
         },
@@ -171,7 +209,7 @@ function create_color_change_timeline(test_stimuli,key_presses){
 
       var ITI = {
         type: "html-keyboard-response",
-        stimulus: ' ',
+        stimulus: stamp,
         trial_duration: ITI_timing,
         response_ends_trial: false,
         data: {task: 'ITI'}
@@ -205,27 +243,30 @@ function run_task_by_ID(task_ID,loopi){
   //task list 
   //0 is combine
   //1 is detection
-  //2 is n-back
+  //2 is 3-back (short for now)
   //3 is n-switch hard
   //4 is n-switch easy
+  //5 is middle prob n-switch
+  //6 is 1-back
+  //7 is 2-back
   if(task_ID==0){
-    var temp = setup_nBack(loopi);
-    return temp
-  }
-  if(task_ID==1){
     var temp = setup_detection(false,loopi);
     return temp
   }
-  if(task_ID==2){
-    var temp = setup_practice_nback(3);
-    return temp
-  }
-  if(task_ID==3){
-    var temp = setup_nswitch(false,loopi,1);
+  if(task_ID>0&task_ID<4){ //1-3-back
+    var temp = setup_nBack(loopi,task_ID);
     return temp
   }
   if(task_ID==4){
+    var temp = setup_nswitch(false,loopi,1);//hard
+    return temp
+  }
+  if(task_ID==5){
     var temp = setup_nswitch(false,loopi,2); //easy
+    return temp
+  }
+  if(task_ID==6){
+    var temp = setup_nswitch(false,loopi,3); //middle difficulty
     return temp
   }
 }
@@ -244,6 +285,10 @@ function randomizeList(list){
     oldlist.splice(rand,1);//randomly index into indices, use that to reference trial_type, then delete the value
   }
   return newlist
+}
+
+const unique = (value, index, self) => {
+    return self.indexOf(value) === index;
 }
 
 function getColNames(){
@@ -354,6 +399,19 @@ function parseQuestionText(){
   }
   for(i=0;i<free_responses.length;i++){
     long_string += free_responses[i];
+  }
+  final = long_string.replace(/[^a-zA-Z0-9]/g,'_');
+  return final
+}
+
+function parseInteractionData(){
+  var interaction_data = jsPsych.data.getInteractionData();
+  interaction_data = interaction_data.values();
+  long_string = [];
+  for(i=0;i<interaction_data.length;i++){
+    long_string += 'event_' + String(interaction_data[i].event) + '_';
+    long_string += 'trial_' + String(interaction_data[i].trial) + '_';
+    long_string += 'time_' + + String(interaction_data[i].time) + '_';
   }
   final = long_string.replace(/[^a-zA-Z0-9]/g,'_');
   return final

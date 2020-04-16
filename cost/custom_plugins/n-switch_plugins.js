@@ -18,11 +18,13 @@ function setup_nswitch(practice,loopi,condition){
   // condition = 1 if hard, 2 if easy
   if(condition==2){
     p_switch = 0.1;
-  }else{ //condition is 1
+  }if(condition==1){ //condition is 1
     p_switch = 0.9;
+  }if(condition==3){
+    p_switch = 0.5;
   }
 
-  fractal = fractals[2+condition]; //fractal 3 for hard, 4 for easy
+  fractal = fractals[2+condition]; //fractal 3 for hard, 4 for easy, 5 for middle condition
 
   //answer keys are 
   var answer_key_names = ['S','F','H','K']
@@ -54,7 +56,7 @@ function setup_nswitch(practice,loopi,condition){
   }
   key_presses += '</div>';
      
-  space_bar_message = "<p> [Press the space bar to continue.] </p>";
+  space_bar_message = "<p> [Press any key to continue.] </p>";
 
   if(!practice){ //regular task
     var instructs = {
@@ -103,8 +105,8 @@ function setup_nswitch(practice,loopi,condition){
     var presentation_screen = {
       timeline: [{
         type: "html-keyboard-response",
-        stimulus: fractal,
-        prompt: '<p>Practice task.</p><p>This picture will always be associated with the following task, like a picture label.</p><p>You will now learn the rules of this task and get a chance to practice.</p><p>Press the space bar to continue.</p>',
+        stimulus: '<p> Task: </p>' + fractal,
+        prompt: '<p>This picture will always be associated with the following task, like a picture label.</p><p>You will now learn the rules of this task and get a chance to practice.</p><p>Press the space bar to continue.</p>',
         trial_duration: instructs_timing
           }]
       };
