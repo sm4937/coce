@@ -110,6 +110,10 @@ function create_practice_tasks(exp_version){
         timeline: setup_detection(practice_flag)
     };
 
+    practice_n_detection = {
+      timeline: setup_detection_n(practice_flag,-1,2)
+    };
+
     var practice_1_back = {
       timeline: setup_practice_nBack(1)
     };
@@ -333,6 +337,9 @@ function create_practice_tasks(exp_version){
     }
     if(exp_version==3){
       return temp = [practice_detection, practice_1_back, full_nback_practice];
+    }
+    if(exp_version==4){
+      return temp = [practice_detection, practice_n_detection, practice_1_back, full_nback_practice];
     }
   }
   // n-switch version of the instructions

@@ -64,7 +64,7 @@ data = group;
 %sanity check - BDM differences across sessions?
 if plot_flag
 figure
-subplot(2,2,1)
+subplot(3,2,1)
 for i = 1:length(unique(data.session))
     y = data.values(data.session==i,:);
     y = reshape(y,numel(y),1);
@@ -94,7 +94,7 @@ listn1 = sortrows(list,1,'Ascend');
 listn2 = sortrows(list,2,'Ascend');
 
 if plot_flag
-subplot(2,2,2)
+subplot(3,2,2)
 scatter(1:height(data),listn1(:,1))
 title('STD of BDM points requested per subject (1-back)')
 ylabel('STD')
@@ -104,7 +104,7 @@ xticklabels(num2str(listn1(:,3)))
 ax = gca; fig = gcf;
 fig.Color = 'w';
 
-subplot(2,2,4)
+subplot(3,2,4)
 scatter(1:height(data),listn2(:,2))
 title('STD of BDM points requested per subject (2-back)')
 ylabel('STD')
@@ -114,16 +114,26 @@ xticklabels(num2str(listn2(:,3)))
 fig = gcf;
 fig.Color = 'w';
 
-subplot(2,2,3)
+subplot(3,2,3)
 scatter(list(:,1),list(:,2),'Filled')
 title('relationship of BDM variances across tasks')
 ylabel('2-back STD BDMs')
 xlabel('1-back STD BDMs')
 
+subplot(3,2,5)
+missedBDMs = sum(isnan(data.values),2);
+matrix = [missedBDMs [1:length(missedBDMs)]'];
+matrix = sortrows(matrix,1,'ascend');
+plot(1:length(matrix),matrix(:,1),'o')
+ylabel('# Missed BDMS')
+title('Missed BDM answers by subject')
+xlabel('Subject number')
+xticklabels(num2str(matrix(:,2)))
+
 end %plotflag if
 
-%exclude = list(list(:,1)>1.5,2); %grab any subjects who have STD of BDMs>1.5
-%data(exclude,:) = [];
+exclude = matrix(matrix(:,1)>=13,2); %grab any subjects who have STD of BDMs>1.5
+data(exclude,:) = [];
 
 end
 

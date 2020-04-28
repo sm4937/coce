@@ -1,6 +1,8 @@
 function [data,failed_data] = make_data_table_v03(raw_data)
 
 %filename = ['\data\' filename];
+
+raw_data = sortrows(raw_data,'trial_index'); %re-sort scrambled data
 data = table;
 colnames = raw_data.Properties.VariableNames;
 default_length = 32;
@@ -29,6 +31,8 @@ raw_data.new_correct(raw_data.correct_key==90) = true;
 % can be trimmed as you go
 accidx = find(ismember(colnames,{'new_correct'})); 
 
+%% extract basic performance information
+
 %clean the detect and n-back columns up, it's messy because of the zero's in it become
 %"undefined"s
 detect = raw_data.detect;
@@ -54,7 +58,7 @@ if sum(~isnan(tasknumlist))>0
         failed = false;
         failed_data = table;
         demo = process_demo(raw_data); %we'll get this back
-        data.age = demo.age; data.sex = demo.sex; data.hand = demo.hand; 
+        data.age = demo.age; data.sex = demo.sex; data.hand = demo.hand; data.diffrating = demo.diffrating; 
         data.session = unique(raw_data.session);
     end
 else
@@ -103,9 +107,25 @@ displayed = double(displayed);
 %debrief(debrief<last_trials(1)) = []; %only post-task debrief
 debrief = find(task_list == categorical({'debrief'})&main_task);
 task_trials = ismember(task_list,tasks)&main_task; %relevant trials. break into blocks by anything post-BDM and pre-debrief
-trials = find(task_trials);
-first_trials = trials(1:15:end);
-last_trials = trials(15:15:end); %is this the solution? lol, no
+for block = 1:default_length
+    tasknum = block-1;
+    relevant = raw_data(raw_data.tasknum == tasknum,:);
+    first_trials(block) = find(raw_data.trial_index == relevant.trial_index(2));
+    last_trials(block) = find(raw_data.trial_index == relevant.trial_index(end));
+    TOT(block) = [relevant.time_elapsed(end)-relevant.time_elapsed(2)]/1000;
+end
+%first_trials = trials(1:15:end);
+%last_trials = trials(15:15:end); %is this the solution? lol, no
+
+% if sum(TOT>30|TOT<20)>0
+%     idx = find(TOT>30|TOT<20)
+%     TOT(idx)
+%     subjnum
+%     task_list(first_trials(idx))
+%     task_list(last_trials(idx))
+%     last_trials(idx)-first_trials(idx)
+% end
+
 if length(last_trials)<default_length %subject data got cut off for some unknown reason
     last_trials(end+1) = trials(end); %arbitrary last trial, since actual identity is unimportant
 end
@@ -131,6 +151,15 @@ offer_by_block = offer_list(BDMs+1);
 values = value_by_block; %points requested by block #
 offers = offer_by_block;
 
+%% get practice accuracy for an idea of 'baseline executive function'
+
+max_practices = 13; 
+practice_acc = raw_data.practice_accuracy(~isnan(raw_data.practice_accuracy));
+diff = max_practices-length(practice_acc);
+practice_acc = [practice_acc' NaN(1,diff)];
+% first block is detection, second block is 1-back, 3rd and onward is
+% 2-back
+
 %% compile rts by block and task
 detectrts = NaN(1,default_length); nbackmeanrts = NaN(2,default_length); %defaults for concatenating failed subjects
 for i=1:length(first_trials)
@@ -149,9 +178,9 @@ for i=1:length(first_trials)
     end
 end
 
-starttime = raw_data(first_trials,timesteps); starttime = table2array(starttime);
-endtime = raw_data(last_trials,timesteps); endtime = table2array(endtime);
-TOT = (endtime-starttime)/1000;
+% starttime = raw_data(first_trials,timesteps); starttime = table2array(starttime);
+% endtime = raw_data(last_trials,timesteps); endtime = table2array(endtime);
+% TOT = (endtime-starttime)/1000;
 
 task_progression = table2array(raw_data(first_trials,taskidx));
 
@@ -176,26 +205,29 @@ for i = 1:length(task_progression)
 end
 
 %% look into characteristics of individual task completion (e.g. mean switch costs during a round of the combine)
-init = NaN(1,length(task_progression));
+init = NaN(1,default_length);
 swrts = NaN(default_length,2); blrts = NaN(default_length,2);  %task switch rts, baseline rts for each task (detect, then nback)
 %detectrts = [];
 matchcount = NaN(1,default_length); missedmatches = NaN(1,default_length); nmatches = NaN(1,default_length); 
 nswitches = NaN(1,default_length);
 nswitchrts = NaN(2,default_length);
+furthererrors = NaN(1,default_length);
 % look into dual task cost in RT (so mean hit rts in combine - detect)
-for trial = 1:length(first_trials)
-    rts = table2array(raw_data(:,rtidx)); %initialize this properly
-    first = first_trials(trial);
-    last = last_trials(trial);
-    task_rts = rts(first:last);
-    task_accuracy = table2array(raw_data(first:last,accidx));
-    task = task_list(first);
+for block = 1:default_length
+    %for trial = 1:length(first_trials)
+    tasknum = block-1;
+    relevant = raw_data(raw_data.tasknum==tasknum,:);
+    %rts = table2array(raw_data(:,rtidx)); %initialize this properly
+    %first = first_trials(trial);
+    %last = last_trials(trial);
+    %task_rts = rts(first:last);
+    task_rts = relevant.rt;
+    task_accuracy = relevant.new_correct;
+    task = relevant.task(2);
     if task == tasks(1) %detection
-        detect = table2array(raw_data(first:last,detectidx)) == 'true';
-        condition = init'; condition(detect) = 1;
-        rts = task_rts(~isnan(condition)&condition~=0);
-        %detectrts = [detectrts; nanmean(rts)];
-    elseif task == tasks(2)
+        detect = relevant.detect == '1';
+        rts = task_rts(detect);
+    elseif task == tasks(2) %combine
         detect = table2array(raw_data(first:last,detectidx)) == '1'; %need to convert to logical
         nback = table2array(raw_data(first:last,nbackidx)) == '1'; %make sure that this is 1, or 'true' or something
         accurate = raw_data.new_correct(first:last);
@@ -217,12 +249,24 @@ for trial = 1:length(first_trials)
         nswitches(trial) = sum(switches); %first trial is not a switch
         %[max(stacked) max(task_rts(switches)) min(task_rts(switches)) max(task_rts(notswitches)) min(task_rts(notswitches)) last-first]
         %print-out for debugging purposes, switch costs were all wrong here
-    elseif task == tasks(4)
-        nback = table2array(raw_data(first:last,nbackidx)) == '1'; %make sure that this is 1, or 'true' or something
-        accurate = raw_data.new_correct(first:last);
-        nmatches(trial) = nansum(nback);
-        missedmatches(trial) = nansum(nback&~accurate);
-        matchcount(trial) = nansum(nback&accurate);
+    elseif task == tasks(4) %n-back (NOT combine)
+        nback = (relevant.nback) == '1'; %make sure that this is 1, or 'true' or something
+        accurate = relevant.new_correct;
+        nmatches(block) = nansum(nback);
+        missedmatches(block) = nansum(nback&~accurate);
+        matchcount(block) = nansum(nback&accurate);
+        if missedmatches(block)>0
+            %if one error made, do you give up?
+            matches = relevant(nback,:);
+            errors = find(matches.new_correct==false);
+            % errors made over matches still to go
+            matchesleft = sum(find(matches.nback=='1')>errors(1));
+            furthererrors(block) = sum(errors>errors(1))/(matchesleft);
+            if matchesleft == 0
+                furthererrors(block) = 0;
+            end
+            %so, error rate after 1 error was made
+        end
     end
 end
 
@@ -290,13 +334,14 @@ data.subjnum = subjnum;
 data.version = exp_version;
 data.fullscreen = fullscreen;
 data.overall = overall;
+data.practiceacc = practice_acc;
 data.n1acc = nbackacc(1,:);
 data.n2acc = nbackacc(2,:);
 data.detectacc = detectacc;
 data.values = values';
 data.perf = perf_by_block';
 data.task_progression = task_progression';
-data.TOT = TOT';
+data.TOT = TOT;
 data.n1rts = nbackmeanrts(1,:);
 data.n2rts = nbackmeanrts(2,:);
 data.detectrts = detectrts;
@@ -308,6 +353,7 @@ data.matcheffect = matcheffect;
 data.n1matcheffect = n1matcheffect;
 data.n2matcheffect = n2matcheffect;
 data.missedeffect = missedeffect;
+data.nbackfurthererrors = furthererrors;
 data.offers = offers';
 %data.BDMmimicry = BDMmimicry;
 data.failed = failed;

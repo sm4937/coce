@@ -15,6 +15,7 @@ if responses=='NULL' %no demo data for this person
     demo_vars.edu = NaN;
     demo_vars.sex = NaN;
     demo_vars.hand = NaN;
+    demo_vars.diffrating = NaN;
     return 
 end
 
@@ -56,6 +57,12 @@ else
     end
 end
 
+%right before handedness question is the un-labeled difficulty question
+difficulties = {'Very_Easy','Easy','Okay','Hard','Very_Hard'};
+difficulty = separated(handidx-2);
+selfrating = find(ismember(difficulties,difficulty));
+%self rating goes 1-5, with 5 being "very hard"
+
 if isempty(sex)
     sex = NaN;
 end
@@ -68,11 +75,17 @@ end
 if isempty(hand)
     hand = NaN;
 end
+if isempty(selfrating)
+    selfrating = NaN;
+end
 
 demo_vars.age = age;
 demo_vars.edu = edu;
 demo_vars.sex = sex;
 demo_vars.hand = hand;
+demo_vars.diffrating = selfrating;
+
+%% grab interaction data
 
 end
 

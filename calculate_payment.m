@@ -1,6 +1,5 @@
 %% Pay subjects from MTurk
 % go file by file
-% not working yet
 
 clear all
 filename = '07.04.2020_trial';

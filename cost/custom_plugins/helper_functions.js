@@ -120,8 +120,10 @@ function sumPoints(input){
 
 function calculatePayment(){
   base = 2.5;
-  TOT = jsPsych.data.get().select("time_elapsed").values;
-  TOT = TOT.slice(-1)[0]; //total time on experiment in milliseconds
+  totaltime = jsPsych.data.get().select("time_elapsed").values;
+  totaltime = totaltime.slice(-1)[0]; //total time on experiment in milliseconds
+  postconsent = jsPsych.data.get().filter({trial_index: 3}).select("time_elapsed").values; //limit from trial 4, in case they sit on consents for a long time
+  TOT = totaltime-postconsent;
   points = (sumPoints(points_list))/100; //points = cents
   hourly = (TOT/3600000)*10; //10 dollars an hour
   payment = (points+hourly);
@@ -198,7 +200,7 @@ function create_color_change_timeline(test_stimuli,key_presses,stamp){
           if(RT[0]!=null){
             duration = stim_timing-RT[0];
           }else{
-            duration = 0.5;
+            duration = 0;
           }
           return duration
         },
@@ -269,6 +271,10 @@ function run_task_by_ID(task_ID,loopi){
     var temp = setup_nswitch(false,loopi,3); //middle difficulty
     return temp
   }
+  if(task_ID==7){
+    var temp = setup_detection_n(false,loopi,2);
+    return temp;
+  }
 }
 
 function randomizeList(list){
@@ -321,10 +327,10 @@ function setDataColumns(){
   turkInfo = jsPsych.turk.turkInfo();
   turk = !turkInfo.outsideTurk;
   if(turk){
-    var urlVar = jsPsych.data.urlVariables();
-    var worker = urlVar.workerId;
-    var assignment = urlVar.assignmentId;
-    var hitid = urlVar.hitId;
+    //var urlVar = jsPsych.data.urlVariables();
+    var worker = turkInfo.workerId;
+    var assignment = turkInfo.assignmentId;
+    var hitid = turkInfo.hitId;
   }
   if(!turk){
     var worker = null;

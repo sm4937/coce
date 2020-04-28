@@ -5,9 +5,24 @@
 %delay since then
 %subj as random effect
 %predicting BDM
+
+function data = run_stats(input)
+    if unique(input.version) == 3
+        data = run_stats_v03(input);
+    else
+        data = run_stats_v02(input);
+    end
+end
+
+function data = run_stats_v03(data)
+tasks = [categorical(cellstr('detection'));categorical(cellstr('n1')); categorical(cellstr('n2'))];
+tasklabels = {'0-back','1-back','2-back'};
+default_length = 32;
+
 n = height(data);
 n1effect = []; n2effect = [];
 trim = [];
+
 for task = 1:2 %cycle through what is being displayed, display by what happened before
     for subj = 1:n %go subject by subject
         displayed = data.task_displayed(subj,:)+1;
@@ -18,22 +33,24 @@ for task = 1:2 %cycle through what is being displayed, display by what happened 
         perf = data.perf(subj,:);
         for trial = 1:length(idx)
             now = idx(trial);
-            if sum(completed<now)>0 %they've done the last once before
+            iters = sum(data.task_progression(subj,1:trial-1)==tasks(task+1));
+            if sum(completed<now)>0 %they've done the task once before
                 last = completed(completed<now); last = last(end);
                 delay = now-last;
-                eval(['n' num2str(task) 'effect = [n' num2str(task) 'effect; perf(last) matches(last) delay subj BDMs(now)];'])
+                eval(['n' num2str(task) 'effect = [n' num2str(task) 'effect; perf(last) matches(last) delay iters subj BDMs(now)];'])
             end
         end %of trial loop
+        if sum(completed)<2
+            disp(['subj ' num2str(subj) ' didnt do this task enough times'])
+            eval(['trim_' num2str(task) ' = [trim; subj];'])
+        end
     end %of subject loop
-    if sum(completed)==0
-        disp(['subj ' num2str(subj) ' didnt do this task'])
-        trim = [trim; subj];
-    end
-end
+end %of task loop
 
 
 task = 2;
 % change to change base data
+eval(['data.n' num2str(task) 'intercept = NaN(height(data),1); data.n' num2str(task) 'slope = NaN(height(data),1);'])
 
 tasklabels = {'1-back','2-back'};
 if task == 1
@@ -48,8 +65,9 @@ tbl.matches = torun(:,2)-nanmean(torun(:,2)); %-min(long(:,2)); %or 0 baseline t
 %-mean(long(:,2)); %negative correlation of intercept and slope, need to
 %center the n-switches column to prevent ill-fitting model?
 tbl.delay = torun(:,3)-nanmean(torun(:,3));
-tbl.subj = categorical(torun(:,4)); %tbl.sess = categorical(long(:,6)); 
-tbl.y = torun(:,5);
+tbl.iters = torun(:,4)-nanmean(torun(:,4));
+tbl.subj = categorical(torun(:,5)); %tbl.sess = categorical(long(:,6)); 
+tbl.y = torun(:,6);
 
 n = length(unique(tbl.subj));
 
@@ -81,7 +99,8 @@ xtickangle(45)
 eval(['winner = model_struct.m' num2str(which)])
 
 [~,~,rEffects] = randomEffects(random_both);
-estimates_inter = fixedEffects(random_both);
+%estimates_inter = fixedEffects(random_both);
+estimates_inter = [0.91,0.22];
 figure
 subplot(1,3,1)
 scatter(rEffects.Estimate(1:2:n*2)+estimates_inter(1),rEffects.Estimate(2:2:n*2)+estimates_inter(2))
@@ -107,20 +126,35 @@ title('Fit Slopes in Interacting Slope/Inter Model')
 xlabel('Subject')
 ylabel('Fit Slopes')
 
-NFCs = data.NFC;
-NFCs(trim) = []; %exclude subjects who didn't get this model fit to them because they didn't do this task at all
-slopes(isnan(NFCs)) = []; intercepts(isnan(NFCs)) = [];
-NFCs(isnan(NFCs)) = []; %also missing data 
-[r,p] = corr(NFCs,slopes,'Type','Spearman');
-[r,p] = corr(NFCs,intercepts,'Type','Spearman');
+% save this all to original data table
+
+subjects = unique(tbl.subj);
+for row = 1:length(subjects)
+    subjnum = double(string(subjects(row)));
+    eval(['check = ~ismember(subjnum,trim_' num2str(task) ');']) %this is redundant, but it is a good check
+    if check
+        eval(['data.n' num2str(task) 'intercept(subjnum) = intercepts(row);'])
+        eval(['data.n' num2str(task) 'slope(subjnum) = slopes(row);'])
+    end
+end
+
+% NFCs = data.NFC;
+% NFCs(trim) = []; %exclude subjects who didn't get this model fit to them because they didn't do this task at all
+% slopes(isnan(NFCs)) = []; intercepts(isnan(NFCs)) = [];
+% NFCs(isnan(NFCs)) = []; %also missing data 
+% [r,p] = corr(NFCs,slopes,'Type','Spearman');
+% [r,p] = corr(NFCs,intercepts,'Type','Spearman');
+% this linear analysis ain't doin it
+end
+
 
 %% V1 and V2 statistics
+function run_stats_v02(data)
 % build model of BDM value by
 % 1. accuracy on last run-through of that task
 % 2. n-matches on last run-through of that task (too correlated with 1?)
 % 3. NFC
 % 4. SAPS
-
 long = [];
 for subj = 1:n
     hard = find(data.task_progression(subj,:)==tasks(2)|data.task_progression(subj,:)==tasks(3));
@@ -618,4 +652,5 @@ ylabel('NFC score normalized')
 title('Slope of subcomponent effect by NFC score')
 ax = gca; fig = gcf;
 fig.Color = 'w'; ax.FontSize = 12;
+end
 

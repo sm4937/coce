@@ -32,8 +32,9 @@ for subj = 1:n
 end
 tasks_rts = [nanmean(data.detectrts,2) nanmean(data.n1rts,2) nanmean(data.n2rts,2)];
 
-data.taskfreqs = [sum(data.task_progression==tasks(1),2) sum(data.task_progression==tasks(2),2) sum(data.task_progression==tasks(3),2)];
+data = run_stats(data);
 
+data.taskfreqs = [sum(data.task_progression==tasks(1),2) sum(data.task_progression==tasks(2),2) sum(data.task_progression==tasks(3),2)];
 %% Check data quality - how long each task takes, how many times they've been completed
 figure
 subplot(1,2,1)
@@ -44,7 +45,6 @@ scatter(ones(length(y),1),y)
 hold on
 scatter(2*ones(length(x),1),x)
 scatter(3*ones(length(z),1),z)
-errorbar(1:3,[mean(y) mean(x) mean(z)],[std(y)/sqrt(length(y)) std(x)/sqrt(length(x)) std(z)/sqrt(length(z))],'ko')
 % Fix outliers - where did those come from?
 %[h,p] = ttest2(z,y);
 xlim([0.75 3.25])
@@ -54,6 +54,28 @@ xticklabels({'0-back','1-back','2-back'})
 ax = gca; fig = gcf;
 fig.Color = 'w';
 ax.FontSize = 12;
+
+[h,p] = ttest2(data.TOT(data.task_progression==tasks(1)),data.TOT(data.task_progression==tasks(2)));
+[h,p] = ttest2(data.TOT(data.task_progression==tasks(3)),data.TOT(data.task_progression==tasks(1)));
+
+%prune outliers from task 1 - does that fix it?
+dettotstd = nanstd(data.TOT(data.task_progression==tasks(1)));
+dettotmean = nanmean(data.TOT(data.task_progression==tasks(1)));
+
+outliers = abs(data.TOT-dettotmean)>(3.*dettotstd);
+trimmed = data.TOT;
+trimmed(outliers) = dettotmean;
+
+[h,p] = ttest2(trimmed(data.task_progression==tasks(1)),trimmed(data.task_progression==tasks(2)));
+[h,p] = ttest2(trimmed(data.task_progression==tasks(3)),trimmed(data.task_progression==tasks(1)));
+
+%there is a significant difference in how long it takes to do task 1 - fix
+%in version 4 - it is only 400 milliseconds on average but it cannot
+%persist
+
+%no difference in tasks 2 and 3 (n-backs)
+
+errorbar(1:3,[mean(y) mean(x) mean(z)],[std(y)/sqrt(length(y)) std(x)/sqrt(length(x)) std(z)/sqrt(length(z))],'k')
 
 subplot(1,2,2)
 y = sum(data.taskfreqs(:,1));
@@ -186,6 +208,18 @@ ax.FontSize = 12;
 ylabel('BDM points requested')
 xlabel('Task iteration')
 xticks([0:20])
+
+figure
+%what does this bdm x iter thing look like subj by subj?
+for task = 1:2
+    subplot(1,2,task)
+    eval(['toplot = n' num2str(task) 'subjvalue;'])
+    for subj = 1:n
+        plot(1:default_length+1,toplot(subj,:))
+        hold on
+    end
+    title(['BDM by iteration: ' num2str(task) '-back'])
+end
 
 %plot task avoidance, well, sort of
 % for i = 1:n
@@ -510,7 +544,14 @@ end
 xlabel('Number of N-Back Matches, missed or correct')
 ylabel('BDM value')
 
+% look at survivor analysis
+% if they made one error on either task, how likely were they to just give
+% up?
+
 %% deal with individual differences in perfectionism
+%style variables
+SAPScolors = [0 .25 .25; 0 .5 .5; 0 .75 .75];
+
 figure
 subplot(1,3,1)
 histogram(data.NFC,'BinWidth',0.5)
@@ -537,19 +578,33 @@ split = tertileSplit(data.SAPS);
 
 subplot(1,3,1)
 %bar([nanmean(data.perf(split==1)) nanmean(data.perf(split==2)) nanmean(data.perf(split==3))])
-bar(1,[nanmean(data.perf(split==1))],'c')
+% bar(1,[nanmean(data.overall(split==1))],'c')
+% hold on
+% bar(2,[nanmean(data.overall(split==2))],'b')
+% bar(3,[nanmean(data.overall(split==3))],'r')
+% errorbar([nanmean(data.overall(split==1)) nanmean(data.overall(split==2)) nanmean(data.overall(split==3))],[nanstd(data.overall(split==1)) nanstd(data.overall(split==2)) nanstd(data.overall(split==3))]./[sqrt(sum(split==1)) sqrt(sum(split==2)) sqrt(sum(split==3))],'*k','LineWidth',1.5)
+bars = [nanmean(tasks_overall(split==1,1)) nanmean(tasks_overall(split==2,1)) nanmean(tasks_overall(split==3,1)); ...
+    nanmean(tasks_overall(split==1,2)) nanmean(tasks_overall(split==2,2)) nanmean(tasks_overall(split==3,2)); ...
+    nanmean(tasks_overall(split==1,3)) nanmean(tasks_overall(split==2,3)) nanmean(tasks_overall(split==3,3))];
+E = [nanstd(tasks_overall(split==1,1)) nanstd(tasks_overall(split==2,1)) nanstd(tasks_overall(split==3,1)); ...
+    nanstd(tasks_overall(split==1,2)) nanstd(tasks_overall(split==2,2)) nanstd(tasks_overall(split==3,2)); ...
+    nanstd(tasks_overall(split==1,3)) nanstd(tasks_overall(split==2,3)) nanstd(tasks_overall(split==3,3))]./[sqrt(sum(split==1)) sqrt(sum(split==2)) sqrt(sum(split==3))];
+bar(1:3:9,bars(:,1),'FaceColor',SAPScolors(1,:),'BarWidth',0.2)
 hold on
-bar(2,[nanmean(data.perf(split==2))],'b')
-bar(3,[nanmean(data.perf(split==3))],'r')
-errorbar([nanmean(data.perf(split==1)) nanmean(data.perf(split==2)) nanmean(data.perf(split==3))],[nanstd(data.perf(split==1)) nanstd(data.perf(split==2)) nanstd(data.perf(split==3))]./[sqrt(sum(split==1)) sqrt(sum(split==2)) sqrt(sum(split==3))],'*k','LineWidth',1.5)
+bar(2:3:9,bars(:,2),'FaceColor',SAPScolors(2,:),'BarWidth',0.2)
+bar(3:3:9,bars(:,3),'FaceColor',SAPScolors(3,:),'BarWidth',0.2)
+bars = reshape(bars',1,numel(bars));
+E = reshape(E',1,numel(E));
+errorbar(bars,E,'*k')
 title('Accuracy by SAPS group')
-xticks([1:3])
-xticklabels({'Low SAPS','Mid SAPS','High SAPS'})
+xticks([2:3:9])
+legend({'Low SAPS','Mid SAPS','High SAPS'})
+xticklabels(tasklabels)
 ylim([50 100])
 ylabel('Mean Accuracy')
 fig = gcf; fig.Color = 'w';
 %diff in accuracy in high and low SAPS groups?
-[h,p] = ttest2(data.perf(split==1),data.perf(split==3)); % no
+[h,p] = ttest2(data.overall(split==1),data.overall(split==3)); % no
 
 subplot(1,3,2)
 low = []; mid = []; high = [];
@@ -566,10 +621,10 @@ for row = 1:n
         high = [high; x' y'];
     end
 end
-scatter(low(:,1),low(:,2),'oc','Filled')
+scatter(low(:,1),low(:,2),[],SAPScolors(1,:),'Filled')
 hold on
-scatter(mid(:,1),mid(:,2),'ob','Filled')
-scatter(high(:,1),high(:,2),'or','Filled')
+scatter(mid(:,1),mid(:,2),[],SAPScolors(2,:),'Filled')
+scatter(high(:,1),high(:,2),[],SAPScolors(3,:),'Filled')
 low(isnan(low(:,2)),:) = []; mid(isnan(mid(:,2)),:) = []; high(isnan(high(:,2)),:) = [];
 [r,p] = corr(low(:,1),low(:,2),'Type','Spearman');
 [r,p] = corr(mid(:,1),mid(:,2),'Type','Spearman');
@@ -595,10 +650,10 @@ for row = 1:n
         high = [high; x' y'];
     end
 end
-scatter(low(:,1),low(:,2),'oc','Filled')
+scatter(low(:,1),low(:,2),[],SAPScolors(1,:),'Filled')
 hold on
-scatter(mid(:,1),mid(:,2),'ob','Filled')
-scatter(high(:,1),high(:,2),'or','Filled')
+scatter(mid(:,1),mid(:,2),[],SAPScolors(2,:),'Filled')
+scatter(high(:,1),high(:,2),[],SAPScolors(3,:),'Filled')
 low(isnan(low(:,2)),:) = []; mid(isnan(mid(:,2)),:) = []; high(isnan(high(:,2)),:) = [];
 [r,p] = corr(low(:,1),low(:,2),'Type','Spearman');
 [r,p] = corr(mid(:,1),mid(:,2),'Type','Spearman');
@@ -609,7 +664,96 @@ xlabel('Missed Matches')
 ylabel('BDM value')
 fig = gcf; fig.Color = 'w';
 
+figure
+for task = 1:2
+    y = data.nbackfurthererrors;
+    relevant = y(data.task_progression==tasks(task+1));
+    subplot(2,2,task)
+    histogram(relevant,'BinWidth',0.25)
+    title(['Distribution of ER after first error - ' num2str(task) '-back'])
+    xlabel('Post-Error Error Rate')
+    for group = 1:3
+        subplot(2,2,task+2)
+        mini = y(split==group,:);
+        relevant = mini(data.task_progression(split==group,:)==tasks(task+1));
+        %means(group) = nanmean(relevant); E(group) = nanstd(relevant);
+        %bar(group,nanmean(relevant),'FaceColor',SAPScolors(group,:))
+        histogram(relevant,'BinWidth',0.10,'FaceColor',SAPScolors(group,:))
+        hold on
+        title(['ER after first error - ' num2str(task) '-back'])
+        ylabel('Post-Error Error Rate')
+        legend({'Low SAPS','Mid SAPS','High SAPS'})
+    end
+    %errorbar(means,E,'k','LineWidth',1.5)
+end %of task loop
+fig = gcf; fig.Color = 'w';
+
+figure
+%slower performance, higher perfectionism?
+bars = [nanmean(tasks_rts(split==1,1)) nanmean(tasks_rts(split==2,1)) nanmean(tasks_rts(split==3,1)); ...
+    nanmean(tasks_rts(split==1,2)) nanmean(tasks_rts(split==2,2)) nanmean(tasks_rts(split==3,2)); ...
+    nanmean(tasks_rts(split==1,3)) nanmean(tasks_rts(split==2,3)) nanmean(tasks_rts(split==3,3))];
+E = [nanstd(tasks_rts(split==1,1)) nanstd(tasks_rts(split==2,1)) nanstd(tasks_rts(split==3,1)); ...
+    nanstd(tasks_rts(split==1,2)) nanstd(tasks_rts(split==2,2)) nanstd(tasks_rts(split==3,2)); ...
+    nanstd(tasks_rts(split==1,3)) nanstd(tasks_rts(split==2,3)) nanstd(tasks_rts(split==3,3))]./[sqrt(sum(split==1)) sqrt(sum(split==2)) sqrt(sum(split==3))];
+bar(1:3:9,bars(:,1),'FaceColor',SAPScolors(1,:),'BarWidth',0.2)
+hold on
+bar(2:3:9,bars(:,2),'FaceColor',SAPScolors(2,:),'BarWidth',0.2)
+bar(3:3:9,bars(:,3),'FaceColor',SAPScolors(3,:),'BarWidth',0.2)
+bars = reshape(bars',1,numel(bars));
+E = reshape(E',1,numel(E));
+errorbar(bars,E,'*k')
+xticks([2:3:9])
+xticklabels(tasklabels)
+title('Mean RTs by SAPS group')
+legend({'Low SAPS','Mid SAPS','High SAPS'})
+xticklabels(tasklabels)
+
+figure
+subplot(1,2,1)
+pracn0acc = data.practiceacc(:,1);
+pracn1acc = data.practiceacc(:,2);
+pracn2acc = data.practiceacc(:,3); %first practice round for each task
+bars = [nanmean(pracn0acc(split==1,:)) nanmean(pracn0acc(split==2,:)) nanmean(pracn0acc(split==3,:)); ...
+    nanmean(pracn1acc(split==1,:)) nanmean(pracn1acc(split==2,:)) nanmean(pracn1acc(split==3,:)); ...
+    nanmean(pracn2acc(split==1,:)) nanmean(pracn2acc(split==2,:)) nanmean(pracn2acc(split==3,:))];
+E = [nanstd(pracn0acc(split==1,:)) nanstd(pracn0acc(split==2,:)) nanstd(pracn0acc(split==3,:)); ...
+    nanstd(pracn1acc(split==1,:)) nanstd(pracn1acc(split==2,:)) nanstd(pracn1acc(split==3,:)); ...
+    nanstd(pracn2acc(split==1,:)) nanstd(pracn2acc(split==2,:)) nanstd(pracn2acc(split==3,:))]./[sqrt(sum(split==1)) sqrt(sum(split==2)) sqrt(sum(split==3))];
+bar(1:3:9,bars(:,1),'FaceColor',SAPScolors(1,:),'BarWidth',0.2)
+hold on
+bar(2:3:9,bars(:,2),'FaceColor',SAPScolors(2,:),'BarWidth',0.2)
+bar(3:3:9,bars(:,3),'FaceColor',SAPScolors(3,:),'BarWidth',0.2)
+bars = reshape(bars',1,numel(bars));
+E = reshape(E',1,numel(E));
+errorbar(bars,E,'*k')
+xticks([2:3:9])
+xticklabels(tasklabels)
+legend({'Low SAPS','Mid SAPS','High SAPS'})
+title('Interaction of SAPS group with practice accuracy')
+ax = gca; fig = gcf; 
+fig.Color = 'w'; ax.FontSize = 12;
+
+% look into self-rated competence i.e. how "easy" or "hard" they rated the
+% task to be
+subplot(1,2,2)
+E = []; means = [];
+for group = 1:3
+    relevant = data.diffrating(split==group,:);
+    means(group) = nanmean(relevant); E(group) = nanstd(relevant)./sqrt(sum(split==group));
+    bar(group,nanmean(relevant),'FaceColor',SAPScolors(group,:))
+    hold on
+    title(['Overall difficulty rating by SAPS group'])
+    ylabel('Mean rating (1 lowest, 5 highest)')
+    xticks([1:3])
+    xticklabels({'Low SAPS','Mid SAPS','High SAPS'})
+end
+errorbar(means,E,'k','LineWidth',1.5)
+fig = gcf; fig.Color = 'w';
+
 %% Tertile split NFC scores
+%style variables
+NFCcolors = [.5 0 .5; .75 0 .75; .95 0 .95];
 % individual differences in NFC and cognition
 split = tertileSplit(data.NFC);
 %plot nswitches vs. BDM as function of NFC score
@@ -694,15 +838,15 @@ if p<0.05
 end
 
 n1effect = []; n2effect = []; % keep track of numbers pulled out here for stats later
-colors = {'oc','ob','or'};
 figure
 for task = 1:2 %cycle through what is being displayed, display by what happened before
-    subplot(1,2,task)
+    subplot(1,3,task)
     for subj = 1:n %go subject by subject
         group = split(subj);
         displayed = data.task_displayed(subj,:)+1;
         idx = find(displayed == (task+1)); 
         matches = data.nbackmatches{subj,:};
+        perf = data.perf(subj,:);
         BDMs = data.values(subj,:);
         completed = find(data.task_progression(subj,:)==tasks(task+1));
         for trial = 1:length(idx)
@@ -720,12 +864,12 @@ for task = 1:2 %cycle through what is being displayed, display by what happened 
     end
     eval(['low = n' num2str(task) 'effect(n' num2str(task) 'effect(:,5)==1,:); mid = n' num2str(task) 'effect(n' num2str(task) 'effect(:,5)==2,:); high = n' num2str(task) 'effect(n' num2str(task) 'effect(:,5)==3,:);']) 
     toplot = countEntries([mid(:,2),mid(:,4)]);
-    scatter(toplot(:,1),toplot(:,2),(toplot(:,3)+1)*10,colors{2},'Filled');
+    scatter(toplot(:,1),toplot(:,2),(toplot(:,3)+1)*10,NFCcolors(2,:),'Filled');
     hold on
     toplot = countEntries([low(:,2),low(:,4)]);
-    scatter(toplot(:,1),toplot(:,2),(toplot(:,3)+1)*10,colors{1},'Filled');
+    scatter(toplot(:,1),toplot(:,2),(toplot(:,3)+1)*10,NFCcolors(1,:),'Filled');
     toplot = countEntries([high(:,2),high(:,4)]);
-    scatter(toplot(:,1),toplot(:,2),(toplot(:,3)+1)*10,colors{3},'Filled');
+    scatter(toplot(:,1),toplot(:,2),(toplot(:,3)+1)*10,NFCcolors(3,:),'Filled');
     ylabel('BDM points')
     title(['BDM for ' num2str(task) '-back task'])
     legend({'Mid NFC','Low NFC','High NFC'})
@@ -759,8 +903,56 @@ low(isnan(low(:,4)),:) = []; mid(isnan(mid(:,4)),:) = []; high(isnan(high(:,4)),
 [r,p] = corr(high(:,2),high(:,4));
 % disp('high NFC spearman corr of matches and BDM, 2-back')
 
+subplot(1,3,3)
+% accuracy by group
+bars = [nanmean(tasks_overall(split==1,1)) nanmean(tasks_overall(split==2,1)) nanmean(tasks_overall(split==3,1)); ...
+    nanmean(tasks_overall(split==1,2)) nanmean(tasks_overall(split==2,2)) nanmean(tasks_overall(split==3,2)); ...
+    nanmean(tasks_overall(split==1,3)) nanmean(tasks_overall(split==2,3)) nanmean(tasks_overall(split==3,3))];
+E = [nanstd(tasks_overall(split==1,1)) nanstd(tasks_overall(split==2,1)) nanstd(tasks_overall(split==3,1)); ...
+    nanstd(tasks_overall(split==1,2)) nanstd(tasks_overall(split==2,2)) nanstd(tasks_overall(split==3,2)); ...
+    nanstd(tasks_overall(split==1,3)) nanstd(tasks_overall(split==2,3)) nanstd(tasks_overall(split==3,3))]./[sqrt(sum(split==1)) sqrt(sum(split==2)) sqrt(sum(split==3))];
+bar(1:3:9,bars(:,1),'FaceColor',NFCcolors(1,:),'BarWidth',0.2)
+hold on
+bar(2:3:9,bars(:,2),'FaceColor',NFCcolors(2,:),'BarWidth',0.2)
+bar(3:3:9,bars(:,3),'FaceColor',NFCcolors(3,:),'BarWidth',0.2)
+bars = reshape(bars',1,numel(bars));
+E = reshape(E',1,numel(E));
+errorbar(bars,E,'*k')
+xticks([2:3:9])
+xticklabels(tasklabels)
+title('Accuracy by NFC group')
+legend({'Low NFC','Mid NFC','High NFC'})
+xticklabels(tasklabels)
+
+% how does NFC interact with 'baseline EF' i.e. practice accuracy?
+figure
+pracn0acc = data.practiceacc(:,1);
+pracn1acc = data.practiceacc(:,2);
+pracn2acc = data.practiceacc(:,3); %first practice round for each task
+bars = [nanmean(pracn0acc(split==1,:)) nanmean(pracn0acc(split==2,:)) nanmean(pracn0acc(split==3,:)); ...
+    nanmean(pracn1acc(split==1,:)) nanmean(pracn1acc(split==2,:)) nanmean(pracn1acc(split==3,:)); ...
+    nanmean(pracn2acc(split==1,:)) nanmean(pracn2acc(split==2,:)) nanmean(pracn2acc(split==3,:))];
+E = [nanstd(pracn0acc(split==1,:)) nanstd(pracn0acc(split==2,:)) nanstd(pracn0acc(split==3,:)); ...
+    nanstd(pracn1acc(split==1,:)) nanstd(pracn1acc(split==2,:)) nanstd(pracn1acc(split==3,:)); ...
+    nanstd(pracn2acc(split==1,:)) nanstd(pracn2acc(split==2,:)) nanstd(pracn2acc(split==3,:))]./[sqrt(sum(split==1)) sqrt(sum(split==2)) sqrt(sum(split==3))];
+bar(1:3:9,bars(:,1),'FaceColor',NFCcolors(1,:),'BarWidth',0.2)
+hold on
+bar(2:3:9,bars(:,2),'FaceColor',NFCcolors(2,:),'BarWidth',0.2)
+bar(3:3:9,bars(:,3),'FaceColor',NFCcolors(3,:),'BarWidth',0.2)
+xticks([2:3:9])
+bars = reshape(bars',1,numel(bars));
+E = reshape(E',1,numel(E));
+errorbar(bars,E,'*k')
+xticklabels(tasklabels)
+legend({'Low NFC','Mid NFC','High NFC'})
+title('Interaction of NFC group with practice accuracy')
+ax = gca; fig = gcf; 
+fig.Color = 'w'; ax.FontSize = 12;
+
 %% try to understand random effects by plotting one plot/subject, BDM vs.
 %nswitches, NFC as title %%%%%%%
+split = tertileSplit(data.NFC);
+
 figure
 for row = 1:n
     subplot(6,7,row)
@@ -844,6 +1036,138 @@ disp('t-test for low NFC people')
 disp('t-test for mid NFC people')
 [h,p] = ttest2(highNFCvalues(n1(split==3,:)),highNFCvalues(n2(split==3,:)))
 disp('t-test for high NFC people')
+
+%% modeling results x individual differences
+% first, NFC by linear mixed effects
+split = tertileSplit(data.NFC);
+
+figure
+subplot(1,2,1)
+bar(1,nanmean(data.n2intercept(split==1)),'FaceColor',NFCcolors(1,:));
+hold on
+bar(2,nanmean(data.n2intercept(split==2)),'FaceColor',NFCcolors(2,:)); 
+bar(3,nanmean(data.n2intercept(split==3)),'FaceColor',NFCcolors(3,:));
+errorbar([nanmean(data.n2intercept(split==1)) nanmean(data.n2intercept(split==2)) nanmean(data.n2intercept(split==3))], ...
+    [nanstd(data.n2intercept(split==1)) nanstd(data.n2intercept(split==2)) nanstd(data.n2intercept(split==3))]./[sqrt(sum(split==1)) sqrt(sum(split==2)) sqrt(sum(split==3))], ...
+    'k','LineWidth',1.5)
+scatter(ones(sum(split==1),1),data.n2intercept(split==1),[],'k','Filled')
+scatter(2.*ones(sum(split==2),1),data.n2intercept(split==2),[],'k','Filled')
+scatter(3.*ones(sum(split==3),1),data.n2intercept(split==3),[],'k','Filled')
+ylabel({'Mean Intercepts'})
+title('Mixed Effect Intercepts by NFC group')
+xticks([1:3])
+xticklabels({'Low NFC','Mid NFC','High NFC'})
+ax = gca; fig = gcf; 
+fig.Color = 'w'; ax.FontSize = 12;
+
+subplot(1,2,2)
+bar(1,nanmean(data.n2slope(split==1)),'FaceColor',NFCcolors(1,:));
+hold on
+bar(2,nanmean(data.n2slope(split==2)),'FaceColor',NFCcolors(2,:)); 
+bar(3,nanmean(data.n2slope(split==3)),'FaceColor',NFCcolors(3,:));
+errorbar([nanmean(data.n2slope(split==1)) nanmean(data.n2slope(split==2)) nanmean(data.n2slope(split==3))], ...
+    [nanstd(data.n2slope(split==1)) nanstd(data.n2slope(split==2)) nanstd(data.n2slope(split==3))]./[sqrt(sum(split==1)) sqrt(sum(split==2)) sqrt(sum(split==3))], ...
+    'k','LineWidth',1.5)
+scatter(ones(sum(split==1),1),data.n2slope(split==1),[],NFCcolors(1,:),'Filled')
+scatter(2.*ones(sum(split==2),1),data.n2slope(split==2),[],NFCcolors(2,:),'Filled')
+scatter(3.*ones(sum(split==3),1),data.n2slope(split==3),[],NFCcolors(3,:),'Filled')
+ylabel({'Mean Slopes'})
+title('Mixed Effect Slopes by NFC group')
+xticks([1:3])
+xticklabels({'Low NFC','Mid NFC','High NFC'})
+ax = gca; fig = gcf; 
+fig.Color = 'w'; ax.FontSize = 12;
+
+[h,p] = ttest2(data.n2intercept(split==1),data.n2intercept(split==3))
+[h,p] = ttest2(data.n2slope(split==1),data.n2slope(split==3))
+
+%is the high high NFC intercept a competence effect?
+idx = ~isnan(data.n2intercept)&split==3;
+[r,p] = corr(data.n2intercept(idx),data.practiceacc(idx,3));
+practicereps = sum(~isnan(data.practiceacc),2);
+[r,p] = corr(data.n2intercept(idx),practicereps(idx));
+
+%survivor analysis by group as well
+figure
+for task = 1:2
+    E = []; means = [];
+    y = data.nbackfurthererrors;
+    relevant = y(data.task_progression==tasks(task+1));
+    subplot(2,2,task)
+    histogram(relevant,'BinWidth',0.25)
+    title(['Distribution of ER after first error - ' num2str(task) '-back'])
+    xlabel('Post-Error Error Rate')
+    for group = 1:3
+        subplot(2,2,task+2)
+        mini = y(split==group,:);
+        relevant = mini(data.task_progression(split==group,:)==tasks(task+1));
+        means(group) = nanmean(relevant); E(group) = nanstd(relevant)/sqrt(sum(split==group));
+        bar(group,nanmean(relevant),'FaceColor',NFCcolors(group,:))
+        hold on
+        title(['Mean ER after first error - ' num2str(task) '-back'])
+        ylabel('Post-Error Error Rate')
+        xticks([1:3])
+        xticklabels({'Low NFC','Mid NFC','High NFC'})
+    end
+    errorbar(means,E,'k','LineWidth',1.5)
+end %of task loop
+fig = gcf; fig.Color = 'w';
+
+% look into self-rated competence i.e. how "easy" or "hard" they rated the
+% task to be
+figure
+for group = 1:3
+    relevant = data.diffrating(split==group,:);
+    means(group) = nanmean(relevant); E(group) = nanstd(relevant)/sqrt(sum(split==group));
+    bar(group,nanmean(relevant),'FaceColor',NFCcolors(group,:))
+    hold on
+    title(['Overall difficulty rating by NFC group'])
+    ylabel('Mean rating (1 lowest, 5 highest)')
+    xticks([1:3])
+    xticklabels({'Low NFC','Mid NFC','High NFC'})
+end
+errorbar(means,E,'k','LineWidth',1.5)
+fig = gcf; fig.Color = 'w';
+
+%% demographic data analysis
+figure
+subplot(3,2,1)
+bar([nanmean(data.NFC(data.sex==1)) nanmean(data.NFC(data.sex==2))])
+hold on
+xticklabels({'Men','Women'})
+errorbar([nanmean(data.NFC(data.sex==1)) nanmean(data.NFC(data.sex==2))],[nanstd(data.NFC(data.sex==1)) nanstd(data.NFC(data.sex==2))]./[sqrt(sum(data.sex==1)) sqrt(sum(data.sex==2))],'k','LineWidth',1.5)
+ylabel('Mean NFC')
+
+subplot(3,2,2)
+scatter(data.age,data.NFC,'Filled')
+title('Age by NFC')
+xlabel('Age')
+ylabel('NFC')
+
+subplot(3,2,3)
+bar([nanmean(data.SAPS(data.sex==1)) nanmean(data.SAPS(data.sex==2))])
+hold on
+xticklabels({'Men','Women'})
+errorbar([nanmean(data.SAPS(data.sex==1)) nanmean(data.SAPS(data.sex==2))],[nanstd(data.SAPS(data.sex==1)) nanstd(data.SAPS(data.sex==2))]./[sqrt(sum(data.sex==1)) sqrt(sum(data.sex==2))],'k','LineWidth',1.5)
+ylabel('Mean SAPS')
+
+subplot(3,2,4)
+scatter(data.age,data.SAPS,'Filled')
+title('Age by SAPS')
+xlabel('Age')
+ylabel('SAPS')
+
+subplot(3,2,5)
+scatter(data.age,meanBDM)
+xlabel('Age')
+ylabel('Mean BDM')
+title('Age by Mean BDM')
+
+subplot(3,2,6)
+scatter(data.age,data.overall)
+xlabel('Age')
+ylabel('Overall Acc')
+title('Age by Overall Accuracy')
 
 %% why high dropout rates?
 figure

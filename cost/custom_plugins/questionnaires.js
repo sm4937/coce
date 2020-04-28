@@ -1,17 +1,74 @@
 // functions and such just for n-back creation 
 // set up the n-back task parameters and stimulus list
+function create_difficulty_ratings(){
+  var debrief = {
+    timeline: [{
+      type: "html-keyboard-response",
+      stimulus: "<p>The next few screens have some survey questions on them.</p><p>Press respond to every question you are comfortable answering.</p><p>Press any key to continue.</p>"
+    }]
+  }
+
+  var rating = []; var rating_timeline = [];
+  uniqueValues.push(easy_task_ID); //list tasks used in this version of the exp
+
+  rating_timeline.push(debrief);
+
+  var srt_point = Math.random()*100;
+  //var task_ID = uniqueValues[i];
+  var rating1 = {
+    timeline: [{
+      type: "html-slider-response",
+      stimulus: stim = fractals[0]+'" width="'+fractal_size+'" height ="'+fractal_size+'"',
+      data:{task: 'difficultyrating', task_displayed: 0, slider_start: srt_point},
+      require_movement: true,
+      labels: ['5','4','3','2','1'],
+      start: srt_point,
+      step: 4,
+      prompt: "<p>How difficult was this task for you (where 1 is very easy, and 5 is very hard)?</p>",
+      trial_duration: 60000 //60 seconds to respond
+    }]
+  };
+  var srt_point = Math.random()*100;
+  var rating2 = {
+    timeline: [{
+      type: "html-slider-response",
+      stimulus: stim = fractals[1]+'" width="'+fractal_size+'" height ="'+fractal_size+'"',
+      data:{task: 'difficultyrating', task_displayed: 1, slider_start: srt_point},
+      require_movement: true,
+      labels: ['5','4','3','2','1'],
+      start: srt_point,
+      step: 4,
+      prompt: "<p>How difficult was this task for you (where 1 is very easy, and 5 is very hard)?</p>",
+      trial_duration: 60000 //60 seconds to respond
+    }]
+  };
+  var srt_point = Math.random()*100;
+  var rating3 = {
+    timeline: [{
+      type: "html-slider-response",
+      stimulus: stim = fractals[2]+'" width="'+fractal_size+'" height ="'+fractal_size+'"',
+      data:{task: 'difficultyrating', task_displayed: 2, slider_start: srt_point},
+      require_movement: true,
+      labels: ['5','4','3','2','1'],
+      start: srt_point,
+      step: 4,
+      prompt: "<p>How difficult was this task for you (where 1 is very easy, and 5 is very hard)?</p>",
+      trial_duration: 60000 //60 seconds to respond
+    }] 
+  };
+
+  rating_timeline.push(rating1);
+  rating_timeline.push(rating2);
+  rating_timeline.push(rating3);
+
+  return rating_timeline;
+} //end of function
+
 function create_need_for_cognition(){
 
   space_bar_message = "<p>[Press the space bar to continue.]</p>";
 
   NFC_instructs = "<p><strong>For each of the statements below, please indicate whether or not the statement is characteristic of you or of what you believe.</strong></p>"
-
-  var debrief = {
-    timeline: [{
-      type: "html-keyboard-response",
-      stimulus: "<p>The next few screens have some survey questions on them.</p><p>Press respond to every question you are comfortable answering.</p>" + space_bar_message
-    }]
-  }
 
   var options = ["extremely uncharacteristic of me", "somewhat uncharacteristic of me", "uncertain", "somewhat characteristic of me", "extremely characteristic of me"];
 
@@ -81,7 +138,7 @@ function create_need_for_cognition(){
   }
     //NFC.push(multi_choice_block_horizontal);
 
-  return timeline = [debrief, NFC1, NFC2, NFC3];
+  return timeline = [NFC1, NFC2, NFC3];
 
 };
 

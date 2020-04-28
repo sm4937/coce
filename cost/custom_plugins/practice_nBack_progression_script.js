@@ -15,13 +15,13 @@ function setup_practice_nBack(n){
   stamp += fractals[0] + ' width="'+stamp_size+'" height ="'+stamp_size+'">';
   stamp += '</div>';
 
-   var presentation_screen = {
-      timeline: [{
-        type: "html-keyboard-response",
-        stimulus: '<p> Task: </p> ' + fractals[n]+' width="'+fractal_size+'" height ="'+fractal_size+'"',
-        prompt: '<p>This picture will always be associated with the following task, like a picture label.</p><p>You will now learn the rules of this task and get a chance to practice.</p><p>Press any key to continue.</p>'
-      }]
-    };
+  var presentation_screen = {
+    timeline: [{
+      type: "html-keyboard-response",
+      stimulus: '<p> Task: </p> ' + fractals[n]+' width="'+fractal_size+'" height ="'+fractal_size+'"',
+      prompt: '<p>This picture will always be associated with the following task, like a picture label.</p><p>You will now learn the rules of this task and get a chance to practice.</p><p>Press any key to continue.</p>'
+    }]
+  };
 
   var back_rule = '<strong>' + String(n) + '</strong> letters ago';
   if(n==1){
