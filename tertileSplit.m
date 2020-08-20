@@ -12,7 +12,7 @@ purescores = unique(measurement);
 purescores = purescores(~isnan(purescores));
 thirds = [ceil(length(purescores)/3) ceil(2*length(purescores)/3) length(purescores)]; %indices
 lowbound = purescores(thirds(1)); highbound = purescores(thirds(2));
-idx1 = matrix(:,2)<=lowbound; idx2 = matrix(:,2)>lowbound & matrix(:,2)<highbound; idx3 = matrix(:,2)>=highbound;
+idx1 = matrix(:,2)<lowbound; idx2 = matrix(:,2)>=lowbound & matrix(:,2)<highbound; idx3 = matrix(:,2)>=highbound;
 matrix(idx1,3) = 1; matrix(idx2,3) = 2; matrix(idx3,3) = 3;
 
 groups = matrix(:,3);

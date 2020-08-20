@@ -6,27 +6,194 @@
 %subj as random effect
 %predicting BDM
 
-function data = run_stats(input)
+function data = run_stats(input,inputtask)
     if unique(input.version) == 3
-        data = run_stats_v03(input);
+        data = run_stats_v03(input,inputtask);
+    elseif unique(input.version)==4
+        data = run_stats_v04(input,inputtask);
     else
         data = run_stats_v02(input);
     end
 end
 
-function data = run_stats_v03(data)
+function data = run_stats_v04(data,inputtask)
+tasks = [categorical(cellstr('n1')); categorical(cellstr('n2')); categorical(cellstr('ndetection'))];
+tasklabels = {'1-back','2-back','3-detect'};
+tasknumbers = [1,2,7];
+default_length = 32;
+datacolumns = {'nback','nback','ndetect'};
+
+n = height(data);
+effects = []; trim = [];
+for task = inputtask %go through and grab info from pre-specified task
+    for subj = 1:n %go subject by subject
+        displayed = data.task_displayed(subj,:);
+        idx = find(displayed == tasknumbers(task)); 
+        eval(['matches = data.' datacolumns{task} 'matches(subj,:);'])
+        eval(['misses = data.' datacolumns{task} 'misses(subj,:);'])
+        BDMs = data.values(subj,:); 
+        completed = find(data.task_progression(subj,:)==tasks(task));
+        perf = data.perf(subj,:);
+        others = data.distractors(subj,:);
+        for trial = 1:length(idx)
+            now = idx(trial);
+            iters = sum(data.task_progression(subj,1:trial-1)==tasks(task));
+            if sum(completed<now)>0 %they've done the task once before
+                last = completed(completed<now); last = last(end);
+                delay = now-last;
+                effects = [effects; perf(last) matches(last) delay iters subj misses(last) others(last) BDMs(now)];
+            end
+        end %of trial loop
+        if sum(completed)<2
+            disp(['subj ' num2str(subj) ' didnt do this task enough times'])
+            trim = [trim; subj];
+        end
+    end %of subject loop
+end %of task loop
+
+task = inputtask;
+% change to change base data
+eval(['data.n' num2str(task) 'intercept = NaN(height(data),1); data.n' num2str(task) 'slope = NaN(height(data),1);'])
+
+torun = effects;
+tbl = table;
+tbl.perf = torun(:,1)-nanmean(torun(:,1)); 
+tbl.matches = torun(:,2)-nanmean(torun(:,2)); %-min(long(:,2)); %or 0 baseline them?
+%-mean(long(:,2)); %negative correlation of intercept and slope, need to
+%center the n-switches column to prevent ill-fitting model?
+tbl.delay = torun(:,3)-nanmean(torun(:,3));
+tbl.iters = torun(:,4)-nanmean(torun(:,4));
+tbl.subj = categorical(torun(:,5)); %tbl.sess = categorical(long(:,6)); 
+tbl.misses = torun(:,6)-nanmean(torun(:,6));
+tbl.inter = torun(:,7)-nanmean(torun(:,7));
+tbl.y = torun(:,8);
+
+n = length(unique(tbl.subj));
+
+no_random = fitlme(tbl,'y ~ 1 + matches + delay + perf + misses + iters');
+random_int = fitlme(tbl,'y ~ 1 + matches + delay + perf + misses + iters + ( 1 | subj)'); %random intercept of subj
+random_both = fitlme(tbl,'y ~ 1 + matches + delay + perf + misses + iters + ( 1 + matches | subj) + ( 1 + misses | subj)');
+if inputtask==2 %inter breaks other tasks because it's just 0
+no_random = fitlme(tbl,'y ~ 1 + matches + delay + perf + misses + iters + inter');
+random_int = fitlme(tbl,'y ~ 1 + matches + delay + perf + misses + iters + inter + ( 1 | subj)'); %random intercept of subj
+random_one = fitlme(tbl,'y ~ 1 + matches + delay + perf + misses + iters + inter + ( 1 + matches | subj)'); %this model wins over no random
+random_both = fitlme(tbl,'y ~ 1 + matches + delay + perf + misses + iters + inter + ( 1 + matches | subj) + ( 1 + misses | subj)'); %this model wins over 1 slope (just matches)
+random_three = fitlme(tbl,'y ~ 1 + matches + delay + perf + misses + iters + inter + ( 1 + matches | subj) + ( 1 + misses | subj) + ( 1 + inter | subj)'); %this does not win over 2 slopes (matches & misses; so inter adds nothing)
+end
+
+model_struct = struct;
+model_struct.m1 = no_random;
+model_struct.m2 = random_int;
+model_struct.m3 = random_both;
+% model_struct.m4 = no_random_test;
+% model_struct.m5 = random_int_test;
+% model_struct.m6 = random_both_test;
+
+AICs = [-no_random.LogLikelihood.*2+2.*0, ...
+    -random_int.LogLikelihood.*2+(2.*numel(random_int.covarianceParameters{1})), ...
+    -random_both.LogLikelihood.*2+(2.*numel(random_both.covarianceParameters{1}))]; %, ...
+%     -no_random_test.LogLikelihood.*2+(2.*0), ...
+%     -random_int_test.LogLikelihood.*2+(2.*numel(random_int_test.covarianceParameters{1})), ...
+%     -random_both_test.LogLikelihood.*2+(2.*numel(random_both_test.covarianceParameters{1}))];
+figure
+bar(AICs)
+hold on
+[score,which] = min(AICs);
+plot(which,score,'*k','LineWidth',1.5)
+title(['AIC by model, fit to real data from ' tasklabels{task}])
+ylabel('AIC')
+xlabel('Model')
+xticklabels({'No Random Effects','Random Intercept','Random Slope and Intercept'})
+xtickangle(45)
+
+% look into values for minimum model
+
+eval(['winner = model_struct.m' num2str(which)])
+
+[~,~,rEffects] = randomEffects(random_both);
+estimates_inter = fixedEffects(random_both);
+estimates_inter = [estimates_inter(1) estimates_inter(2) estimates_inter(5)];
+figure
+subplot(3,2,1)
+intercepts = rEffects.Estimate(1:2:n*2);
+scatter(rEffects.Estimate(1:2:n*2)+estimates_inter(1),rEffects.Estimate(2:2:n*2)+estimates_inter(2))
+title('Slope vs. Intercept in Interacting Slope/Inter Model')
+[r,p] = corr(rEffects.Estimate(1:2:n*2),rEffects.Estimate(2:2:n*2));
+if p<0.05
+    lsline
+end
+ylabel('Slope')
+xlabel('Intercept')
+
+subplot(3,2,2)
+slopes = rEffects.Estimate(2:2:n*2);
+scatter(rEffects.Estimate(2:2:n*2)+estimates_inter(3),rEffects.Estimate((n*2)+2:2:end)+estimates_inter(2))
+title('Slope vs. Slope in Interacting Slope/Inter Model')
+[r,p] = corr(rEffects.Estimate(2:2:n*2),rEffects.Estimate((n*2)+2:2:end));
+if p<0.05
+    lsline
+end
+ylabel('Slope')
+xlabel('Intercept')
+
+subplot(3,2,3)
+plot(0:0.05:6,normpdf(0:0.05:6,estimates_inter(1),std(rEffects.Estimate(1:2:n*2))))
+hold on
+scatter(rEffects.Estimate(1:2:n*2)+estimates_inter(1),normpdf(rEffects.Estimate(1:2:n*2)+estimates_inter(1),estimates_inter(1),std(rEffects.Estimate(1:2:n*2))))
+title('Fit Match Intercepts')
+
+subplot(3,2,4)
+plot(-2:0.05:2,normpdf(-2:0.05:2,estimates_inter(2),std(rEffects.Estimate(2:2:n*2))))
+hold on
+scatter(rEffects.Estimate(2:2:n*2)+estimates_inter(2),normpdf(rEffects.Estimate(2:2:n*2)+estimates_inter(2),estimates_inter(2),std(rEffects.Estimate(2:2:n*2))))
+title('Fit Match Slopes')
+
+subplot(3,2,5)
+plot(0:0.05:6,normpdf(0:0.05:6,estimates_inter(1),std(rEffects.Estimate((n*2)+1:2:end))))
+hold on
+scatter(rEffects.Estimate((n*2)+1:2:end)+estimates_inter(1),normpdf(rEffects.Estimate((n*2)+1:2:end)+estimates_inter(1),estimates_inter(1),std(rEffects.Estimate((n*2)+1:2:end))))
+title('Fit Miss Intercepts')
+
+subplot(3,2,6)
+plot(-2:0.05:2,normpdf(-2:0.05:2,estimates_inter(3),std(rEffects.Estimate((n*2)+2:2:end))))
+hold on
+scatter(rEffects.Estimate((n*2)+2:2:end)+estimates_inter(3),normpdf(rEffects.Estimate((n*2)+2:2:end)+estimates_inter(3),estimates_inter(3),std(rEffects.Estimate((n*2)+2:2:end))))
+title('Fit Miss Slopes')
+
+% save this all to original data table
+
+subjects = unique(tbl.subj);
+for row = 1:length(subjects)
+    subjnum = double(string(subjects(row)));
+    check = ~ismember(subjnum,trim); %this is redundant, but it is a good check
+    if check
+        eval(['data.n' num2str(task) 'intercept(subjnum) = intercepts(row);'])
+        eval(['data.n' num2str(task) 'slope(subjnum) = slopes(row);'])
+    end
+end
+
+% NFCs = data.NFC;
+% NFCs(trim) = []; %exclude subjects who didn't get this model fit to them because they didn't do this task at all
+% slopes(isnan(NFCs)) = []; intercepts(isnan(NFCs)) = [];
+% NFCs(isnan(NFCs)) = []; %also missing data 
+% [r,p] = corr(NFCs,slopes,'Type','Spearman');
+% [r,p] = corr(NFCs,intercepts,'Type','Spearman');
+% this linear analysis ain't doin it
+end
+
+function data = run_stats_v03(data,inputtask)
 tasks = [categorical(cellstr('detection'));categorical(cellstr('n1')); categorical(cellstr('n2'))];
 tasklabels = {'0-back','1-back','2-back'};
 default_length = 32;
 
 n = height(data);
 n1effect = []; n2effect = [];
-trim = [];
+trim_1 = []; trim_2 = [];
 
 for task = 1:2 %cycle through what is being displayed, display by what happened before
     for subj = 1:n %go subject by subject
-        displayed = data.task_displayed(subj,:)+1;
-        idx = find(displayed == (task+1)); 
+        displayed = data.task_displayed(subj,:);
+        idx = find(displayed == (task)); 
         matches = data.nbackmatches{subj,:};
         BDMs = data.values(subj,:);
         completed = find(data.task_progression(subj,:)==tasks(task+1));
@@ -42,13 +209,13 @@ for task = 1:2 %cycle through what is being displayed, display by what happened 
         end %of trial loop
         if sum(completed)<2
             disp(['subj ' num2str(subj) ' didnt do this task enough times'])
-            eval(['trim_' num2str(task) ' = [trim; subj];'])
+            eval(['trim_' num2str(task) ' = [trim_' num2str(task) '; subj];'])
         end
     end %of subject loop
 end %of task loop
 
 
-task = 2;
+task = inputtask;
 % change to change base data
 eval(['data.n' num2str(task) 'intercept = NaN(height(data),1); data.n' num2str(task) 'slope = NaN(height(data),1);'])
 
@@ -602,55 +769,6 @@ scatter(matrix(:,1), matrix(:,3))
 xlabel('Slope')
 ylabel('AIC score')
 
-%% Simulate slopes based on NFC
-
-alpha = 0.50; %baseline slope
-NFC = 1; %fake, as if NFC were between 0 and 1
-B = -10:10;
-S = alpha*(1./(1+exp(-B.*NFC)));
-figure
-scatter(B,S)
-ylabel('Slope')
-title(['Formula alpha*sigmoid(-B*NFC), NFC: ' num2str(NFC)])
-xlabel('Beta Value')
-xticks(B)
-xlim([B(1) B(end)])
-xticklabels(B)
-ylim([-1 1])
-
-NFCs = data.NFC;
-maxNFC = 5;
-NFCs = NFCs./5;
-
-Beta = 3;
-alpha = 3;
-slopes = alpha*(1-(1./(1+exp(-Beta.*NFCs))));
-%slopes = alpha + (Beta.*NFCs);
-nswitches = 6:15;
-Bs = rand(n,1)*3;
-y = slopes.*nswitches + Bs;
-
-figure
-subplot(2,1,2)
-toplot = 5:10;
-for subj = toplot
-    scatter(nswitches,y(subj,:),'o','Filled')
-    hold on
 end
-xlabel('N Switches')
-ylabel('BDM value')
-title('Simulated effect of nswitches according to NFC')
-labels = [repmat('NFC: ',length(toplot),1) num2str(NFCs(toplot))];
-legend({labels})
-ax = gca; 
-ax.FontSize = 12;
 
-subplot(2,1,1)
-scatter(slopes,NFCs)
-xlabel('Slope')
-ylabel('NFC score normalized')
-title('Slope of subcomponent effect by NFC score')
-ax = gca; fig = gcf;
-fig.Color = 'w'; ax.FontSize = 12;
-end
 

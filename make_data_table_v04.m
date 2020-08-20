@@ -1,4 +1,4 @@
-function [data,failed_data] = make_data_table_v03(raw_data)
+function [data,failed_data] = make_data_table_v04(raw_data)
 
 %filename = ['\data\' filename];
 
@@ -49,7 +49,7 @@ raw_data.nback = string(raw_data.nback);
 tasknumlist = double(string(raw_data.tasknum));
 tasknumlist = unique(tasknumlist(~isnan(tasknumlist)));
 if sum(~isnan(tasknumlist))>0
-    if tasknumlist(end) < (default_length-1)
+    if length(tasknumlist) < default_length
         data.failed = true;
         data.subjnum = subjnum; %print some stuff about people who fail, eventually
         failed_data = dropout(raw_data,default_length); %pass it into a deeper function to figure out they dropped out
@@ -71,7 +71,8 @@ fullscreen = false;
 
 % pull out need for cognition scores
 [NFC,SAPS,SAPSs,SAPSd] = grade_scales(raw_data);
-%doesn't work for early pilots
+% pull out difficulty ratings
+[task_ratings] = gradeDifficultyRatings(raw_data);
 
 rts = table2array(raw_data(:,rtidx));
 logrts = log(rts);
@@ -94,48 +95,41 @@ else
     disp(['Subject ' num2str(raw_data.subjnum(1)) ' questionnaire data missing.'])
 end
 
-tasks = [categorical(cellstr('detection'));categorical(cellstr('combine'));categorical(cellstr('n-switch'));categorical(cellstr('n-back'))];
+tasks = [categorical(cellstr('detection'));categorical(cellstr('combine'));categorical(cellstr('n-switch'));categorical(cellstr('n-back')); categorical(cellstr('ndetection'))];
 BDM_label = categorical(cellstr('BDM')); % find BDM trials in the sequence
 BDMs = find(task_list == BDM_label);
-BDM_rt = rts(BDMs);
+BDM_rt = NaN(1,default_length);
+BDM_rt(1:length(BDMs)) = rts(BDMs);
 displayed = raw_data.task_displayed(BDMs,:)';
-displayed = double(displayed);
+d = default_length-length(displayed);
+displayed = [double(string(displayed)) NaN(1,d)];
 
-%first_trials = BDMs+4; 
-%last_trials = BDMs-4;
-%last_trials(1) = []; last_trials(end+1) = length(task_list) - 13; %pre-first BDM isn't a task trial
-%debrief(debrief<last_trials(1)) = []; %only post-task debrief
 debrief = find(task_list == categorical({'debrief'})&main_task);
 task_trials = ismember(task_list,tasks)&main_task; %relevant trials. break into blocks by anything post-BDM and pre-debrief
 for block = 1:default_length
     tasknum = block-1;
     relevant = raw_data(raw_data.tasknum == tasknum,:);
-    first_trials(block) = find(raw_data.trial_index == relevant.trial_index(2));
-    last_trials(block) = find(raw_data.trial_index == relevant.trial_index(end));
-    TOT(block) = [relevant.time_elapsed(end)-relevant.time_elapsed(2)]/1000;
+    if height(relevant)>3
+        first_trials(block) = find(raw_data.trial_index == relevant.trial_index(2));
+        last_trials(block) = find(raw_data.trial_index == relevant.trial_index(end));
+        TOT(block) = [relevant.time_elapsed(end)-relevant.time_elapsed(2)]/1000;
+    else
+        first_trials(block) = NaN;
+        last_trials(block) = NaN;
+        TOT(block) = NaN;
+    end 
 end
-%first_trials = trials(1:15:end);
-%last_trials = trials(15:15:end); %is this the solution? lol, no
 
-% if sum(TOT>30|TOT<20)>0
-%     idx = find(TOT>30|TOT<20)
-%     TOT(idx)
-%     subjnum
-%     task_list(first_trials(idx))
-%     task_list(last_trials(idx))
-%     last_trials(idx)-first_trials(idx)
-% end
-
-if length(last_trials)<default_length %subject data got cut off for some unknown reason
-    last_trials(end+1) = trials(end); %arbitrary last trial, since actual identity is unimportant
-end
+last_trials(isnan(first_trials)) = [];
+first_trials(isnan(first_trials)) = [];
 
 perf_list = table2array(raw_data(:,perfidx));
 perf_by_block = perf_list(task_list==categorical({'debrief'})&main_task);
 perf_by_block = str2num(char(perf_by_block));
 if length(perf_by_block)<default_length
     disp(['check perf_by_block, subject ' string(subjnum) ' data may have stopped saving'])
-    perf_by_block = [perf_by_block; 0];
+    d = default_length-length(perf_by_block);
+    perf_by_block = [perf_by_block; NaN(d,1)];
 end
 if isempty(overall)
    overall = nanmean(perf_by_block);
@@ -147,9 +141,10 @@ value_by_block = value_list(BDMs+1);
 % BDM offers (random numbers)
 offer_list = double(string(table2array(raw_data(:,offer))));
 offer_by_block = offer_list(BDMs+1);
-
-values = value_by_block; %points requested by block #
-offers = offer_by_block;
+values = NaN(1,default_length);
+values(1:length(value_by_block)) = value_by_block; %points requested by block
+offers = NaN(1,default_length); %offers by block
+offers(1:length(offer_by_block)) = offer_by_block; %determines actual points on offer
 
 %% get practice accuracy for an idea of 'baseline executive function'
 
@@ -169,97 +164,55 @@ end
 % first block is detection, second block is 1-back, 3rd and onward is
 % 2-back
 
-%% compile rts by block and task
-detectrts = NaN(1,default_length); nbackmeanrts = NaN(2,default_length); %defaults for concatenating failed subjects
-for i=1:length(first_trials)
-    if task_list(first_trials(i))==tasks(1)
-        detectrts(:,i) = nanmean(rts(first_trials(i):last_trials(i)));
-        nbackmeanrts(:,i) = NaN(2,1);
-    elseif task_list(first_trials(i))==tasks(4)
-        detectrts(:,i) = NaN;
-        n = table2array(raw_data(first_trials(i),nidx));
-        if n==1
-            stacked = [nanmean(rts(first_trials(i):last_trials(i))); NaN];
-        elseif n==2
-            stacked = [NaN; nanmean(rts(first_trials(i):last_trials(i)))];
-        end
-        nbackmeanrts(:,i) = stacked;
+%% compile rts and accuracies by block and task
+task_progression = repmat(categorical(cellstr('NULL')),1,default_length);
+nbackacc = NaN(2,default_length); detectacc = NaN(1,default_length); ndetectacc = NaN(1,default_length);
+detectrts = NaN(2,default_length); n1rts = NaN(2,default_length); n2rts = NaN(2,default_length); ndetectrts = NaN(2,default_length); %defaults for concatenating failed subjects
+
+for block = 1:length(first_trials)
+    tasknum = block-1;
+    relevant = raw_data(raw_data.tasknum==tasknum,:);
+    relevant = relevant(2:end,:); %trim first row, which is the BDM trial preceding the block starts
+    correct = relevant.rt(relevant.new_correct);
+    incorrect = relevant.rt(~relevant.new_correct);
+    currenttask = relevant.task(1);
+    task_progression(block) = currenttask;
+    switch currenttask
+        case tasks(1)
+            detectrts(:,block) = [nanmean(correct); nanmean(incorrect)];
+            detectacc(:,block) = perf_by_block(block);
+        case tasks(4)
+            n = relevant.n(1);
+            eval(['n' num2str(n) 'rts(:,block) = [nanmean(correct); nanmean(incorrect)];'])
+            nbackacc(n,block) = perf_by_block(block);
+            task_progression(block) = categorical(cellstr(['n' num2str(n)]));
+        case tasks(5)
+            ndetectrts(:,block) = [nanmean(correct); nanmean(incorrect)];
+            ndetectacc(:,block) = perf_by_block(block);
     end
 end
-
-% starttime = raw_data(first_trials,timesteps); starttime = table2array(starttime);
-% endtime = raw_data(last_trials,timesteps); endtime = table2array(endtime);
-% TOT = (endtime-starttime)/1000;
-
-task_progression = table2array(raw_data(first_trials,taskidx));
-
-nbackacc = NaN(2,default_length); detectacc = NaN(1,default_length);
-for i = 1:length(task_progression)
-    task = task_progression(i);
-    if task == tasks(1)
-        detectacc(:,i) = perf_by_block(i);
-        nbackacc(:,i) = NaN(2,1);
-    elseif task == tasks(4)
-        detectacc(:,i) = NaN;
-        n = table2array(raw_data(first_trials(i),nidx));
-        if n==1
-            stacked = [perf_by_block(i); NaN];
-            task_progression(i) = categorical({'n1'});
-        elseif n==2
-            stacked = [NaN; perf_by_block(i)];
-            task_progression(i) = categorical({'n2'});
-        end
-        nbackacc(:,i) = stacked;
-    end
-end
-
-%% look into characteristics of individual task completion (e.g. mean switch costs during a round of the combine)
+%% look into characteristics of individual task completion (e.g. ER post-first error)
 init = NaN(1,default_length);
 swrts = NaN(default_length,2); blrts = NaN(default_length,2);  %task switch rts, baseline rts for each task (detect, then nback)
 %detectrts = [];
-matchcount = NaN(1,default_length); missedmatches = NaN(1,default_length); nmatches = NaN(1,default_length); 
-nswitches = NaN(1,default_length);
+matchcount = NaN(1,default_length); missedmatches = NaN(1,default_length); nmatches = NaN(1,default_length); distractors = zeros(1,default_length);
+nswitches = NaN(1,default_length); ndetectcount = NaN(1,default_length); ndetectmisses = NaN(1,default_length);
 nswitchrts = NaN(2,default_length);
-furthererrors = NaN(1,default_length);
+furthererrors = NaN(1,default_length); posterrorRT = NaN(1,default_length);
 % look into dual task cost in RT (so mean hit rts in combine - detect)
-for block = 1:default_length
+for block = 1:length(first_trials)
     %for trial = 1:length(first_trials)
     tasknum = block-1;
     relevant = raw_data(raw_data.tasknum==tasknum,:);
-    %rts = table2array(raw_data(:,rtidx)); %initialize this properly
-    %first = first_trials(trial);
-    %last = last_trials(trial);
-    %task_rts = rts(first:last);
     task_rts = relevant.rt;
     task_accuracy = relevant.new_correct;
     task = relevant.task(2);
     if task == tasks(1) %detection
         detect = relevant.detect == '1';
         rts = task_rts(detect);
-    elseif task == tasks(2) %combine
-        detect = table2array(raw_data(first:last,detectidx)) == '1'; %need to convert to logical
-        nback = table2array(raw_data(first:last,nbackidx)) == '1'; %make sure that this is 1, or 'true' or something
-        accurate = raw_data.new_correct(first:last);
-        condition = init'; condition(nback) = 2; condition(detect) = 1; %always need to count detect trials as non-nbacks, no overlapping there
-        rts = task_rts(~isnan(condition)&condition~=0); %rts(condition==0) = [];
-        condition(isnan(condition)) = []; condition(condition==0) = []; %prune this, wasn't lining up before
-        switches = [false; diff(condition)~=0];
-        bl_detect = condition==1&~switches; bl_nback = condition==2&~switches; %bl short for "baseline"
-        sw_detect = condition==1&switches; sw_nback = condition==2&switches;
-        swrts(trial,:) = [nanmean(rts(sw_detect)) nanmean(rts(sw_nback))];
-        blrts(trial,:) = [nanmean(rts(bl_detect)) nanmean(rts(bl_nback))];
-        matchcount = [matchcount nansum(nback&accurate)];
-    elseif task == tasks(3) %figure out switch costs in n-switch
-        relevant = raw_data.task == tasks(3)&raw_data.new_correct&main_task; %only correct RTs, in main task, for n-switch task
-        switches = table2array(raw_data(first:last,swidx))==categorical({'1'}) & relevant(first:last); %find switches, convert to logical
-        notswitches = table2array(raw_data(first:last,swidx))==categorical({'0'}) & relevant(first:last); %find notswitches, convert to logical
-        stacked = [nanmean(task_rts(notswitches)); nanmean(task_rts(switches))]; %let's not analyze first trials, since they're both not switches and not not switches
-        nswitchrts(:,trial) = stacked;
-        nswitches(trial) = sum(switches); %first trial is not a switch
-        %[max(stacked) max(task_rts(switches)) min(task_rts(switches)) max(task_rts(notswitches)) min(task_rts(notswitches)) last-first]
-        %print-out for debugging purposes, switch costs were all wrong here
     elseif task == tasks(4) %n-back (NOT combine)
         nback = (relevant.nback) == '1'; %make sure that this is 1, or 'true' or something
+        n = relevant.n(2); idxes = find(nback);
         accurate = relevant.new_correct;
         nmatches(block) = nansum(nback);
         missedmatches(block) = nansum(nback&~accurate);
@@ -273,13 +226,43 @@ for block = 1:default_length
             furthererrors(block) = sum(errors>errors(1))/(matchesleft);
             if matchesleft == 0
                 furthererrors(block) = 0;
+            elseif matchesleft > 0
+                remaining = find(matches.nback=='1')>errors(1);
+                posterrorRT(block) = nanmean(matches.rt(remaining));
             end
             %so, error rate after 1 error was made
+        end
+        for i = 1:nmatches(block)
+            idx = idxes(i);
+            within = relevant(idx-n:idx,:);
+            other = nansum(within.stimnum(1:n-1)~=within.stimnum(n)); %count stimuli that are not the same
+            % for 3detect this should always be 0
+            distractors(block) = distractors(block) + other;
+        end
+    elseif task == tasks(5) %ndetect (2-back but continuous evidence accumulation)
+        detect = relevant.detect == '1';
+        ndetectcount(block) = nansum(detect&relevant.new_correct);
+        ndetectmisses(block) = nansum(detect&~relevant.new_correct);
+        if ndetectmisses(block)>0
+            %if one error made, do you give up?
+            matches = relevant(detect,:);
+            errors = find(matches.new_correct==false);
+            % errors made over matches still to go
+            matchesleft = sum(find(matches.detect=='1')>errors(1));
+            furthererrors(block) = sum(errors>errors(1))/(matchesleft);
+            if matchesleft == 0
+                furthererrors(block) = 0;
+            elseif matchesleft > 0
+                remaining = find(matches.detect=='1')>errors(1);
+                posterrorRT(block) = nanmean(matches.rt(remaining));
+            end
+            % same variable for every task, can separate by block
+            % #/task_progression
         end
     end
 end
 
-nbackmatches{1} = matchcount; %count number of matches, n
+nbackmatches = matchcount; %count number of matches, n
 
 %% Calculate "effect" of n-back matches on BDM value (like set size effect)
 
@@ -299,7 +282,7 @@ for task = 1:2 %cycle through 1- and 2-back
     end
 end
 
-range = 3:5;
+range = 2:4;
 n1matcheffect = NaN(1,length(range)); n2matcheffect = NaN(1,length(range));
 for i = 1:length(range)
     match = range(i);
@@ -333,12 +316,57 @@ for block = 1:length(first_trials) % go by first-trial and last-trial indices
     %changedresponse(block) = sum(~isnan(rts(task))&~isnan(rts(fb))); %responded both during task and during fb
 end
 
-%% make individual scores for BDM offer mimicry
+%% why does detection task take longer in some people than in others?
+
+raw_data.time_elapsed(1);
+detect = find(task_progression==categorical(cellstr('detection')));
+phases = [categorical(cellstr('detection')) categorical(cellstr('feedback')) categorical(cellstr('ITI'))];
+for block = 1:length(detect)
+    tasknum = detect(block)-1;
+    trials = raw_data.trial_index(raw_data.tasknum==tasknum);
+    first = find(raw_data.trial_index==trials(1)); last = find(raw_data.trial_index==(trials(end)+2));
+    relevant = raw_data(first:last,:);
+    realfirst = find(relevant.task==categorical(cellstr('instructions')));
+    relevant = relevant((realfirst+1):end,:);
+    trialtimes = [NaN; diff(relevant.time_elapsed)];
+    numresp = nansum(~isnan(relevant.rt));
+    for phase = 1:length(phases)
+        totaltimes(phase) = nansum(trialtimes(relevant.task==phases(phase)));
+    end
+    bookkeeping(block,:) = [subjnum totaltimes TOT(block) numresp];
+end
+
+detect_time_breakdown{1} = bookkeeping;
+
+%% Individual relationships of BDMs with other values
 y = values(2:end);
 x = offers(1:end-1);
 %[r,p] = corr(x,y);
 %BDMmimicry = [r,p];
+tasknumbers = [0 1 2 7];
+BDMautocorrs = NaN(1,length(tasknumbers)-1);
+BDMacrosscorrs = NaN(3,2);
+for task = 1:(length(tasknumbers)-1)
+    onscreen = find(displayed==tasknumbers(task+1)); lag = onscreen(2:end); 
+    others = [1 2 7];
+    others(others==task) = [];
+    for second = 1:(length(tasknumbers)-2)
+        othertask = find(displayed==others(second));
+        columns{1} = othertask; columns{2} = onscreen;
+        [~,longer] = max([length(othertask),length(onscreen)]);
+        d = abs(length(othertask)-length(onscreen)); d = d-1;
+        columns{longer}(end-d:end) = []; 
+        [r,p] = corr(values(columns{1})',values(columns{2})');
+        BDMacrosscorrs(task,second) = r; %original task each row, second task is column (so 3x2)
+    end
+    onscreen(end) = [];
+    [r,p] = corr(values(onscreen)',values(lag)'); %task autocorrelations
+    BDMautocorrs(task) = r;
+end
+taskBDMcorrs{1} = BDMacrosscorrs;
+taskBDMcorrs{2} = BDMautocorrs;
 
+%% save it all
 data.subjnum = subjnum;
 data.version = exp_version;
 data.fullscreen = fullscreen;
@@ -347,14 +375,17 @@ data.practiceacc = practice_acc;
 data.n1acc = nbackacc(1,:);
 data.n2acc = nbackacc(2,:);
 data.detectacc = detectacc;
-data.values = values';
+data.ndetectacc = ndetectacc;
+data.values = values;
 data.perf = perf_by_block';
-data.task_progression = task_progression';
+data.task_progression = task_progression;
 data.TOT = TOT;
-data.n1rts = nbackmeanrts(1,:);
-data.n2rts = nbackmeanrts(2,:);
-data.detectrts = detectrts;
-data.BDMrt = BDM_rt';
+data.n1rts = n1rts(1,:);
+data.n2rts = n2rts(1,:);
+data.detectrts = detectrts(1,:);
+data.ndetectrts = ndetectrts(1,:);
+data.incorrectrts{1} = [detectrts(2,:); n1rts(2,:); n2rts(2,:); ndetectrts(2,:)];
+data.BDMrt = BDM_rt;
 data.nbackmatches = nbackmatches;
 data.nbackmisses = missedmatches;
 data.intendednbackmatches = nmatches;
@@ -362,8 +393,12 @@ data.matcheffect = matcheffect;
 data.n1matcheffect = n1matcheffect;
 data.n2matcheffect = n2matcheffect;
 data.missedeffect = missedeffect;
-data.nbackfurthererrors = furthererrors;
-data.offers = offers';
+data.posterrorER = furthererrors;
+data.posterrorRT = posterrorRT;
+data.ndetectmatches = ndetectcount;
+data.ndetectmisses = ndetectmisses;
+data.distractors = distractors;
+data.offers = offers;
 %data.BDMmimicry = BDMmimicry;
 data.failed = failed;
 data.missedtrials = missed;
@@ -374,4 +409,7 @@ data.NFC = NFC;
 data.SAPS = SAPS;
 data.SAPSs = SAPSs;
 data.SAPSd = SAPSd;
+data.taskratings = task_ratings;
+data.detect_time_breakdown = detect_time_breakdown;
+data.taskBDMcorrs = taskBDMcorrs;
 %end

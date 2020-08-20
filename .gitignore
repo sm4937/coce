@@ -9,6 +9,7 @@ group_level.asv
 pilotdata/*
 data/*
 mturk_hit_bookkeeping.xlsx
+~$mturk_hit_bookkeeping.xlsx
 free_response_log.txt
 make_data_table_pilot.m
 cost/old_index.html

@@ -73,10 +73,10 @@ raw_data.nback = string(raw_data.nback);
 tasknumlist = double(string(raw_data.tasknum));
 tasknumlist = unique(tasknumlist(~isnan(tasknumlist)));
 if sum(~isnan(tasknumlist))>0
-    if tasknumlist(end) < 23
+    if tasknumlist(end) < (default_length-1)
         data.failed = true;
         data.subjnum = subjnum; %print some stuff about people who fail, eventually
-        failed_data = dropout(raw_data); %pass it into a deeper function to figure out they dropped out
+        failed_data = dropout(raw_data,default_length); %pass it into a deeper function to figure out they dropped out
         return
     else
         failed = false;
@@ -88,7 +88,7 @@ if sum(~isnan(tasknumlist))>0
 else
     data.failed = true;
     data.subjnum = subjnum;
-    failed_data = dropout(raw_data);
+    failed_data = dropout(raw_data,default_length);
     return
 end
 % see whether subjects were in fullscreen mode the entire experiment

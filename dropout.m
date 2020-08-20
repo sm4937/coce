@@ -2,7 +2,7 @@
 %subject by subject, print out a new data table for failed people
 function [failed_data] = dropout(raw_data,default_length)
     failed_data = table;
-    max_practices = 12;
+    max_practices = 13;
     subjnum = unique(raw_data.subjnum);
     quiz_long = unique(double(string(raw_data.BDMquizgrade)));
     quiz = quiz_long(1);

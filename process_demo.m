@@ -16,6 +16,8 @@ if responses=='NULL' %no demo data for this person
     demo_vars.sex = NaN;
     demo_vars.hand = NaN;
     demo_vars.diffrating = NaN;
+    demo_vars.blurs = NaN;
+    demo_vars.task_blurs = NaN(1,4);
     return 
 end
 
@@ -86,6 +88,29 @@ demo_vars.hand = hand;
 demo_vars.diffrating = selfrating;
 
 %% grab interaction data
+tasks = [categorical(cellstr('detection'));categorical(cellstr('n-back'));categorical(cellstr('ndetection'))];
 
+inter = string(raw_data.interaction_data(end));
+list = strsplit(inter,'event_');
+demo_vars.blurs = sum(contains(list,'blur'));
+blurs = list(contains(list,'blur'));
+trials = []; task_blurs = zeros(1,length(tasks)+1);
+if length(blurs)>0
+    for blur = 1:length(blurs)
+        trial = strsplit(blurs(blur),'trial_');
+        trial = strsplit(trial(2),'_time_');
+        trial = str2num(char(trial(1)));
+        task = raw_data.task(raw_data.trial_index==trial);
+        if task==tasks(2)
+            n = raw_data.n(raw_data.trial_index==trial);
+            task_blurs(1+n) = task_blurs(1+n)+1;
+        else
+            task_blurs(task==tasks) = task_blurs(task==tasks) + 1; %find which task was blurred, add to tally
+        end
+    end
+else
+    task_blurs = zeros(1,length(tasks)+1);
+end
+demo_vars.task_blurs = task_blurs;
 end
 

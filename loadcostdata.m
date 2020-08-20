@@ -13,7 +13,7 @@ for i = 1:length(files)
     colnames = raw.Untitled.Properties.VariableNames;
     raw.Untitled.TOT = double(string(raw.Untitled.TOT));
     raw.Untitled.total_points = double(string(raw.Untitled.total_points));
-    raw.Untitled.stimnum = double(string(raw.Untitled.total_points));
+    raw.Untitled.stimnum = double(string(raw.Untitled.stimnum));
     raw.Untitled.prob_switch = double(string(raw.Untitled.prob_switch));
     raw.Untitled.rule = double(string(raw.Untitled.rule));
     raw.Untitled.practice_accuracy = double(string(raw.Untitled.practice_accuracy));
@@ -45,8 +45,10 @@ group = table; excluded = table;
 for i = 1:length(subjs)
     subj = subjs(i);
     raw_data = long_format(long_format.subjnum == subj,:);
-    if unique(raw_data.exp_version==3)
+    if unique(raw_data.exp_version)==3
         [single,failed_counts] = make_data_table_v03(raw_data); %cleaned some stuff up for version 3, ease of analysis
+    elseif unique(raw_data.exp_version)==4
+        [single,failed_counts] = make_data_table_v04(raw_data); %cleaned some stuff up for version 3, ease of analysis
     else
         [single,failed_counts] = make_data_table(raw_data); 
     end
@@ -128,6 +130,7 @@ plot(1:length(matrix),matrix(:,1),'o')
 ylabel('# Missed BDMS')
 title('Missed BDM answers by subject')
 xlabel('Subject number')
+xticks(1:n)
 xticklabels(num2str(matrix(:,2)))
 
 end %plotflag if

@@ -2,9 +2,10 @@
 % go file by file
 
 clear all
-filename = '07.04.2020_trial';
+filename = '18.05.2020.mat';
 subjs = [];
-long_format = import_mturk_data(['./data/' filename '.csv']);
+long_format = load(['data/' filename]);
+long_format = long_format.Untitled;
 %raw_data = load('11.02.2020.mat','Untitled');
 %long_format = raw_data.Untitled;
 subjs = unique(string(long_format.worker_ID));
@@ -23,7 +24,7 @@ for i = 1:length(subjs)
     indexs = find(long_format.subjnum == subjnum);
     index = indexs(end);
     if length(indexs)>5 %more than 5 trials completed
-    subj_points = double(string(long_format.total_points(indexs)));
+    subj_points = double(string(long_format.points(indexs)));
     points = nansum(subj_points);
     total_points = [total_points; points];
     TOT = [long_format.time_elapsed(indexs(end))-long_format.time_elapsed(indexs(3))]/60000;

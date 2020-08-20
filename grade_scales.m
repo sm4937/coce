@@ -1,11 +1,12 @@
-function [normalized_NFC,normalized_SAPS] = grade_scales(raw_data)
+function [normalized_NFC,normalized_SAPS,SAPSs,SAPSd] = grade_scales(raw_data)
 %gradeNFC Grade the need for cognition scale from raw text data
 %   Takes raw answers to need for cognition scale and grades according to 
 % The Efficient Assessment of need for cognition (Cacioppo, Petty, 1984)
 screener_answers = {'extremelycharacteristicofme','somewhatagree'};
 
 %rows = 383:385; %hard-coded for testing but will be pull-out-able later with:
-responses = string(raw_data.responses(end));
+possible_responses = string(raw_data.responses(end-10:end));
+responses = possible_responses(contains(possible_responses,'SAPS8'));
 separated = split(responses,'___');
 corr_flag = 1; %mark with a flag whether the data printed correctly or not
 if length(separated)<=1 %the columns didn't get condensed properly in jspsych
@@ -110,28 +111,39 @@ end
 %% grade SAPS now, I think it's just a sum??
 
 totalSAPS = 0; answered = 0;
+SAPS_standards = 0; SAPS_discrepancy = 0;
+
+standards = [1,3,5,7];
 
 responses = {'stronglydisagree', 'disagree', 'somewhatdisagree', 'neutral', 'somewhatagree', 'agree', 'stronglyagree'};
-
-for q = 1:length(all_SAPS_answers) %all questions, of 18        
+for q = 1:length(all_SAPS_answers) %all questions, of 8     
     response = separated(all_SAPS_answers(q));
     for answer = 1:length(responses)
-        if contains(response,responses{answer})
+        if response == responses{answer}
             grade = answer; %clunkier way to do this but more robust to formatting variations
         end
     end
     if isempty(grade)
         grade = 0;
     end
+    if ismember(q,standards)
+        SAPS_standards = SAPS_standards+grade;
+    else
+        SAPS_discrepancy = SAPS_discrepancy+grade;
+    end
     totalSAPS = totalSAPS+grade;
     answered = answered+(grade~=0);
 end
 
 normalized_SAPS = totalSAPS/answered; %control for # questions answered
+SAPSs = SAPS_standards;
+SAPSd = SAPS_discrepancy;
 
 if sum(passed_screeners)==0
     normalized_SAPS = NaN;
     normalized_NFC = NaN;
+    SAPSs = NaN;
+    SAPSd = NaN;
     totalSAPS = NaN;
     totalNFC = NaN;
 end
