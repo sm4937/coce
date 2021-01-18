@@ -4,110 +4,163 @@ clear all %start from scratch
 fitflag = false;
 %generate simulated data on WM storage/updates/maintenance model
 load('simdata\toanalyze.mat')
-tasks = toanalyze.task;
-ntasks = length(unique(toanalyze.task));
 
-global modeltofit onesim fit_epsilon_opt mu sigma realsubjectsflag bounds
+global modeltofit onesim fit_epsilon_opt mu sigma realsubjectsflag
 realsubjectsflag = true;
-bounds = [0 10];
 %actions = stimuli;
 %rows = actions
 %columns = stimuli
 
-model_names = {'uc','uc_epsilon','uc_epsilon_init','uc_init','uc_epsilon_init_mc', ...
-    'uc_init_mc','uc_epsilon_init_mainc','uc_init_mainc','uc_epsilon_init_mc_mainc',... 
-    'uc_epsilon_init_mc_mainc_alpha'};
-for name = 1:length(model_names)
-    model_labels{name} = strrep(model_names{name},'_','-');
-end
-
-modelstorec = [10]; 
 %which model or models to recover?
+model_names = {'respc_epsilon_init_alpha_lurec','respc_epsilon_init_alpha_lurec_mc'};
+% mc lurec respc model BEST individual recovery so far
 modelStruct = {};
 
 % recover subject parameters, and distribution of those parameters
-
 %pick the model to recover
 if fitflag == true
-for rec = 1:length(modelstorec)
+for rec = 1:length(model_names)
     thrownout = 500; 
-    modeltofit = coc_createModels(model_names{modelstorec(rec)});
-    output = EMfit_sm(toanalyze,modeltofit);
-    eval(['modelStruct.' model_names{modelstorec(rec)} ' = output;'])
+    starting = [];
+    if rec>1
+        nestedflag = checkNested(model_names{rec},model_names{rec-1});
+        if nestedflag %start with guesses from previously fit, more general model
+            eval(['starting = modelStruct.' model_names{rec-1} '.lowparams;'])
+        end
+    end
+    modeltofit = coc_createModels(model_names{rec});
+    output = EMfit_sm(toanalyze,modeltofit,starting); %RUN FITTING HERE!
+    eval(['modelStruct.' model_names{rec} ' = output;'])
 end %of generate loop
-save(['simdata/fittosubjs_' model_names{modelstorec}])
 
-
-nparamlist = [];
-for label = 1:length(modelstorec)
-    nparamlist(label) = length(strsplit(model_labels{label},'-'));
-    modelname = model_names{modelstorec(label)};
-    eval(['model_scores(label) = modelStruct.' modelname '.map;'])
+nparamlist = []; model_names = fieldnames(modelStruct);
+for label = 1:length(model_names)
+    modelname = model_names{label};
+    eval(['nparamlist(label) = modelStruct.' modelname '.nparams;'])
+    eval(['fitsbysubj = modelStruct.' modelname '.fitbysubj;'])
+    eval(['modelStruct.' modelname '.AICsbysubj = (fitsbysubj*2) + (2*nparamlist(label));'])
+    AICsbysubj(label,:) = (fitsbysubj*2)+(2*nparamlist(label));
 end
-
-%AICs = confusion_matrix*2 + 2*nparamlist(1,1:size(confusion_matrix,2));
-
-figure
-bar(model_scores)
-title('Model scores')
-xticklabels(model_labels(modelstorec))
-
-[score,which] = min(model_scores);
-best_name = model_names{modelstorec(which)};
-best_model = eval(['modelStruct.' best_name]);
-nparams = best_model.nparams;
-save(['data/modelfits_' num2str(nparams) 'param_' date '.mat'],'best_model')
+AICs = mean(AICsbysubj,2); modelStruct.AICs = AICs;
+[bestscore,which] = min(AICs);
+best_model = eval(['modelStruct.' model_names{which}]);
+modelStruct.best_model = best_model;
+save(['data/modelfits_' num2str(length(model_names)) '_models_' date '.mat'],'modelStruct')
 end %of fitting if
 
 taskcolors = [0 0.75 0.75; 0.75 0.75 0; 0.75 0 0.75; 0.75 0.75 0.75];
+tasklabels = {'1-back','3-detect','2-back'};
     %display variable real quick ^ 
-%% display, just like, parameters
-load('data/modelfits_6param_14-Aug-2020.mat')
+%% display parameters, model scores, etc.
+%load('data/modelfits_2_models_23-Dec-2020.mat') %uc, matchc, one w delta
+%load('data/modelfits_3_models_30-Dec-2020.mat') %uc, one w mainc, one w delta
+%load('data/modelfits_3_models_02-Jan-2020.mat') %comparisons of uc, mainc,
+%matchc models. doesn't appear to be any effect of mainc on costs
+% uc is low cost, still
+%load('data/modelfits_2_models_06-Jan-2021.mat') %uc, response c
+load('data/modelfits_2_models_13-Jan-2021.mat') %m c, response c, lure c
+%load('data/modelfits_3_models_09-Jan-2021_b.mat') %uc, responsec, lurec
+
+% same as above to compare fits
 load('simdata/toanalyze.mat')
 tasks = toanalyze.task;
 ntasks = length(unique(toanalyze.task));
-nparams = best_model.nparams;
+paramcolors = [1 0 0; 1 0.5 0; 1 0 0.5; 0 0 1; 0 0.5 1; 0 0.7 0; 1 1 0];
+
+model_names = fieldnames(modelStruct); %post-loading, pull stuff out
+model_names(contains(model_names,'AICs')) = []; model_names(contains(model_names,'best_model')) = [];
+for name = 1:length(model_names)
+    model_labels{name} = strrep(model_names{name},'_','-');
+    eval(['model = modelStruct.' model_names{name} ';'])
+    %extract AICs by subj
+    AICsbysubj(name,:) = model.AICsbysubj;
+end
+AICs = modelStruct.AICs; bestscore = min(AICs);
+best_model = modelStruct.best_model;
+nparams = best_model.nparams; 
 nsubjs = size(best_model.lowparams,1); lowparams = best_model.lowparams;
 mu = best_model.highparams(1:nparams); sigma = best_model.highparams((nparams+1):end);
-paramcolors = [1 0 0; 1 0.5 0; 1 0 0.5; 0 0 1; 0 0.5 1; 0 0.7 0];
+for p = 1:length(best_model.paramnames) %reformat param names for better plotting
+    name = best_model.paramnames{p};
+    paramnames{p} = strrep(name,'c',' costs');
+    paramnames{p} = strrep(paramnames{p},'m','miss');
+end
+
+
+figure
+subplot(1,2,1)
+%plot group means
+bar(AICs-bestscore)
+title('Relative mean AIC scores by group')
+xticklabels(model_labels)
+xtickangle(45)
+
+%plot AICs by subj
+[~,tops] = min(AICsbysubj,[],1);
+subplot(1,2,2)
+measures = [];
+for m = 1:length(model_names)
+    measures(m) = sum(tops==m);
+end
+bar(measures)
+xticklabels(model_labels)
+xtickangle(45)
+fig = gcf; fig.Color = 'w';
+title('# of subjs best fit by each model')
+
 
 %how do the fits look?
 figure
 for p = 1:nparams
     subplot(4,2,p)
     scatter(1:nsubjs,lowparams(:,p),[],paramcolors(p,:),'Filled');
-    name = best_model.paramnames{p};
-    title(['Fit ' name 's'])
+    name = paramnames{p};
+    title(['Fit ' name])
     xlabel('Subject')
     ylabel('Param value')
 end %of nparam loop
 subplot(4,2,nparams+1)
-bar(1,mean(lowparams(:,1)),'FaceColor',paramcolors(1,:))
+for p = 1:nparams
+bar(p,mean(lowparams(:,p)),'FaceColor',paramcolors(p,:))
 hold on
-bar(2,mean(lowparams(:,2)),'FaceColor',paramcolors(2,:))
-bar(3,mean(lowparams(:,3)),'FaceColor',paramcolors(3,:))
-bar(4,mean(lowparams(:,4)),'FaceColor',paramcolors(4,:))
-bar(5,mean(lowparams(:,5)),'FaceColor',paramcolors(5,:))
-bar(6,mean(lowparams(:,6)),'FaceColor',paramcolors(6,:))
+end
 errorbar(nanmean(lowparams),nanstd(lowparams)/sqrt(nsubjs),'*k')
 ylabel('mean value')
 xticks([1:nparams])
-xticklabels(best_model.paramnames)
+xticklabels(paramnames)
 fig = gcf; fig.Color = 'w';
 
+figure; costs = [];
+for p = 1:length(best_model.paramnames)
+    costs = [costs; strcmp('c',best_model.paramnames{p}(end))];
+end
+costs = find(costs); 
+trim = lowparams(:,1)>=(2.*std(lowparams(:,1))+mean(lowparams(:,1))); %remove outliers?
+lowparams(trim,:) = [];
+bar(mean(lowparams(:,costs)),'FaceColor',[0 0.7 0])
+hold on
+errorbar(nanmean(lowparams(:,costs)),nanstd(lowparams(:,costs))./sqrt(nsubjs),'*k')
+plot(1:length(costs),lowparams(:,costs),'--k')
+fig = gcf; fig.Color = 'w';
+xticklabels(paramnames(costs))
+xtickangle(30)
+ylabel('Mean parameter value')
+xlabel('Cost parameter')
+
+%look at distribution of each parameter and their tradeoffs
 figure
 count = 0;
 for p = 1:nparams
     for z = 1:nparams
         count = count+1;
-        subplot(6,6,count)
+        subplot(nparams,nparams,count)
         scatter(lowparams(:,p),lowparams(:,z),[],paramcolors(p,:),'Filled')
         lsline
         if z == p
             histogram(lowparams(:,p),'FaceColor',paramcolors(p,:))
         end
-        xlabel(best_model.paramnames(p))
-        ylabel(best_model.paramnames(z))
+        xlabel(paramnames(p))
+        ylabel(paramnames(z))
         [r,pval] = corr(lowparams(:,p),lowparams(:,z));
     end
 end
@@ -118,7 +171,7 @@ fig = gcf; fig.Color = 'w';
 simdata = simulate_cost_model(best_model,lowparams,toanalyze);
 ntrials = sum(simdata(:,1)==1); nsubjs = length(unique(simdata(:,1)));
 %scale things appropriately
-simdata(:,3) = ((simdata(:,3).*bounds(2))./25)+1;
+simdata(:,3) = (simdata(:,3)./25)+1;
 
 figure
 subplot(2,1,1)
@@ -141,7 +194,7 @@ for task = 1:(ntasks-1)
     for subj = 1:nsubjs
         onesubj = simdata(simdata(:,1)==subj,:);
         curve = NaN(1,11);
-        curve(1:sum(onesubj(:,2)==task+1)) = onesubj(onesubj(:,2)==task+1,3)';
+        curve(1:sum(onesubj(:,4)==task+1)) = onesubj(onesubj(:,4)==task+1,3)';
         eval(['task' num2str(task) ' = [task' num2str(task) '; curve];'])
     end
 end
@@ -155,21 +208,39 @@ fig = gcf; fig.Color = 'w';
 
 figure
 subjs = randperm(nsubjs,6);
+subjs = [20 22 13 7 23 18];
+tasksymbols = {'s','o','d'};
+trialcolors = linspace(0.1,1,ntrials); trialcolors = repmat(trialcolors',1,3);
+taskcount = false(1,3);
 for i = 1:length(subjs)
     subj = subjs(i);
     subplot(3,2,i)
     onesim = simdata(simdata(:,1)==subj,:);
-    simulated = onesim(:,3);
+    simulated = onesim(:,3); 
     onereal = toanalyze(toanalyze.subj==subj,:);
-    real = onereal.newBDM; real = (real./25)+1;
-    for trial = 1:length(real)
-        task = onereal.task(trial);
-        scatter(trial,real(trial),[],taskcolors(task,:),'*')
-        hold on
-        scatter(trial,simulated(trial),[],taskcolors(task,:),'o','Filled')
+    real = onereal.BDM; real = (real./25)+1;
+    for trial = 1:sum(~isnan(real))
+        task = onereal.display(trial);
+        if ~isnan(task)
+            tasksymbol = tasksymbols{task-1};
+            if ~taskcount(task-1)
+                scatter(real(trial),simulated(trial),[],trialcolors(trial,:),tasksymbol,'Filled','DisplayName',tasklabels{task-1})
+                taskcount(task-1) = true; %have you already labeled this task?
+            else
+                scatter(real(trial),simulated(trial),[],trialcolors(trial,:),tasksymbol,'Filled')
+            end
+            hold on
+            line
+            %re-formatting for Peter
+%             scatter(trial,real(trial),[],taskcolors(task,:),tasksymbol,'Filled')
+%             hold on
+%             scatter(trial,simulated(trial),[],taskcolors(task,:),'o','Filled')
+        end
     end
     title(['Subj ' num2str(subj)])
-    legend({'Real','Simulated'})
+    %legend('location','best')
+    %legend({'Real','Simulated'})
+    xlabel('real values'); ylabel('simulated');
 end
 fig = gcf; fig.Color = 'w';
 
@@ -178,23 +249,23 @@ for subj = 1:nsubjs
     onesim = simdata(simdata(:,1)==subj,:);
     simulated = onesim(:,3);
     onereal = toanalyze(toanalyze.subj==subj,:);
-    real = onereal.newBDM; real = (real./25)+1;
-    MSE(subj) = sqrt(nanmean((real-simulated).^2));
+    real = onereal.BDM; real = (real./25)+1;
+    idx = true(length(simulated),1); idx(isnan(real(idx))) = false; 
+    MSE(subj) = sqrt(nanmean((real(idx)-simulated(idx)).^2));
 end
 subjrankings = sortrows([MSE' (1:nsubjs)'],1);
 
 figure
 for p = 1:nparams 
-    subplot(3,2,p)
+    subplot(4,2,p)
     for i = 1:length(subjrankings)
         subj = subjrankings(i,2);
         scatter(i,lowparams(subj,p),[],paramcolors(p,:),'Filled')
         hold on
-        name = best_model.paramnames{p};
+        name = paramnames{p};
         title(['Fit ' name 's'])
         xlabel('Fit rank')
         ylabel('Param value')
     end
 end
 fig = gcf; fig.Color = 'w';
-

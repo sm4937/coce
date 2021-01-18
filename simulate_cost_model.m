@@ -3,70 +3,50 @@ function [simdata] = simulate_cost_model(modeltosim,allparams,toanalyze)
 %parameters
 %Get simdata out, which is plottable and analyzable
     %lower level parameters
-    global bounds
-    init = 0.25.*bounds(2); epsilon = 0.7.*bounds(2); mc = 0; mainc = 0; alpha = 0.35;
+    global real_epsilon_opt realparamlist model
     nparams = modeltosim.nparams; nsubjs = size(allparams,1);
-    
     %global simdata %initialize empty
     simdata = [];
     tasks = unique(toanalyze.task);
     for subj = 1:nsubjs  %simulate the model for one subject at a time
     real_epsilon = []; params = allparams(subj,:);
-    if modeltosim.uc
-        idx = find(contains(modeltosim.paramnames,'uc'));
-        uc = params(idx);
-        %epsilon = 0.2; %note to self: make sure hist of params is normally distrib
-    end
-    if modeltosim.epsilon
-        idx = find(contains(modeltosim.paramnames,'epsilon'));
-        epsilon = params(idx).*bounds(2);
-        %epsilon = 0.2; %note to self: make sure hist of params is normally distrib
-    end
-    if modeltosim.init
-        idx = find(contains(modeltosim.paramnames,'init'));
-        init = params(idx).*bounds(2);
-    end
-    if modeltosim.mc
-        idx = find(contains(modeltosim.paramnames,'mc'));
-        mc = params(idx).*bounds(2);
-    end
-    if modeltosim.mainc
-        idx = find(contains(modeltosim.paramnames,'mainc'));
-        mainc = params(idx).*bounds(2);
-    end
-    if modeltosim.alpha
-        idx = find(contains(modeltosim.paramnames,'alpha'));
-        alpha = params(idx);
-    end
-    ratings = init*(ones(1,length(unique(tasks)))); %init for each subject
-    onesubj = toanalyze(toanalyze.subj==subj,:);
-    ntrials = height(onesubj);
+    
+    model = modeltosim;
+    [uc,epsilon,init,mc,mainc,matchc,noisec,respc,lurec,alpha,delta] = setParamValues(params);
+    costs = [uc mc mainc matchc noisec respc lurec];
+
+    ratings = init.*(ones(1,max(toanalyze.display))); %init for each subject
+    trialScalar = 1;
+    %onesubj = repmat(toanalyze(toanalyze.subj==ceil(rand().*30),:),trialScalar,1); %if simulating some fake people
+    onesubj = repmat(toanalyze(toanalyze.subj==subj,:),trialScalar,1); %if
+    %using only real subjects
+    nupdates = zeros(length(onesubj.nupdates),1); nupdates(onesubj.nupdates>0,:) = zscore(onesubj.nupdates(onesubj.nupdates>0,:)); % need to edit nupdates because it has so many zeros from irrelevant task 1
+    nmisses = zscore(onesubj.nmisses); nmaintained = zscore(onesubj.maintained); nmatches = zscore(onesubj.nmatches);
+    noisiness = zscore(onesubj.noisiness); responses = zscore(onesubj.nresponses); nlures = zscore(onesubj.nlures);
+    ntrials = sum(~isnan(onesubj.BDM)&~isnan(onesubj.display)); %height(onesubj);
     for trial = 1:ntrials
+        torate = onesubj.display(trial);
+        if ~isnan(torate) %skip those trials
+            rating = ratings(torate) + normrnd(0,epsilon); %mean 0, std epsilon
+            rating(rating<0)=0; rating(rating>100) = 100;
+            real_epsilon = [real_epsilon; subj rating ratings(torate) rating-ratings(torate)];
+        else
+            rating = NaN;
+        end
+        if modeltosim.delta & trial > 1
+            costs = setNewCosts(costs,delta,trial);
+        end
         task = onesubj.task(trial);
-        updates = onesubj.nupdates(trial);%./(max(onesubj.nupdates));
-        misses = onesubj.nmisses(trial);%./(max(onesubj.nmisses)); %normalize between 0 and 1
-        %misses = ceil(rand().*4);
-        mains = onesubj.maintained(trial);%./(max(onesubj.maintained));
-        %mains = ceil(rand().*4);
-        cost = uc*updates;
-        if modeltosim.mc
-            cost = cost + mc*misses;
-        end
-        if modeltosim.mainc
-            cost = cost+ mainc*mains;
-        end
+        updates = nupdates(trial);misses = nmisses(trial); mains = nmaintained(trial); matches = nmatches(trial); noise = noisiness(trial); nresp = responses(trial); lures = nlures(trial);
+        cost = costs*[nupdates(trial);nmisses(trial);nmaintained(trial);nmatches(trial);noisiness(trial);responses(trial);nlures(trial)]; %add all the costs together
         if modeltosim.alpha
             ratings(task) = ratings(task) + alpha*(cost-ratings(task)); %delta rule
-        else %alpha is fixed
-            ratings(task) = ratings(task) + alpha*(cost); %not a learning rate of one
+        else %alpha fixed or no alpha
+            %ratings(stim) = ratings(stim) + alpha*(cost); %compounding cost model
+            ratings(task) = cost; %no learning, no compounding, no delta rule. just a basic regression on last round
         end
-        noiselessri(trial) = ratings(task);
-        rating = ratings(task) + normrnd(0,epsilon); %mean 0, std epsilon
-        rating(rating<0)=0; rating(rating>bounds(2)) = bounds(2);
-        real_epsilon = [real_epsilon; subj rating ratings(task) rating-ratings(task)];
-        simdata = [simdata; subj task rating updates uc misses mc mains mainc];
+        simdata = [simdata; subj task rating torate updates misses mains matches noise nresp lures];
     end %of one subj run-through
-    
     real_epsilon_opt(subj) = sqrt((1/ntrials) * sum(real_epsilon(:,4)).^2);
     end %of simulating all subjects
 end

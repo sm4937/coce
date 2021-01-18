@@ -1,13 +1,17 @@
 
-#bullshit from matlab
+#bullshit from matlab and unnecessary file types
 make_data_table.asv
 group_level.asv
 *~
 *.asv
+*.jpg
+*.fig
+*.eps
 
 #data folders and files
 pilotdata/*
 data/*
+simdata/*
 mturk_hit_bookkeeping.xlsx
 ~$mturk_hit_bookkeeping.xlsx
 free_response_log.txt

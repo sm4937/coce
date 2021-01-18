@@ -42,6 +42,7 @@ if preloadflag
             oneperson.stimnum = data.stimnum(idx);
             oneperson.nmatches = double(string(data.nmatches(idx)));
             oneperson.nmatches(isnan(oneperson.nmatches)) = 0; %replace NaN's with 0
+            oneperson.keypress = data.key_press(idx);
             tosim = [tosim; oneperson];
             end
         end
@@ -53,135 +54,34 @@ end
 
 n_tasks = length(unique(tosim.task(~isnan(tosim.task))));
 tasklabels = {'1-detect','1-back','2-back','3-detect'};
-nsubjs = 2; %how many simulated subjects? fixed for now
-subjcolors = rand(nsubjs*2);subjcolors(:,4:end) = []; %delete unnecessary columns
-
-%  % SET PARAMETERS %  %
-% AKA
-% model parameters!
-alpha = 0.1; %same for everyone
-init = 0.4; %same for everyone
-noise = 0.2;
-
-params = struct;
-params.alpha = alpha; %learning rate
-params.main = 0.2; %cost of maintenance
-params.inter = 0.2; %cost of interfering stimuli
-params.match = 0.2; %cost of matches
-params.miss = 0.2; %cost of misses
-params.forget = 0.5;
-params.init = init;
-params.noise = noise;
-
-parameters{1} = params;
-
-%overwrite the ones that are different for subject 2
-params.main = 0.1; %cost of maintenance
-params.inter = 0.1; %cost of interfering stimuli
-params.match = 0.1; %cost of matches
-params.miss = 0.1; %cost of misses
-params.forget = 0.6;
-
-parameters{2} = params; %second simulated subject
-%% A first-pass cost model, based on task characteristics
-% %features: 
-% %adapting, changing as task gets learned
-% %maintenance has a cost, interfering stimuli have a cost
-% 
-% %initialize costs of each task
-% cost = init*ones(1,n_tasks); %initialize to 25, start low, allow learning during practice round
-% real_cost = NaN(1,n_tasks);
-% %real_cost(1) = 1;
-% 
-% %simulate some stuff!!
-% figure
-% for subj = 1:nsubjs
-%     params = parameters{subj};
-%     main = params.main; inter = params.inter; match = params.match; miss = params.miss; forget = params.forget;
-%     for block = -1:max(tosim.block) %need to separate out practice blocks later
-%         blockdata = tosim(tosim.block==block,:);
-%         round = block+2;
-%         task = blockdata.task(2)+1;
-%         real_cost(task) = blockdata.BDM(1); %update actual BDM value on each round
-%         n = blockdata.n(2);
-%         blockcost = cost(task);
-%         blockcost = blockcost + main*n; %add maintenance cost
-%         nmatches = nansum(blockdata.nback(blockdata.correct)) + nansum(blockdata.detect(blockdata.correct));
-%         nmisses = nansum(blockdata.nback(~blockdata.correct)) + nansum(blockdata.detect(~blockdata.correct));
-%         blockcost = blockcost + match*nmatches;
-%         blockcost = blockcost - miss*nmisses; %apologetic
-%         idxes = find(blockdata.nback|blockdata.detect);
-%         distractors = 0;
-%         if n>0
-%         for i = 1:nmatches
-%             idx = idxes(i);
-%             within = blockdata(idx-n:idx,:);
-%             other = nansum(within.stimnum(1:n-1)~=within.stimnum(n)); %count stimuli that are not the same
-%             % for 3detect this should always be 0
-%             distractors = distractors + other;
-%         end
-%         end
-%         blockcost = blockcost+(distractors*inter); %inter parameter * distractor
-%         cost(task) = cost(task) + alpha*blockcost;
-%         not = [1:n_tasks];
-%         not(task) = [];
-%         cost(not) = cost(not) - forget*(cost(not)-init); %forget tasks that weren't just completed
-%     end
-%     cost = (cost/25)+1; %go from 1 to 5
-%     real_cost = (real_cost/25)+1; %go from 1 to 5
-%     
-%     scatter(1:length(tasklabels),cost,[],subjcolors(subj,:),'Filled')
-%     hold on
-%     scatter(1:length(real_cost),real_cost,[],subjcolors(subj+1,:),'Filled')
-%     real_cost
-%     legend({'Simulated Costs','Real Costs','Simulated Costs','Real Costs'})
-%     xticks([1:4])
-%     xticklabels(tasklabels)
-%     title('Final Costs of Tasks - 1 Sim Subj')
-% end
-
-%% Second-pass model, where Matlab does the task itself, and costs come from the operations needed for that
-% no threshold yet 
-% work through the n-back round by round
+%% Pull possible costs from subjects' behavior and task presented to them
+% Goes through the tasks round by round to tally the costs incurred by each
+% subject on each round. Does it slightly according to task rules and slightly
+% according to an internal process which is common across tasks.
 
 practiceblocks = tosim(tosim.block==-1,:);
-% how to incorporate practice when I don't have... stimnums... hmm...
-% plus the nmatches is always 3 for everything (except ndetect, which has
-% 2) 
-% leave this for now
+% Will become relevant when I get practice stimnums out of new subjects.
+% But for now, irrelevant.
 
-components = []; %bookkeeping
-
-%let costs of tasks evolve over time
+components = []; %bookkeeping 
+noise = 0; %not really doing this in a biologically plausible way, just setting noise to 0
 for subj = 1:length(unique(tosim.subj))
-    params = parameters{1};
-    %initialize costs of each task
-    init = params.init*100;
-    cost = init*ones(1,n_tasks); %initialize to 25, start low, allow learning during practice round
-    real_cost = NaN(1,n_tasks);
-    main = params.main*10; inter = params.inter*10; match = params.match*10; miss = params.miss*10; forget = params.forget; noise = params.noise;
     oneperson = tosim(tosim.subj==subj,:);
-    for block = 0:max(oneperson.block) %need to separate out practice blocks later
+    for block = 0:max(oneperson.block) 
         blockdata = oneperson(oneperson.block==block,:);
-        nmatches = 0; nmisses = 0; nupdates = 0; noutputs = 0; %initialize cost variables
+        nupdates = 0; nlures = 0; %initialize cost variables
         maintained = NaN(1,2); %keep track of storage over time, to get a sense of maintained info over time
         task = blockdata.task(2)+1;
-        n = blockdata.n(2); matches = sum(blockdata.nback==true|blockdata.detect==true); %number of intended matches
+        n = blockdata.n(2); matches = blockdata.nmatches(2);
         storage = NaN(1,n); %empty storage for n-back
-        blockcost = cost(task); %pull remembered cost from lookup table
         for trial = 2:height(blockdata)
             stim = blockdata.stimnum(trial);
-            if n == 0 %do detection
-                if stim == 3
-                    nmatches = nmatches + (blockdata.detect(trial) == true & blockdata.correct(trial)==true);
-                end
+            if n == 0 %do detection, pretty simple
                 maintained(trial,:) = 0;
             else %n-backs and n-detects
-                if stim == storage(1) % a match!
-                    nmatches = nmatches + 1;
-                else % no match!
-                    if blockdata.nback(trial)==true
-                        nmisses = nmisses + 1; %count misses
+                if task==3 %only in 2-back can there be WM lures inside buffer
+                    if storage(2)==stim
+                        nlures = nlures + 1; %not a real 2-back, but a lure trial
                     end
                 end
                 if sum(stim == storage)==n %full storage remaining the same
@@ -199,78 +99,77 @@ for subj = 1:length(unique(tosim.subj))
                 maintained(trial,:) = storage;
             end
         end
+        % grab noisiness for whole block instead of trial
+        noisiness = sum((blockdata.detect|blockdata.nback)==true&blockdata.correct==false)/max([sum(blockdata.detect|blockdata.nback) 1]);
+        nmatches = sum((blockdata.detect|blockdata.nback)==true&blockdata.correct==true);
+        nmisses = sum((blockdata.detect|blockdata.nback)==true&blockdata.correct==false);
+        nresponses = sum(~isnan(blockdata.keypress(2:end)));
         maintained(1,:) = []; maintained = nanmean(sum(maintained>0,2));
-        blockcost = blockcost + maintained*main; %average maintenance by cost of that
-        blockcost = blockcost + nmatches*match;
-        blockcost = blockcost + nupdates*inter; %interfering cost attributed to updating cost
-        blockcost = blockcost - nmisses*miss;
-        cost(task) = cost(task) + alpha*blockcost;
-        real_cost(task) = blockdata.BDM(1); %update actual BDM value on each round
-        not = [1:n_tasks];
-        not(task) = [];
-        cost(not) = cost(not) - forget*(cost(not)-init); %forget tasks that weren't just completed
         
-        components = [components; subj nmatches maintained nupdates nmisses blockdata.display(1)+1 task cost(task) real_cost(task)];
+        components = [components; subj nmatches maintained nupdates nmisses blockdata.display(1)+1 task blockdata.BDM(1) noisiness nresponses nlures];
     end %end of block by block loop
-    cost = (cost/25)+1; %go from 1 to 5
-    real_cost = (real_cost/25)+1; %go from 1 to 5
-
-%     scatter(1:length(tasklabels),cost,[],subjcolors(subj,:),'Filled')
-%     hold on
-%     scatter(1:length(real_cost),real_cost,[],subjcolors(subj+1,:),'Filled')
-%     legend({'Simulated Costs','Real Costs','Simulated Costs','Real Costs'})
-%     xticks([1:4])
-%     xticklabels(tasklabels)
-%     title('Final Costs of Tasks - 1 Sim Subj')
-
 end
 
 toanalyze = table;
 toanalyze.subj = components(:,1); toanalyze.nmatches = components(:,2);
 toanalyze.maintained = components(:,3); toanalyze.nupdates = components(:,4);
 toanalyze.nmisses = components(:,5); toanalyze.display = components(:,6); 
-toanalyze.task = components(:,7); toanalyze.BDM = components(:,9); 
-% pop things labelled into a table for clarity
-% need to alter BDM column to be reflective of post-task costs (i.e.
-% stagger by one round)
-toanalyze.newBDM = NaN(height(toanalyze),1);
-
-BDMrows = NaN(length(unique(toanalyze.subj)),32); simBDMrows = NaN(length(unique(toanalyze.subj)),32); %also, make meanable variable for BDMs/block
-for subj = 1:length(unique(toanalyze.subj))
-    newcolumn = NaN(32,1);
-    if subj ~= 8 %trim this out for now because for some reason it's broken
-    oldcolumn = toanalyze.BDM(toanalyze.subj==subj);
-    tasklist = toanalyze.task(toanalyze.subj==subj);
-    displayed = toanalyze.display(toanalyze.subj==subj);
-    for task = 2:4
-        realvalues = [];
-        completed = find(tasklist==task);
-        score = find(displayed==task);
-        for i = 1:length(completed)
-            next = score(score>completed(i)); 
-            if length(next)>0
-                next = next(1); %immediately following round
-                realvalues = [realvalues; oldcolumn(next)];
-            else
-                realvalues = [realvalues; NaN];
-            end
-        end
-        newcolumn(completed) = realvalues; %shift everything over by one, last value is now NaN since it influences nothing
-    end
-    toanalyze.newBDM(toanalyze.subj==subj) = newcolumn;
-    BDMrows(subj,:) = newcolumn';
-    simBDMrows(subj,:) = components(components(:,1)==subj,8)';
-    end
-end
-
+toanalyze.task = components(:,7); toanalyze.BDM = components(:,8); 
+toanalyze.noisiness = components(:,9); toanalyze.nresponses = components(:,10);
+toanalyze.nlures = components(:,11);
 %save('simdata/toanalyze.mat','toanalyze')
 
+%% Check out individual differences in measures
+nsubjs = length(unique(tosim.subj));
+
+figure; subplot(2,2,2)
+for misses = 0:4
+    for subj = 1:nsubjs
+        nmisses(subj) = max(toanalyze.nmisses(toanalyze.subj==subj));
+        BDMs = toanalyze.BDM(toanalyze.subj==subj,:);
+        nmissesall(:,subj) = [toanalyze.nmisses(toanalyze.subj==subj); nan(32-sum(toanalyze.subj==subj),1)];
+        misseffect(misses+1,:,subj) = NaN(1,32); %initialize empty
+        idx = find(nmissesall(:,subj)==misses)+1; idx(idx>length(BDMs)) = []; %trim out edges
+        misseffect(misses+1,idx,subj) = BDMs(idx); %catalog BDM effects from misses
+    end
+    scatter(1:nsubjs,sum(nmissesall==misses),'Filled')
+    hold on
+end
+legend({'0','1','2','3','4'})
+title('All Misses per Subject')
+ylabel('Frequency'); xlabel('Subject')
+subplot(2,2,3)
+histogram(nmisses)
+title('Max number of misses for each subject')
+subplot(2,2,1)
+histogram(toanalyze.nmisses)
+title('All misses values all subjects')
+fig = gcf; fig.Color = 'w';
+
+subplot(2,2,4)
+for misses = 0:4
+    scatter(ones(nsubjs,1)*misses,nanmean(misseffect(misses+1,:,:),2),'Filled')
+    hold on
+end
+for subj = 1:nsubjs
+    plot(0:4,nanmean(misseffect(:,:,subj),2),'k--')
+    hold on
+end
+fig = gcf; fig.Color = 'w';
+title('Mean BDM following each # of misses')
+%mean wage for each subject following n misses
+totest = [squeeze(nanmean(misseffect(1,:,:),2)) zeros(nsubjs,1); squeeze(nanmean(misseffect(2,:,:),2)) ones(nsubjs,1); ...
+    squeeze(nanmean(misseffect(3,:,:),2)) 2*ones(nsubjs,1); squeeze(nanmean(misseffect(4,:,:),2)) 3*ones(nsubjs,1); ...
+    squeeze(nanmean(misseffect(5,:,:),2)) 4*ones(nsubjs,1)];
+[~,~,stats] = anova1(totest(:,1),totest(:,2));
+
+%% Simulate some stuff to see if behavior can be captured by these costs
 nsubjs = length(unique(toanalyze.subj))-1;
 subjcolors = rand(nsubjs*2);subjcolors(:,4:end) = []; %delete unnecessary columns
 taskcolors = [0 0.75 0.75; 0.75 0.75 0; 0.75 0 0.75; 0.75 0.75 0.75];
 %plot one subj's learning block by block, to see how the dynamics of this
 %go
-realvssim = [toanalyze.subj toanalyze.display toanalyze.newBDM components(:,8)];
+realvssim = [toanalyze.subj toanalyze.display toanalyze.BDM components(:,8)];
 figure
 subplot(3,2,1)
 for subj = 1:2
@@ -332,7 +231,6 @@ for task = 2:4
     legend({'Real','Sim'})
     ylabel('average BDM value')
 end
-
 
 %% Run linear mixed effect models on simulations
 %mean center the appropriate scores

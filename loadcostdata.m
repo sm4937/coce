@@ -48,7 +48,7 @@ for i = 1:length(subjs)
     if unique(raw_data.exp_version)==3
         [single,failed_counts] = make_data_table_v03(raw_data); %cleaned some stuff up for version 3, ease of analysis
     elseif unique(raw_data.exp_version)==4
-        [single,failed_counts] = make_data_table_v04(raw_data); %cleaned some stuff up for version 3, ease of analysis
+        [single,failed_counts] = make_data_table_v04(raw_data); % % CURRENT TASK VERSION
     else
         [single,failed_counts] = make_data_table(raw_data); 
     end
