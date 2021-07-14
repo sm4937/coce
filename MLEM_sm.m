@@ -49,7 +49,7 @@ for gen = 1:length(genrec)
     simdata = simulate_cost_model(modeltosim,realparamlist,toanalyze);
     
     % What's the correlatedness of each of my components?
-    [~,p] = corr(simdata(:,5:11));
+    [r,p] = corr(simdata(:,5:11))
     
     %% recover subject parameters, and distribution of those parameters
     %pick the model to recover
@@ -141,7 +141,7 @@ xlabel('recovering model')
 ylabel('generating model')
 
 %% model simulations and validation figures
-taskcolors = [0 0.75 0.75; 0.75 0.75 0; 0.75 0 0.75; 0.75 0.75 0.75];
+taskcolors = [0.75 0.75 0.75;0 0.75 0.75; 0.75 0.75 0; 0.75 0 0.75];
 paramcolors = [1 0 0; 1 0.5 0; 1 0 0.5; 0 0 1; 0 0.5 1; 0 0.7 0; 1 1 0];
 
 figure
@@ -166,10 +166,10 @@ for task = 1:(ntasks-1)
         eval(['task' num2str(task) ' = [task' num2str(task) '; curve];'])
     end
 end
-errorbar(nanmean(task1),nanstd(task1)/sqrt(nsubjs),'Color',taskcolors(1,:),'LineWidth',2)
+errorbar(nanmean(task1),nanstd(task1)/sqrt(nsubjs),'Color',taskcolors(2,:),'LineWidth',2)
 hold on
-errorbar(nanmean(task2),nanstd(task2)/sqrt(nsubjs),'Color',taskcolors(2,:),'LineWidth',2)
-errorbar(nanmean(task3),nanstd(task3)/sqrt(nsubjs),'Color',taskcolors(3,:),'LineWidth',2)
+errorbar(nanmean(task2),nanstd(task2)/sqrt(nsubjs),'Color',taskcolors(3,:),'LineWidth',2)
+errorbar(nanmean(task3),nanstd(task3)/sqrt(nsubjs),'Color',taskcolors(4,:),'LineWidth',2)
 title('Group learning curves for each task')
 
 %plot likelihood surface for each parameter

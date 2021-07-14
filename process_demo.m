@@ -40,8 +40,12 @@ else %the columns didn't get condensed properly in jspsych
     edu = NaN; %sexidx-1;
     
     age = acrosscols(ageidx); age = split(age,'":"'); number = split(age(2),'"'); age = str2num(char(number(1)));
-    sex = split(acrosscols(sexidx),':"'); sex = char(sex(2)); sex = split(sex,'"'); sex = sex(1);
-    sex = find(sexes==sex);
+    sex = split(acrosscols(sexidx),':"');
+    try
+        sex = char(sex(2));sex = split(sex,'"'); sex = sex(1);sex = find(sexes==sex);
+    catch
+        sex = NaN;
+    end
     separated = acrosscols;
 end
 
@@ -104,8 +108,11 @@ if length(blurs)>0
         if task==tasks(2)
             n = raw_data.n(raw_data.trial_index==trial);
             task_blurs(1+n) = task_blurs(1+n)+1;
+        elseif sum(contains(string(tasks),string(task)))>0
+            which = find(contains(string(tasks),string(task)));
+            task_blurs(which) = task_blurs(which) + 1; %find which task was blurred, add to tally
         else
-            task_blurs(task==tasks) = task_blurs(task==tasks) + 1; %find which task was blurred, add to tally
+            % do nothing
         end
     end
 else

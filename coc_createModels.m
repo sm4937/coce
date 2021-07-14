@@ -8,7 +8,7 @@ function [model] = coc_createModels(name)
 modelStruct = struct;
 possibleparams = {'uc','epsilon','init','mc','mainc','alpha','delta','matchc','noisec','respc','lurec'};
 
-params = strsplit(name,'_');
+params = strsplit(name,'_'); params = strsplit(name,'-'); %split by both in case you've mixed them up somewhere
 model.nparams = length(params);
 for p = 1:length(possibleparams)
     if sum(contains(params,possibleparams{p}))>0

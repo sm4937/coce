@@ -56,10 +56,24 @@ function create_difficulty_ratings(){
       trial_duration: 60000 //60 seconds to respond
     }] 
   };
+  var rating4 = {
+    timeline: [{
+      type: "html-slider-response",
+      stimulus: stim = fractals[7]+'" width="'+fractal_size+'" height ="'+fractal_size+'"',
+      data:{task: 'difficultyrating', task_displayed: 7, slider_start: srt_point},
+      require_movement: true,
+      labels: ['5','4','3','2','1'],
+      start: srt_point,
+      step: 4,
+      prompt: "<p>How difficult was this task for you (where 1 is very easy, and 5 is very hard)?</p>",
+      trial_duration: 60000 //60 seconds to respond
+    }] 
+  };
 
   rating_timeline.push(rating1);
   rating_timeline.push(rating2);
   rating_timeline.push(rating3);
+  rating_timeline.push(rating4);
 
   return rating_timeline;
 } //end of function

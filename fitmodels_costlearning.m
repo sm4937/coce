@@ -48,7 +48,7 @@ modelStruct.best_model = best_model;
 save(['data/modelfits_' num2str(length(model_names)) '_models_' date '.mat'],'modelStruct')
 end %of fitting if
 
-taskcolors = [0 0.75 0.75; 0.75 0.75 0; 0.75 0 0.75; 0.75 0.75 0.75];
+taskcolors = [0.75 0.75 0.75;0 0.75 0.75; 0.75 0.75 0; 0.75 0 0.75];
 tasklabels = {'1-back','3-detect','2-back'};
     %display variable real quick ^ 
 %% display parameters, model scores, etc.
@@ -58,8 +58,8 @@ tasklabels = {'1-back','3-detect','2-back'};
 %matchc models. doesn't appear to be any effect of mainc on costs
 % uc is low cost, still
 %load('data/modelfits_2_models_06-Jan-2021.mat') %uc, response c
-load('data/modelfits_2_models_13-Jan-2021.mat') %m c, response c, lure c
-%load('data/modelfits_3_models_09-Jan-2021_b.mat') %uc, responsec, lurec
+%load('data/modelfits_2_models_13-Jan-2021.mat') %m c, response c, lure c
+load('data/modelfits_3_models_09-Jan-2021_b.mat') %uc, responsec, lurec
 
 % same as above to compare fits
 load('simdata/toanalyze.mat')
@@ -73,7 +73,7 @@ for name = 1:length(model_names)
     model_labels{name} = strrep(model_names{name},'_','-');
     eval(['model = modelStruct.' model_names{name} ';'])
     %extract AICs by subj
-    AICsbysubj(name,:) = model.AICsbysubj;
+    AICsbysubj(name,:) = model.AICsbysubj(name,:);
 end
 AICs = modelStruct.AICs; bestscore = min(AICs);
 best_model = modelStruct.best_model;
@@ -263,7 +263,7 @@ for p = 1:nparams
         scatter(i,lowparams(subj,p),[],paramcolors(p,:),'Filled')
         hold on
         name = paramnames{p};
-        title(['Fit ' name 's'])
+        title(['Fit ' name])
         xlabel('Fit rank')
         ylabel('Param value')
     end

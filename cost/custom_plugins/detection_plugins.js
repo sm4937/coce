@@ -31,12 +31,6 @@ function setup_detection(practice,loopi){
       }]
     };
 
-    var presentation_screen = {
-      type: "html-keyboard-response",
-      stimulus: '+',
-      trial_duration: 100
-    };
-
     var debrief = {
       type: "html-keyboard-response",
       stimulus: function() {
@@ -52,19 +46,22 @@ function setup_detection(practice,loopi){
 
   ntrials = 15;
 
-  trial_type = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  indices = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14];
-  trial_list = [];
-
-  for(var trial = 0; trial < ntrials; trial++){
-    rand = Math.floor(Math.random()*indices.length);
-    //console.log(rand)
-    idx = indices[rand];
-    //console.log(idx)
-    trial_list.push(trial_type[idx]);
-    //console.log(trial_type)
-    indices.splice(rand,1);//randomly index into indices, use that to reference trial_type, then delete the value
+  rand = Math.random();
+  if(rand<1){ //some blocks with more matches, randomly, approx 1/3 divided
+    nmatches = 2;
   }
+  if(rand<0.66){
+    nmatches = 3;
+  }
+  if(rand<0.33){
+    nmatches = 4;
+  }
+
+  var trial_list = new Array(ntrials);
+  trial_list.fill(0);
+  trial_list.fill(1,0,nmatches);
+  //trial_type = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  trial_list = randomizeList(trial_list);
 
   for(var trial = 0; trial < ntrials; trial++){
     stimnum = Math.floor(Math.random()*num_stim);
@@ -83,12 +80,14 @@ function setup_detection(practice,loopi){
 
   var test_stimuli = [];
     for(var trial = 0; trial < ntrials; trial++){
-      test_stimuli.push({stimulus: stimuli[stimnum_list[trial]], response_color: response_color, correct_key: key_list[trial], data: {detect: data_list[trial], nback: false, n: 0, stimnum: stimnum_list[trial], task: 'detection', correct_key: key_list[trial], tasknum: loopi}})
+      test_stimuli.push({stimulus: stimuli[stimnum_list[trial]], response_color: response_color, correct_key: key_list[trial], data: {detect: data_list[trial], nback: false, n: 0, nmatches: nmatches, stimnum: stimnum_list[trial], task: 'detection', correct_key: key_list[trial], tasknum: loopi}})
     }; 
 
   var detect = {
     timeline: create_color_change_timeline(test_stimuli,"",stamp)
   }
+
+  var tempt = [instructs,detect,debrief];
 
   } else { // make a practice task
 
@@ -158,7 +157,7 @@ function setup_detection(practice,loopi){
 
     var test_stimuli = [];
     for(var trial = 0; trial < ntrials; trial++){
-        test_stimuli.push({stimulus: makeHTML(stimuli[stimnum_list[trial]]), correct_key: key_list[trial], data: {detect: data_list[trial], correct_key: key_list[trial], task: 'detection', tasknum: -1}})
+        test_stimuli.push({stimulus: makeHTML(stimuli[stimnum_list[trial]]), correct_key: key_list[trial], data: {detect: data_list[trial], correct_key: key_list[trial], stimnum: stimnum_list[trial], task: 'detection', tasknum: -1}})
     };
 
     test = []; // empty test variable for practice, build more dynamic feedback by hijacking the plugins
@@ -224,10 +223,10 @@ function setup_detection(practice,loopi){
     var detect = {
       timeline: test
     } // do not TOUCH THIS PIECE OF CODE HOLY mother of god!
-
+    var tempt = [presentation_screen,instructs,detect,debrief];
   }; //end of practice task creation
 
-  timeline = [presentation_screen,instructs,detect,debrief];
+  timeline = tempt;
   return timeline
 };
 

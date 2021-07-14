@@ -3,32 +3,61 @@
 clear all 
 preloadflag = false;
 if preloadflag
-    files = {'29.04.2020.mat','07.05.2020.mat','12.05.2020.mat','13.05.2020.mat','18.05.2020.mat'};
+    files = {'29.04.2020.mat','07.05.2020.mat','12.05.2020.mat','13.05.2020.mat',...
+    '18.05.2020.mat','25.01.2021.mat','26.01.2021.mat','01.02.2021.mat', ...
+    '05.17.2021.mat','05.21.2021.mat','05.24.2021.mat','06.02.2021.mat', '06.08.2021.mat'};
     load('simdata\fullsubjnumbers.mat') %grab usable subjects
     tosim = [];
     for file = 1:length(files)
         load(['data\' files{file}])
+        clear tasklist oneperson
         for row = 1:length(list)
             subj = list(row);
             data = Untitled(Untitled.subjnum==subj,:);
             if height(data)>0 %that subj might not be in that file
             data = sortrows(data,find(ismember(data.Properties.VariableNames,'trial_index'))); %a little jumbled up still
             oneperson = table;
+            display = double(string(data.task_displayed)); % I have to put this early
+            % because subj 98 has duplicate values here, an extra trial
+            % which should be trimmed at the start
+            display(end-15:end) = []; %trim post-task difficulty rating trials
+            if sum(~isnan(display))>32 %one subj has 33 display trials due to rare data saving problem
+                duplicate = find(diff(data.trial_index(~isnan(data.trial_index)))==0);
+                % there's duplicate trial in the mix
+                data(duplicate+1,:) = [];
+            end
             tasknum = double(string(data.tasknum));
             idx = ~isnan(tasknum); %clean this up a little before sim stuff
             oneperson.block = tasknum(idx);
             oneperson.subj = repmat(row,height(oneperson),1);
-            oneperson.n = data.n(idx); oneperson.n(1:10) = 0; %the first 10 trials are 0-back practice
+            oneperson.n = data.n(idx,:); 
+            oneperson.n = double(string(oneperson.n)); %account for "diverse" data types
+            oneperson.n(1:10) = 0; %the first 10 trials are 0-back practice
+            % one subj has a missing n-back separation trial for some
+            % reason
             oneperson.detect = data.detect(idx)==categorical(cellstr('1'));
             oneperson.nback = data.nback(idx)==categorical(cellstr('1'));
             values = double(string(data.value));
-            display = double(string(data.task_displayed)); %the last four values here are for difficulty ratings
-            display(end-15:end) = []; %so trim them
+            display = double(string(data.task_displayed));
+            display(end-15:end) = []; %trim post-task difficulty rating trials
+            % trim practice BDMs from here, too
             oneperson.BDM = NaN(height(oneperson),1); oneperson.display = NaN(height(oneperson),1);
-            d = sum(isnan(oneperson.n))-sum(~isnan(values));
-            oneperson.BDM(isnan(oneperson.n)) = [values(~isnan(values)); NaN(d,1)];
-            d = sum(isnan(oneperson.n))-sum(~isnan(display));
-            oneperson.display(isnan(oneperson.n)) = [display(~isnan(display)); NaN(d,1)];
+            %d = sum(isnan(oneperson.n))-sum(~isnan(values));
+            % so here I'm using isnan(oneperson.n) as a signifier of a
+            % block change. I can also do this how I've done it below:
+            d = sum([false;diff(oneperson.block)>0])-sum(~isnan(values));
+            valuestoinsert = [values(~isnan(values)); NaN(d,1)];
+            d = sum([false;diff(oneperson.block)>0])-sum(~isnan(display));
+            displaytoinsert = [display(~isnan(display)); NaN(d,1)];
+            if sum(abs(diff(oneperson.n))>0)>3 %find subjects with missing key values from BDM trials (1 each)
+                missing = find(abs(diff(oneperson.n))>0); missing = missing(end); missing = oneperson.block(missing+1); %ignore practice block
+                old = valuestoinsert; valuestoinsert = old(1:missing-1,:); 
+                valuestoinsert(missing) = NaN; valuestoinsert = [valuestoinsert; old(missing+1:32)];
+                old = displaytoinsert; displaytoinsert = old(1:missing-1,:); 
+                displaytoinsert(missing) = NaN; displaytoinsert = [displaytoinsert; old(missing+1:32)];
+            end
+            oneperson.BDM([false;diff(oneperson.block)>0]) = valuestoinsert;
+            oneperson.display([false;diff(oneperson.block)>0]) = displaytoinsert;
             oneperson.display(oneperson.display==7) = 3;
             oneperson.BDM = (oneperson.BDM-1)*25; %from 0 to 100, to clarify math stuff
             oneperson.task = NaN(height(oneperson),1);
@@ -47,9 +76,9 @@ if preloadflag
             end
         end
     end %end of loading/formatting
-    save('simdata\simdata_n30.mat','tosim')
+    save('simdata\simdata_n100.mat','tosim')
 else
-    load('simdata\simdata_n30.mat')
+    load('simdata\simdata_n58.mat')
 end
 
 n_tasks = length(unique(tosim.task(~isnan(tosim.task))));
@@ -63,16 +92,20 @@ practiceblocks = tosim(tosim.block==-1,:);
 % Will become relevant when I get practice stimnums out of new subjects.
 % But for now, irrelevant.
 
-components = []; %bookkeeping 
+components = []; trim = []; %bookkeeping 
 noise = 0; %not really doing this in a biologically plausible way, just setting noise to 0
 for subj = 1:length(unique(tosim.subj))
     oneperson = tosim(tosim.subj==subj,:);
+    completed(subj,:) = ceil([sum(oneperson.task==0) sum(oneperson.task==1) sum(oneperson.task==3) sum(oneperson.task==2)]./15);
     for block = 0:max(oneperson.block) 
         blockdata = oneperson(oneperson.block==block,:);
         nupdates = 0; nlures = 0; %initialize cost variables
         maintained = NaN(1,2); %keep track of storage over time, to get a sense of maintained info over time
         task = blockdata.task(2)+1;
         n = blockdata.n(2); matches = blockdata.nmatches(2);
+        if isnan(n) %again, with this duplicate trial for subj 98, causing problems
+            n = blockdata.n(3); matches = blockdata.nmatches(3);
+        end
         storage = NaN(1,n); %empty storage for n-back
         for trial = 2:height(blockdata)
             stim = blockdata.stimnum(trial);
@@ -108,7 +141,17 @@ for subj = 1:length(unique(tosim.subj))
         
         components = [components; subj nmatches maintained nupdates nmisses blockdata.display(1)+1 task blockdata.BDM(1) noisiness nresponses nlures];
     end %end of block by block loop
-end
+%     if sum(completed(subj,2:end)>2)<3 %3 iterations or more for each rated task?
+%         disp(['excluding subj ' num2str(subj)])
+%         components(components(:,1)==subj,:) = [];
+%         trim = [trim;subj];
+%     end
+end %of loop over subjects
+%completed
+
+figure
+histogram(completed(:,end))
+title('Completed 2-backs across subjects')
 
 toanalyze = table;
 toanalyze.subj = components(:,1); toanalyze.nmatches = components(:,2);
@@ -117,33 +160,39 @@ toanalyze.nmisses = components(:,5); toanalyze.display = components(:,6);
 toanalyze.task = components(:,7); toanalyze.BDM = components(:,8); 
 toanalyze.noisiness = components(:,9); toanalyze.nresponses = components(:,10);
 toanalyze.nlures = components(:,11);
-%save('simdata/toanalyze.mat','toanalyze')
+save('simdata/toanalyze.mat','toanalyze','trim')
 
 %% Check out individual differences in measures
-nsubjs = length(unique(tosim.subj));
+subjnums = unique(toanalyze.subj);
+nsubjs = length(subjnums);
 
+measures(:,1) = toanalyze.nmisses; measures(:,2) = toanalyze.nlures;
+names = {'misses','lures'};
+for col = 1:size(measures,2)
 figure; subplot(2,2,2)
+measure = measures(:,col);
 for misses = 0:4
-    for subj = 1:nsubjs
-        nmisses(subj) = max(toanalyze.nmisses(toanalyze.subj==subj));
+    for s = 1:nsubjs
+        subj = subjnums(s);
+        nmisses(s) = max(measure(toanalyze.subj==subj));
         BDMs = toanalyze.BDM(toanalyze.subj==subj,:);
-        nmissesall(:,subj) = [toanalyze.nmisses(toanalyze.subj==subj); nan(32-sum(toanalyze.subj==subj),1)];
-        misseffect(misses+1,:,subj) = NaN(1,32); %initialize empty
-        idx = find(nmissesall(:,subj)==misses)+1; idx(idx>length(BDMs)) = []; %trim out edges
-        misseffect(misses+1,idx,subj) = BDMs(idx); %catalog BDM effects from misses
+        nmissesall(:,s) = [measure(toanalyze.subj==subj); nan(32-sum(toanalyze.subj==subj),1)];
+        misseffect(misses+1,:,s) = NaN(1,32); %initialize empty
+        idx = find(nmissesall(:,s)==misses)+1; idx(idx>length(BDMs)) = []; %trim out edges
+        misseffect(misses+1,idx,s) = BDMs(idx); %catalog BDM effects from misses
     end
     scatter(1:nsubjs,sum(nmissesall==misses),'Filled')
     hold on
 end
 legend({'0','1','2','3','4'})
-title('All Misses per Subject')
+title(['All ' names{col} ' per Subject'])
 ylabel('Frequency'); xlabel('Subject')
 subplot(2,2,3)
 histogram(nmisses)
-title('Max number of misses for each subject')
+title(['Max number of ' names{col} ' for each subject'])
 subplot(2,2,1)
-histogram(toanalyze.nmisses)
-title('All misses values all subjects')
+histogram(measure)
+title(['All ' names{col} ' values all subjects'])
 fig = gcf; fig.Color = 'w';
 
 subplot(2,2,4)
@@ -156,12 +205,14 @@ for subj = 1:nsubjs
     hold on
 end
 fig = gcf; fig.Color = 'w';
-title('Mean BDM following each # of misses')
+title(['Mean BDM following each # of ' names{col}])
 %mean wage for each subject following n misses
-totest = [squeeze(nanmean(misseffect(1,:,:),2)) zeros(nsubjs,1); squeeze(nanmean(misseffect(2,:,:),2)) ones(nsubjs,1); ...
-    squeeze(nanmean(misseffect(3,:,:),2)) 2*ones(nsubjs,1); squeeze(nanmean(misseffect(4,:,:),2)) 3*ones(nsubjs,1); ...
-    squeeze(nanmean(misseffect(5,:,:),2)) 4*ones(nsubjs,1)];
-[~,~,stats] = anova1(totest(:,1),totest(:,2));
+% totest = [squeeze(nanmean(misseffect(1,:,:),2)) zeros(nsubjs,1); squeeze(nanmean(misseffect(2,:,:),2)) ones(nsubjs,1); ...
+%     squeeze(nanmean(misseffect(3,:,:),2)) 2*ones(nsubjs,1); squeeze(nanmean(misseffect(4,:,:),2)) 3*ones(nsubjs,1); ...
+%     squeeze(nanmean(misseffect(5,:,:),2)) 4*ones(nsubjs,1)];
+% [~,~,stats] = anova1(totest(:,1),totest(:,2));
+
+end
 
 %% Simulate some stuff to see if behavior can be captured by these costs
 nsubjs = length(unique(toanalyze.subj))-1;

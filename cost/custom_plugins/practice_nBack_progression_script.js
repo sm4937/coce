@@ -88,7 +88,7 @@ function setup_practice_nBack(n){
     //instructs = [presentation_screen, instructs]; 
   var test_stimuli = [];
   for(var trial = 0; trial < ntrials; trial++){
-     test_stimuli.push({stimulus: makeHTML(stimuli[stimnum_list[trial]]), correct_key: key_list[trial], data: {nback: data_list[trial], detect: detect_list[trial], correct_key: key_list[trial], task: 'n-back', tasknum: -1, n: n, practice: true}})
+     test_stimuli.push({stimulus: makeHTML(stimuli[stimnum_list[trial]]), correct_key: key_list[trial], data: {nback: data_list[trial], detect: detect_list[trial], correct_key: key_list[trial], task: 'n-back', stimnum: stimnum_list[trial], tasknum: -1, n: n, practice: true}})
   };      
   var debrief = {
     type: "html-keyboard-response",

@@ -26,19 +26,11 @@ function setup_detection_n(practice_flag,loopi,n){ //called n-back but it's both
       type: "html-keyboard-response",
       stimulus: function() {
         //var n_back_instructs = '<p>In this task, you will need to press <strong>' + answer_key_names[0] + '</strong> every time you see the same letter you saw ' + String(n) + ' letters ago.</p> <p>If the image on screen was not the one you saw ' + String(n) + ' letters ago, do not press anything.</p><p>If you see a T, press <strong>'+ answer_key_names[1] + '</strong> as fast as you can.</p><p>Pay attention! If you are not at least ' + String(cutoff_percent) + '% accurate, you will not earn points for completing this task.</p> <p>Press space to begin.</p>';
-        var instructs_text = '<p>In this task, you will press a button every time you see the same letter ' + String(n+1) + ' times in a row (we call this a match).</p><p>When you see a match, you need to press <strong>' + answer_key_names[0] + '</strong>.</p><p>If the letter on screen is not the same one you saw ' + String(n-1) + ' and ' + String(n) + ' letters ago, do not press anything.</p><p>There may be multiple targets in a row.</p><p>Press any key to begin.</p>'; 
+        var instructs_text = '<p>In this task, you will press a button every time you see the same letter ' + String(n+1) + ' times in a row (we call this a match).</p><p>When you see a match, you need to press <strong>' + answer_key_names[0] + '</strong>.</p><p>If the letter on screen is not the same one you saw ' + String(n-1) + ' and ' + String(n) + ' letters ago, do not press anything.</p><p>There may be multiple matches in a row.</p><p>Press any key to begin.</p>'; 
           //return "<p style='font-size:25px'>" + n_back_instructs + " </p>";
         return instructs_text;
       },
       trial_duration: instructs_timing //30 seconds to respond
-    }]
-  };
-
-  var presentation_screen = {
-    timeline: [{
-      type: "html-keyboard-response",
-      stimulus: '+',
-      trial_duration: 100
     }]
   };
 
@@ -149,6 +141,8 @@ function setup_detection_n(practice_flag,loopi,n){ //called n-back but it's both
     }
   };
 
+  var tempt = [instructs,detection,debrief];
+
   if(practice_flag){ //write practice task n = 10 trials
     test = []; // empty test variable for practice, build more dynamic feedback by hijacking the plugins
     for(var i = 0; i < test_stimuli.length; i++){
@@ -228,9 +222,11 @@ function setup_detection_n(practice_flag,loopi,n){ //called n-back but it's both
       }
     };
 
+    var tempt = [presentation_screen,instructs,detection,debrief];
+
   } // end of practice flag
 
-  timeline = [presentation_screen,instructs,detection,debrief];
+  timeline = tempt;
   return timeline;
 
 }; // end of set up function 

@@ -1,6 +1,6 @@
 %% Analysis of cost of control task data 
 % task written in JsPsych, data printed in CSV form
-% Analysis script for version 3 of the task, the n-back version
+% Analysis script for version 4 of the task, the n-back version
 %% Process raw jspsych text file data
 clear all
 
@@ -12,7 +12,9 @@ clear all
 % version 2
 %files = {'24.03.2020.mat','26.03.2020.mat','31.03.2020.mat','07.04.2020.mat'}; %% %wrong # of variables here %'06.04.2020.mat'
 % version 3
-files = {'29.04.2020.mat','07.05.2020.mat','12.05.2020.mat','13.05.2020.mat','18.05.2020.mat'};
+files = {'29.04.2020.mat','07.05.2020.mat','12.05.2020.mat','13.05.2020.mat',...
+    '18.05.2020.mat','25.01.2021.mat','26.01.2021.mat','01.02.2021.mat', ...
+    '05.17.2021.mat','05.21.2021.mat','05.24.2021.mat','06.02.2021.mat', '06.08.2021.mat'};
 % version 4
 [data,excluded] = loadcostdata(files); %load data in
 n = height(data);
@@ -31,24 +33,20 @@ for subj = 1:n
         tasks_overall(subj,task) = nanmean(data.perf(subj,list));
     end
 end
-tasks_rts = [nanmean(data.detectrts,2) nanmean(data.n1rts,2) nanmean(data.n2rts,2) nanmean(data.ndetectrts,2)];
-
-for task = 2
-    data = run_stats(data,task);
-end %run stats separately on 1 and 2 back
-
+tasks_rts = [nanmean(data.detectrts,2) nanmean(data.n1rts,2) nanmean(data.ndetectrts,2) nanmean(data.n2rts,2)];
 data.taskfreqs = [sum(data.task_progression==tasks(1),2) sum(data.task_progression==tasks(2),2) sum(data.task_progression==tasks(3),2) sum(data.task_progression==tasks(4),2)];
 meanBDM = nanmean(data.values(:,2:end),2);
 
 %display variables
 subjcolors = rand(n);subjcolors(:,4:end) = []; %delete unnecessary columns
-taskcolors = [0 0.75 0.75; 0.75 0.75 0; 0.75 0 0.75; 0.75 0.75 0.75];
+taskcolors = [0.75 0.75 0.75;0 0.75 0.75; 0.75 0.75 0; 0.75 0 0.75];
 %style variables
 NFCcolors = [.5 0 .5; .75 0 .75; .95 0 .95];
 SAPScolors = [0 .25 .25; 0 .5 .5; 0 .75 .75];
 
 % list = data.subjnum;
-% save('fullsubjnumbers.mat','list');
+% save('simdata/fullsubjnumbers.mat','list');
+paper_graphs_and_stats_v04()
 
 %% Check data quality - how long each task takes, how many times they've been completed
 
@@ -356,7 +354,7 @@ ylabel('Accuracy')
 
 %test statistical deviation from ceiling on specific blocks
 for i = 1:32
-[h,p] = ttest(100.*ones(30,1),data.detectacc(:,i));
+[h,p] = ttest(100.*ones(n,1),data.detectacc(:,i));
 if p < 0.05
 disp(['block ' num2str(i) ', p = ' num2str(p)])
 end
@@ -604,28 +602,6 @@ fig = gcf;
 fig.Color = 'w';
 ylim([1 5.1])
 
-for task = 1:3
-    eval(['columns = [n' num2str(task) 'effect(:,2) n' num2str(task) 'effect(:,5)];']);
-    trim = isnan(columns(:,1))|isnan(columns(:,2));
-    columns(trim,:) = [];
-    [r,p] = corr(columns(:,1),columns(:,2),'Type','Spearman');
-    disp(['effect of prev matches on BDM, ' tasklabels{task+1} ': r = ' num2str(r) ' p = ' num2str(p)])
-end
-
-% for task = 1:2
-%     subplot(3,3,task+6)
-%     for subj = 1:n
-%         eval(['y = data.n' num2str(task) 'matcheffect(subj,:);'])
-%         plot(1:3,y,'LineWidth',1.5)
-%         hold on
-%     end
-%     title(['Match "effect" on BDM from last ' num2str(task) '-back'])
-%     eval(['y = data.n' num2str(task) 'matcheffect;'])
-%     errorbar(nanmean(y),nanstd(y)/sqrt(n),'k','LineWidth',1.5)
-%     xticklabels({'3','4','5'})
-%     xlabel('Matches in Last Round of Task')
-%     legend({'Subj 1','Subj 2','...','Subj n'})
-% end
 
 figure
 subplot(2,2,1)
@@ -1190,13 +1166,15 @@ fig.Color = 'w'; ax.FontSize = 12;
 %is high NFC-er's baseline EF better/higher? maybe
 [~,~,stats] = anova1(pracn2acc,split);
 
+%group breakdowns
 maxlength = min([sum(split==1) sum(split==2) sum(split==3)]);
-toolong = [sum(split==1) sum(split==2) sum(split==3)]>maxlength;
-idxes = find(split==find(toolong));
-split(idxes(end)) = NaN; %trim it so it's 9, 9, and 9
-matrix = [pracn0acc pracn1acc pracn2acc prac3dacc split];
-matrix = sortrows(matrix,5); matrix(isnan(matrix(:,5)),:) = []; matrix(:,5) = [];
-[~,~,stats] = anova2(matrix,length(unique(split(~isnan(split)))));
+distances = [sum(split==1) sum(split==2) sum(split==3)]-maxlength;
+trim = find(distances>0); matrix = [pracn0acc pracn1acc pracn2acc prac3dacc split];
+for t = 1:length(trim)
+    idxes = find(split==trim(t)); matrix(idxes(end-(distances(trim(t))-1):end),:) = []; %trim larger NFC groups, need standard size for ANOVA
+end
+matrix = sortrows(matrix,5); matrix(isnan(matrix(:,5)),:) = [];
+[~,~,stats] = anova2(matrix(:,1:4),maxlength);
 
 %2-way anova on overall accuracy by task and NFC group
 tasklist = [repmat(1,n,1); repmat(2,n,1); repmat(3,n,1); repmat(4,n,1)];
@@ -1305,56 +1283,6 @@ for measure = 1:2
     matrix = [ratings repmat(split,3,1) tasklist];
     %[~,~,stats] = anovan(matrix(:,1),{matrix(:,2),matrix(:,3)},'model','interaction','varnames',{'NFC','task'});
 end
-
-%% modeling results x individual differences
-% first, NFC by linear mixed effects
-split = tertileSplit(data.NFC);
-
-figure
-subplot(1,2,1)
-bar(1,nanmean(data.n2intercept(split==1)),'FaceColor',NFCcolors(1,:));
-hold on
-bar(2,nanmean(data.n2intercept(split==2)),'FaceColor',NFCcolors(2,:)); 
-bar(3,nanmean(data.n2intercept(split==3)),'FaceColor',NFCcolors(3,:));
-errorbar([nanmean(data.n2intercept(split==1)) nanmean(data.n2intercept(split==2)) nanmean(data.n2intercept(split==3))], ...
-    [nanstd(data.n2intercept(split==1)) nanstd(data.n2intercept(split==2)) nanstd(data.n2intercept(split==3))]./[sqrt(sum(split==1)) sqrt(sum(split==2)) sqrt(sum(split==3))], ...
-    'k','LineWidth',1.5)
-scatter(ones(sum(split==1),1),data.n2intercept(split==1),[],'k','Filled')
-scatter(2.*ones(sum(split==2),1),data.n2intercept(split==2),[],'k','Filled')
-scatter(3.*ones(sum(split==3),1),data.n2intercept(split==3),[],'k','Filled')
-ylabel({'Mean Intercepts'})
-title('Mixed Effect Intercepts by NFC group')
-xticks([1:3])
-xticklabels({'Low NFC','Mid NFC','High NFC'})
-ax = gca; fig = gcf; 
-fig.Color = 'w'; ax.FontSize = 12;
-
-subplot(1,2,2)
-bar(1,nanmean(data.n2slope(split==1)),'FaceColor',NFCcolors(1,:));
-hold on
-bar(2,nanmean(data.n2slope(split==2)),'FaceColor',NFCcolors(2,:)); 
-bar(3,nanmean(data.n2slope(split==3)),'FaceColor',NFCcolors(3,:));
-errorbar([nanmean(data.n2slope(split==1)) nanmean(data.n2slope(split==2)) nanmean(data.n2slope(split==3))], ...
-    [nanstd(data.n2slope(split==1)) nanstd(data.n2slope(split==2)) nanstd(data.n2slope(split==3))]./[sqrt(sum(split==1)) sqrt(sum(split==2)) sqrt(sum(split==3))], ...
-    'k','LineWidth',1.5)
-scatter(ones(sum(split==1),1),data.n2slope(split==1),[],NFCcolors(1,:),'Filled')
-scatter(2.*ones(sum(split==2),1),data.n2slope(split==2),[],NFCcolors(2,:),'Filled')
-scatter(3.*ones(sum(split==3),1),data.n2slope(split==3),[],NFCcolors(3,:),'Filled')
-ylabel({'Mean Slopes'})
-title('Mixed Effect Slopes by NFC group')
-xticks([1:3])
-xticklabels({'Low NFC','Mid NFC','High NFC'})
-ax = gca; fig = gcf; 
-fig.Color = 'w'; ax.FontSize = 12;
-
-[h,p] = ttest2(data.n2intercept(split==1),data.n2intercept(split==3))
-[h,p] = ttest2(data.n2slope(split==1),data.n2slope(split==3))
-
-%is the high high NFC intercept a competence effect?
-idx = ~isnan(data.n2intercept)&split==3;
-[r,~] = corr(data.n2intercept(idx),data.practiceacc(idx,3));
-practicereps = sum(~isnan(data.practiceacc),2);
-[r,p] = corr(data.n2intercept(idx),practicereps(idx));
 
 % look into self-rated competence i.e. how "easy" or "hard" they rated the
 % task to be
@@ -1513,32 +1441,6 @@ if p < 0.05
     lsline
 end
 
-prune = [data.n2intercept, data.diffrating];
-idx = isnan(data.n2intercept)|isnan(data.diffrating);
-prune(idx,:) = [];
-[r,p] = corr(prune(:,1),prune(:,2));
-figure
-subplot(1,2,1)
-scatter(prune(:,1),prune(:,2),'Filled')
-lsline
-title('Intercept on N2 BDM Points by Overall Difficulty Rating')
-xlabel('Subject Intercept')
-ylabel('Subject Difficulty Rating (1 easy, 5 hard)')
-
-subplot(1,2,2)
-iters = sum(~isnan(n2subjvalue),2);
-y = data.n2intercept + (data.n2slope.*iters); 
-scatter(data.diffrating,y,'Filled')
-lsline
-title('Final n2 Slope Effect by Difficulty Rating')
-ylabel('Final n2 value')
-xlabel('Difficulty Rating at End')
-fig = gcf; fig.Color = 'w';
-idx = isnan(y)|isnan(data.diffrating);
-pruned = [y, data.diffrating];
-pruned(idx,:) = [];
-[r,p] = corr(pruned(:,1),pruned(:,2));
-
 subplot(2,2,1)
 for subj = 1:n
     points = NaN(1,default_length);
@@ -1586,13 +1488,24 @@ xlabel('Accuracy')
 end
 
 %% modeling results (parameters) versus behavioral results (NFC and SAPS)
-
-modelfits = load('data/modelfits_2_models_13-Jan-2021.mat'); %miss c, response c, lure c - most recoverable
-%modelfits = load('data/modelfits_3_models_09-Jan-2021_b.mat'); %uc, responsec, lurec - best fitting model thus far
+addpath('HBI/')
+%modelfits = load('data/modelfits_2_models_13-Jan-2021.mat'); %miss c, response c, lure c - most recoverable
+modelfits = load('HBI/HBI_modelStruct.mat');
+no_fits = load('simdata/toanalyze.mat','trim'); no_fits = no_fits.trim;
+% remove subjects who weren't fit to models
+% grab best model
 best_model = modelfits.modelStruct.best_model;
+responsibility = modelfits.modelStruct.best_model.overallfit.responsibility;
+models_at_play = find(sum(responsibility>=0.01,1)>0);
+assignments(responsibility(:,models_at_play(1))>responsibility(:,models_at_play(2))) = models_at_play(1); 
+assignments(responsibility(:,models_at_play(2))>responsibility(:,models_at_play(1))) = models_at_play(2); %split into best model groups
+
+modelnames = best_model.overallfit.fitmodels;
 nparams = best_model.nparams; 
-params = best_model.lowparams; paramnames = best_model.paramnames;
-measures = [data.NFC data.SAPS];
+params = applyTrans_parameters(best_model,best_model.lowparams); paramnames = best_model.paramnames;
+measures = [data.NFC data.SAPS]; measures(no_fits,:) = []; 
+%remove subject NFC and SAPS who don't have model results
+
 names = {'NFC','SAPS'};
 for measure = 1:size(measures,2)
 split = tertileSplit(measures(:,measure));
@@ -1608,6 +1521,7 @@ for p = 1:nparams
     end
     xlabel(names{measure})
     ylabel(paramnames(p))
+    disp([names{measure} ' vs ' paramnames(p) ' r = ' num2str(r) ', p = ' num2str(pval)])
 end
 fig = gcf; fig.Color = 'w';
 
@@ -1634,36 +1548,132 @@ for p = 1:nparams
     disp([paramnames{p} ': ' num2str(pval) 'difference between low and high ' names{measure}])
 end
 fig = gcf; fig.Color = 'w';
+
+figure
+bar([nanmean(column(assignments==models_at_play(1))); nanmean(column(assignments==models_at_play(2)))],'FaceColor','w')
+hold on
+errorbar([nanmean(column(assignments==models_at_play(1))); nanmean(column(assignments==models_at_play(2)))],[nanstd(column(assignments==models_at_play(1))); nanstd(column(assignments==models_at_play(2)))]./sqrt(n),'*k')
+scatter(ones(sum(assignments==models_at_play(1)),1),column(assignments==models_at_play(1)),[],colors(2,:),'Filled')
+scatter(2*ones(sum(assignments==models_at_play(2)),1),column(assignments==models_at_play(2)),[],colors(2,:),'Filled')
+ylabel(names{measure})
+xticklabels(modelnames(models_at_play))
+xtickangle(45)
+fig = gcf; fig.Color = 'w';
+title(['Mean ' names{measure} ' by model class'])
+end
+[h,p] = ttest2(measures([assignments==models_at_play(1)]'&sum(~isnan(measures),2)==2,1),measures([assignments==models_at_play(2)]'&sum(~isnan(measures),2)==2,1))
+disp('NFC across models 1 and 2')
+[h,p] = ttest2(measures([assignments==models_at_play(1)]'&sum(~isnan(measures),2)==2,1),measures([assignments==models_at_play(1)]'&sum(~isnan(measures),2)==2,2))
+disp('SAPS across models 1 and 2')
+[h,p] = ttest2(measures([assignments==models_at_play(2)]'&sum(~isnan(measures),2)==2,1),measures([assignments==models_at_play(3)]'&sum(~isnan(measures),2)==2,1))
+disp('NFC across models 2 and 3')
+[h,p] = ttest2(measures([assignments==models_at_play(2)]'&sum(~isnan(measures),2)==2,1),measures([assignments==models_at_play(3)]'&sum(~isnan(measures),2)==2,2))
+disp('SAPS across models 2 and 3')
+
+% Assign subjects to their model, plot parameters that way
+all_params = best_model.overallfit.parameters; 
+for measure = 1:2
+    if measure == 1
+        split = tertileSplit(data.NFC); colors = NFCcolors;
+    elseif measure == 2
+        split = tertileSplit(data.SAPS); colors = SAPScolors;
+    end
+    plotted = []; count = 0;
+    figure; fig = gcf; fig.Color = 'w';
+    for m = 1:length(models_at_play)
+        modelnum = models_at_play(m);
+        nparams = size(all_params{modelnum},2);
+        name = best_model.overallfit.fitmodels{modelnum};
+        paramnames = strsplit(strrep(name,'c',' cost'),'-');
+        paramnames = strrep(paramnames,'u ','update '); strrep(paramnames,'main ','maintenance ');
+        costs = find(contains(paramnames,'cost'));
+        values = all_params{modelnum}(:,costs);
+        for c = 1:size(costs,2)
+            count = count+1;
+            subplot(3,2,count)
+            for group = 1:3
+                relevant = values(split==group,c);
+                bar(group,nanmean(relevant),'FaceColor',colors(group,:))
+                hold on
+            end
+            errorbar([nanmean(values(split==1,c)) nanmean(values(split==2,c)) nanmean(values(split==3,c))], ...
+            [nanstd(values(split==1,c)) nanstd(values(split==2,c)) nanstd(values(split==3,c))]./sqrt([sum(split==1) sum(split==2) sum(split==3)]),'*k')
+            title(paramnames{costs(c)})
+            xticks([1:group])
+            xticklabels({['Low ' names{measure}],['Mid ' names{measure}],['High ' names{measure}]})
+            [r,pval] = corr(values(~isnan(data.NFC),c),data.NFC(~isnan(data.NFC)));
+            disp([paramnames{costs(c)} ' vs ' names{measure} ': r = ' num2str(r) ', p = ' num2str(pval)])
+            [h,pval] = ttest2(values(split==1,c),values(split==2,c));
+            disp([paramnames{costs(c)} ': ' num2str(pval) 'difference between low and mid ' names{measure}])
+            [h,pval] = ttest2(values(split==3,c),values(split==2,c));
+            disp([paramnames{costs(c)} ': ' num2str(pval) 'difference between high and mid ' names{measure}])
+            [h,pval] = ttest2(values(split==1,c),values(split==3,c));
+            disp([paramnames{costs(c)} ': ' num2str(pval) 'difference between low and high ' names{measure}])
+        end
+        plotted = [plotted paramnames(costs)];
+    end
+end
+
+%% At N = 58, we have too little power to correlate NFC and
+% update/maintenance costs
+% with the r's what they are, how many people would we need to find a
+% significant correlation?
+samplesize_name = {'maintenance','update'};
+rs = [0.14 0.04];
+
+N = 100; %look for 95% power with alpha = 0.05
+
+for measure = 1:length(samplesize_name)
+    nsamples = 10000;
+    alpha = 0.05;
+    conf = 1-alpha;
+    r = zeros(1,nsamples);
+    for j = 1:nsamples
+        xy = normrnd(0,1,N,2);
+        r(j) = corr(xy(:,1),xy(:,2));
+    end
+    cutoff = quantile(r,conf)
+
+    nsamples = 1000;
+    mu = [0; 0];
+    sig = [1 rs(measure); rs(measure) 1];
+    r = zeros(1,nsamples);
+    for j = 1:nsamples
+        xy = mvnrnd(mu,sig,N);
+        r(j) = corr(xy(:,1),xy(:,2));
+    end
+    [power,powerci] = binofit(sum(r>cutoff),nsamples)
+    disp(['power analysis for ' samplesize_name{measure} ' & NFC correlation, N = ' num2str(N)])
 end
 
 %% why high dropout rates?
-figure
-subplot(1,2,1)
-% plot for experiment 1, no longer relevant here
-% bar([sum(excluded.values(excluded.exp_version==1,1:4)) 0 n1])
-% labels = [excluded.labels(1,1:4) ' ' 'finished'];
-% xticklabels([labels])
-% title('Dropout over course of experiment 1')
-% ylabel('n')
+% figure
+% subplot(1,2,1)
+% % plot for experiment 1, no longer relevant here
+% % bar([sum(excluded.values(excluded.exp_version==1,1:4)) 0 n1])
+% % labels = [excluded.labels(1,1:4) ' ' 'finished'];
+% % xticklabels([labels])
+% % title('Dropout over course of experiment 1')
+% % ylabel('n')
+% % ax = gca; fig = gcf;
+% % ax.FontSize = 14;
+% % fig.Color = 'w';
+% for i = 1:height(excluded)
+%     curve = excluded.practice_accuracy(i,:);
+%     plot(1:length(curve),curve)
+%     hold on
+% end
+% title('Accuracy by Practice #, for excluded subjects')
+% ylabel('Accuracy')
+% xlabel('Block #')
 % ax = gca; fig = gcf;
-% ax.FontSize = 14;
-% fig.Color = 'w';
-for i = 1:height(excluded)
-    curve = excluded.practice_accuracy(i,:);
-    plot(1:length(curve),curve)
-    hold on
-end
-title('Accuracy by Practice #, for excluded subjects')
-ylabel('Accuracy')
-xlabel('Block #')
-ax = gca; fig = gcf;
-ax.FontSize = 12; fig.Color = 'w';
+% ax.FontSize = 12; fig.Color = 'w';
 
-subplot(1,2,2)
-bar([sum(excluded.values(excluded.exp_version==4,1:4)) 0 n])
-labels = [excluded.labels(1,1:4) ' ' 'finished'];
+figure
+bar([sum(excluded.values(excluded.exp_version==4,1:4))+n n])
+labels = [excluded.labels(1,1:4) 'finished'];
 xticklabels([labels])
-title('Dropout over course of experiment 3')
+title('# Subjects completed each phase')
 ylabel('n')
 ax = gca; fig = gcf;
 ax.FontSize = 14;

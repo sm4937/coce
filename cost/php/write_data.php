@@ -48,7 +48,6 @@ try {
 } catch(PDOException $e) {
   echo '{"success": false, "message": ' . $e->getMessage() . '}. ';
   //echo ' spit out : ' . $data_array[50][$col_names[40]];
-  // to try: go row by row
 }
 $conn = null;
 ?>

@@ -1,9 +1,9 @@
-function [map,negllh] = getprobs_costlearning(params)
+function [map,negllh,llh] = getprobs_costlearning(params)
 %Get minimum a priori score (MAP) for specific parameter values of cost learning model
 %   Runs model with input value of parameters
 %   Returns map and negllh
 
-global onesim modeltofit mu sigma fit_epsilon_opt noiselessri realsubjectsflag model
+global onesim modeltofit mu sigma fit_epsilon_opt realsubjectsflag HBI_flag
 if ~realsubjectsflag
 % simulated data, not real
 % simdata = [simdata; subj task rating torate updates misses mains matches];
@@ -32,11 +32,13 @@ else %fitting real subject data
     nlures = zscore(onesim.nlures);
 end
 
-model = modeltofit; %make agnostic variable model to send inputs in to param values func without overwriting other stuff outside this loop
-[uc,epsilon,init,mc,mainc,matchc,noisec,respc,lurec,alpha,delta] = setParamValues(params);
-costs = [uc mc mainc matchc noisec respc lurec];
+if HBI_flag
+    params = applyTrans_parameters(modeltofit,params);
+end
+[uc,epsilon,init,mc,mainc,matchc,noisec,respc,lurec,alpha,delta] = setParamValues(params,modeltofit);
 ntrials = sum(~isnan(realratings)); %length(stimuli);
 
+costs = [uc mc mainc matchc noisec respc lurec];
 if ~modeltofit.init %remove intercept by 0-centering judgments
     realratings = realratings-mean(realratings); %remove mean, center at 0
 end
@@ -44,7 +46,7 @@ end
 %simulate the model for one subject at a time
 ratings = init*(ones(1,max(display))); ratings_list = NaN(ntrials,1); %init for each subject 
 costs = repmat(costs,ntrials,1);
-if modeltofit.delta 
+if model.delta 
     for trial = 1:ntrials
         costs(trial,:) = setNewCosts(costs(trial,:),delta,trial);
     end
@@ -58,7 +60,7 @@ for trial = 1:ntrials
         rating = ratings(torate); ratings_list(trial) = rating; %ratings(stim) 
     end %end of disqualifying data type for displayed task
     
-    if modeltofit.alpha
+    if model.alpha
         ratings(stim) = ratings(stim) + alpha.*(cost(trial)-ratings(stim)); %delta rule
     else %alpha fixed or no alpha
         %ratings(stim) = ratings(stim) + alpha*(cost); %compounding cost model
@@ -66,15 +68,20 @@ for trial = 1:ntrials
     end
 end
 %calculate epsilon optimally
-epsilon_opt = sqrt((1/ntrials) * sum(realratings(~isnan(realratings)) - ratings_list).^2);
-if ~modeltofit.epsilon; epsilon = epsilon_opt; end
+% epsilon_opt = sqrt((1/ntrials) * sum(realratings(~isnan(realratings)) - ratings_list).^2); fit_epsilon_opt(subj) = epsilon_opt; %track fit epsilons
+% if ~model.epsilon; epsilon = epsilon_opt; end 
+try
 probs = normpdf(realratings(~isnan(realratings)),ratings_list,epsilon); probs(probs==0) = 1e-100; %can't be 0 exactly for llh
+catch
+    blah = true %what wrong?
+end
 negllh = -nansum(log(probs));
-fit_epsilon_opt(subj) = epsilon_opt; %track fit epsilons
-
-priors = normpdf(params',mu',sigma');
-lprior = sum(log(priors));
-map = negllh-lprior;
+llh = nansum(log(probs)); map = llh;
+if ~HBI_flag %run these calculations if running EM_fit
+    priors = normpdf(params',mu',sigma');
+    lprior = sum(log(priors));
+    map = negllh-lprior;
+end
 end
 
 

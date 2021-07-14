@@ -47,7 +47,7 @@ function setup_nBack(loopi,n){ //called n-back but it's both that and the combin
   //nmatches = 3;
   rand = Math.random();
   if(rand<1){ //some blocks with more matches, randomly, approx 1/3 divided
-    nmatches = 5;
+    nmatches = 2;
   }
   if(rand<0.66){
     nmatches = 4;

@@ -41,8 +41,9 @@ end
 
 %% Grade screeners
 screeners = find(contains(separated,'screener'));
-all_SAPS_answers = find(contains(separated,'agree')|contains(separated,'neutral'));
 all_NFC_answers = find(contains(separated,'characteristic')|contains(separated,'uncertain'));
+all_SAPS_answers = find(contains(separated,'agree')|contains(separated,'neutral'));
+
 if ~isempty(screeners) %exclude screeners from each questionnaire
     for i = 1:length(screeners)
         screenidx = find(ismember(all_NFC_answers,screeners(i)+(corr_flag))); %trim screener from SAPS responses
@@ -108,13 +109,12 @@ if sum(doubledigits)==0
     normalized_NFC = NaN;
 end
 
-%% grade SAPS now, I think it's just a sum??
+%% grade SAPS now
 
 totalSAPS = 0; answered = 0;
 SAPS_standards = 0; SAPS_discrepancy = 0;
 
 standards = [1,3,5,7];
-
 responses = {'stronglydisagree', 'disagree', 'somewhatdisagree', 'neutral', 'somewhatagree', 'agree', 'stronglyagree'};
 for q = 1:length(all_SAPS_answers) %all questions, of 8     
     response = separated(all_SAPS_answers(q));
@@ -136,10 +136,11 @@ for q = 1:length(all_SAPS_answers) %all questions, of 8
 end
 
 normalized_SAPS = totalSAPS/answered; %control for # questions answered
-SAPSs = SAPS_standards;
-SAPSd = SAPS_discrepancy;
+SAPSs = SAPS_standards; %two subtypes of SAPS, which assess for standards
+SAPSd = SAPS_discrepancy; %and discrepancy perfectionism
 
 if sum(passed_screeners)==0
+    disp('screeners not passed')
     normalized_SAPS = NaN;
     normalized_NFC = NaN;
     SAPSs = NaN;

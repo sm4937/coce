@@ -1,0 +1,50 @@
+cbm_hbi_hbi                                       22-Jun-2021 22:44:52
+Running hierarchical bayesian inference (HBI)...
+
+HBI has been initialized according to
+	epsilon_init_alpha_mc_mainc_lurec_uc_respc.mat [for model 1]
+ 
+Number of samples: 100
+Number of models: 1
+======================================================================
+Iteration 01
+Iteration 02
+                                                           dL:   57.00
+                                                           dx:    0.29
+Iteration 03
+                                                           dL:   64.47
+                                                           dx:    0.22
+Iteration 04
+                                                           dL:   23.60
+                                                           dx:    0.15
+Iteration 05
+                                                           dL:   10.50
+                                                           dx:    0.11
+Iteration 06
+                                                           dL:    5.49
+                                                           dx:    0.07
+Iteration 07
+                                                           dL:    3.90
+                                                           dx:    0.04
+Iteration 08
+                                                           dL:    5.84
+                                                           dx:    0.04
+Iteration 09
+                                                           dL:    2.60
+                                                           dx:    0.03
+Iteration 10
+                                                           dL:    0.44
+                                                           dx:    0.03
+Iteration 11
+                                                           dL:    0.41
+                                                           dx:    0.02
+Iteration 12
+                                                           dL:    0.32
+                                                           dx:    0.02
+Iteration 13
+                                                           dL:    0.23
+                                                           dx:    0.01
+Iteration 14
+                                                           dL:    0.16
+                                                           dx:    0.01
+                                                          Converged :]

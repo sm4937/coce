@@ -1,9 +1,9 @@
-function [uc,epsilon,init,mc,mainc,matchc,noisec,respc,lurec,alpha,delta] = setParamValues(params)
+function [uc,epsilon,init,mc,mainc,matchc,noisec,respc,lurec,alpha,delta] = setParamValues(params,model)
 %   Scale, set parameter values for cost learning models
-global realparamlist model scalingvector canbeneg
+global realparamlist scalingvector canbeneg
 
 labels = fieldnames(model); not_params = sum(contains(labels,'paramnames')|contains(labels,'nparams'));
-cost_scaling = 25;
+cost_scaling = 25; %put at 1 for testing HBI_coc code, broke
 scalingvector = ones(1,length(params)); canbeneg = false(1,length(params));
 
 epsilon = 10; init = 0; alpha = 0; delta = 0;

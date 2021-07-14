@@ -18,6 +18,7 @@
         <script src="./custom_plugins/n-switch_plugins.js"></script>
         <script src="./custom_plugins/practice_nBack_progression_script.js"></script>
         <script src="./custom_plugins/detection_plugins.js"></script>
+        <script src="./custom_plugins/detection_n_plugins.js"></script>
         <script src="./custom_plugins/test_detection.js"></script>
         <script src="./custom_plugins/main_timeline_creation.js"></script>
         <script src="./custom_plugins/questionnaires.js"></script>
@@ -41,11 +42,12 @@
     </body>
     <script>
 
-      var exp_version = 3; //Math.ceil(Math.random()*2); //randomize for simplicity of running from home
+      var exp_version = 4; //Math.ceil(Math.random()*2); //randomize for simplicity of running from home
       // we're fixing to 2, because version 1 is two extremes rather than version 2, which is a better balance of task difficulties
       // 1 is the combine, detection version
       // 2 is the n-switch version
       // 3 is the n-back version
+      // 4 is the n-back version with a 3-target detection task (ndetection)
       var subjnum = String(exp_version) + String(Math.round(Math.random()*10**7)); //eight numbers should suffice?
 
       var debug = false;
@@ -79,7 +81,7 @@
       var fractal_size = "250";
       var stamp_size = "100";
       var fractal_locs = './static/img/';
-      var fractals_imgs = ['fractal1.jpg','fractal2.png','fractal3.jpg','fractal4.png','fractal5.jpg','fractal6.jpg','fractal7.png'];
+      var fractals_imgs = ['fractal1.jpg','fractal2.png','fractal3.jpg','fractal4.png','fractal5.jpg','fractal6.jpg','fractal7.png','fractal8.jpg'];
       /*var fractals = ['<img src="./static/img/fractal1.jpg" width="150" height="150" location="center"','<img src="./static/img/fractal2.png" width='+fractal_size+' height='+fractal_size+'', '<img src="./static/img/fractal3.jpg" width="150" height="150"',
       '<img src="./static/img/fractal4.png" width="150" height="150"', '<img src="./static/img/fractal5.jpg" width="150" height="150"',
       '<img src="./static/img/fractal6.jpg" width="150" height="150"', '<img src="./static/img/fractal7.png" width="150" height="150"']; //list out img sources */
@@ -111,15 +113,17 @@
       // SET NUMBER OF BLOCKS HERE
       var n_repetitions = 32;
       if(debug){
-        n_repetitions = 8;
+        n_repetitions = 16;
       }
       //SET NUMBER OF BLOCKS HERE
       //task list 
-      //0 is combine
-      //1 is detection
-      //2 is n-back
-      //3 is n-switch, hard
-      //4 is n-switch, easy
+      //0 is detection
+      //1-3 is n-back
+      //4 is n-switch, hard (0.9 pswitch)
+      //5 is n-switch, easy (0.1 switch)
+      //6 is n-switch, middle difficulty (0.5)
+      //7 is extended detection task
+      
       var task_list = new Array(n_repetitions);
       task_list.fill(0);
       if(exp_version==2){
@@ -127,11 +131,33 @@
         easy_task_ID = 5; //easy n-switch, p(switch)=0.1
       }
       if(exp_version==3){
-        task_list.fill(1,0,(n_repetitions/2)); //6, 7
+        task_list.fill(1,0,(n_repetitions/2));
         task_list.fill(2,n_repetitions/2,n_repetitions);
-        task_list = randomizeList(task_list);
         easy_task_ID = 0; //0-back (detection)
       }
+      if(exp_version==4){
+        task_list.fill(1,0,(n_repetitions/3)); 
+        task_list.fill(2,n_repetitions/3,(2*n_repetitions)/3);
+        task_list.fill(7,(2*n_repetitions)/3,n_repetitions);
+        easy_task_ID = 0; //0-back (detection)
+      }
+
+      var trying = true;
+      while(trying){ //reshuffle task order if there are too many in a row
+        task_list = randomizeList(task_list); //re-randomize if you have to
+        var run = 0;
+        for(var trial = 0; trial < task_list.length; trial++){
+          tasks = [task_list[trial-4], task_list[trial-3], task_list[trial-2], task_list[trial-1], task_list[trial]]; 
+          if(Number.isInteger(sumPoints(tasks)/tasks.length)){ //i.e. they're all the same number, so there is a run of 5 tasks in a row
+            run+=1;
+          }
+        }//end of matchcounting
+        if(run<1){
+          trying = false;
+        } // so, no runs of 5 or more
+
+      } //end of while loop 
+
       const uniqueValues = task_list.filter(unique);
       var n_tasks = uniqueValues.length+1;
       var blocknums = [];
@@ -139,25 +165,6 @@
       blocknums.push([n_repetitions/4,((2*n_repetitions)/4)-1]); //to feed into main timeline creation loop
       blocknums.push([(2*n_repetitions)/4,((3*n_repetitions)/4)-1]); 
       blocknums.push([(3*n_repetitions)/4,n_repetitions-1]); 
-      
-      /*var firstHalf = {
-          timeline: create_main_timeline(blocknums[0],task_list),
-          conditional_function: function(){
-            accuracy = gradeBDMquiz();
-            return compareToCutoff(accuracy);
-          }
-        };
-
-      temp_timeline.push(firstHalf);
-        var secondHalf = {
-          timeline: create_main_timeline(blocknums[1],task_list),
-          conditional_function: function(){
-            accuracy = keepTrackofPerformance();
-            return compareToCutoff(accuracy);
-          }
-        };
-
-      temp_timeline.push(secondHalf);*/
 
       //begin timeline creation:
       var consent_forms = {
@@ -223,12 +230,22 @@
         temp_timeline.push(BDMexplain); //make these more dynamic so people don't see them if it doesn't make sense to see them (i.e. people who are kicked out pre-BDM instructions)
         // for now they're fine here
 
+        // load in pre-questionnaire screen and task difficulty ratings
+        var rating_timeline = {
+          timeline: create_difficulty_ratings(),
+          conditional_function: function(){
+            //accuracy = gradeBDMquiz();
+            //return accuracy>65; //make sure they do at least some of the task before starting questionnaires
+            return true
+          }
+        }
+
         // load need for cognition scale
         var NFC_timeline = {
-          timeline: create_need_for_cognition(),
+          timeline: create_need_for_cognition(), 
           conditional_function: function(){
             accuracy = gradeBDMquiz();
-            return accuracy>65; //make sure they do at least half of the blocks
+            return accuracy>65; //make sure they do at least some of the task
           } 
         } 
 
@@ -248,6 +265,7 @@
           }
         }
 
+        temp_timeline.push(rating_timeline);
         temp_timeline.push(NFC_timeline);
         temp_timeline.push(SAPS_timeline);
         temp_timeline.push(demo_timeline);
@@ -328,6 +346,10 @@
         }
 
         var timeline = temp_timeline;
+        
+        // for debugging new functionality, out of order
+        //var timeline = rating_timeline;
+
         jsPsych.init({
             timeline: timeline,
             preload_images: all_images,

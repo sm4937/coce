@@ -12,6 +12,7 @@ scalingvector = ones(1,modeltofit.nparams); canbeneg = false(1,modeltofit.nparam
 % set fmincon options, settings for model fitting
 options = optimoptions('fmincon','Display','off');
 nparams = modeltofit.nparams;
+subjnums = unique(data(:,1));
 nsubjs = size(unique(data(:,1)),1);
 
 %recover!
@@ -37,7 +38,8 @@ while iters <= maxiters & ~convergence %allow the algorithm to converge early
         bestforsubj = [];
         mu = mus(tries,:); sigma = sigmas(tries,:);
         dbstop in EMfit_sm.m at 40 if sum(isinf(sigma))>0
-        for subj = 1:nsubjs %go over each subject
+        for s = 1:nsubjs %go over each subject
+            subj = subjnums(s);
             if istable(data)
                 idx = data.subj == subj;
             else
@@ -48,7 +50,7 @@ while iters <= maxiters & ~convergence %allow the algorithm to converge early
             for z = 1:5 %z random starts for each subject
                 params = normrnd(mu,sigma); %initialization points, random
                 if z == 1 & (size(bestforsubj,1)==nsubjs)
-                    params = bestforsubj(subj,2:2+(nparams-1));
+                    params = bestforsubj(s,2:2+(nparams-1));
                     % first guess: last best fitting values, if they exist
                 end
                 if modeltofit.epsilon; idx = find(contains(modeltofit.paramnames,'epsilon'));
@@ -63,7 +65,7 @@ while iters <= maxiters & ~convergence %allow the algorithm to converge early
                 % grab parameters from less restrictive model if already
                 % fit, start from there
                 if ~isempty(starting)&iters==1
-                    params = starting(subj,:);
+                    params = starting(s,:);
                     missing = abs(nparams-size(starting,2));
                     params = [params zeros(1,missing)];
                 end
@@ -103,7 +105,8 @@ while iters <= maxiters & ~convergence %allow the algorithm to converge early
     title('Convergence of high-level parameters')
 end %of trying to find the best mu and sigma
 %score model fit for all subjects individually
-for subj = 1:nsubjs
+for s = 1:nsubjs
+    subj = subjnums(s);
     mu = bestmu; sigma = bestsigma;
     if istable(data)
         idx = data.subj == subj;
@@ -112,7 +115,7 @@ for subj = 1:nsubjs
     end
     onesim = data(idx,:);
     params = bestforsubj(:,2:2+(nparams-1));
-    [bestfit(subj),group_llhs(subj)] = getprobs_costlearning(params(subj,:));
+    [bestfit(s),group_llhs(s)] = getprobs_costlearning(params(s,:));
 end
 
 [modeltofit.map] = min(modelscores);

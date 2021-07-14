@@ -2,7 +2,7 @@
 % go file by file
 
 clear all
-filename = '18.05.2020.mat';
+filename = '06.08.2021.mat';
 subjs = [];
 long_format = load(['data/' filename]);
 long_format = long_format.Untitled;
@@ -21,8 +21,9 @@ for i = 1:length(subjs)
     else
         repeatflag = false;
     end
-    indexs = find(long_format.subjnum == subjnum);
-    index = indexs(end);
+    trial_index = find(contains(long_format.Properties.VariableNames,'trial_index'));
+    long_format = sortrows(long_format,trial_index,'Ascend');
+    indexs = find(long_format.subjnum == subjnum);index = indexs(end);
     if length(indexs)>5 %more than 5 trials completed
     subj_points = double(string(long_format.points(indexs)));
     points = nansum(subj_points);

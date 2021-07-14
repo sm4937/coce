@@ -47,7 +47,7 @@ raw_data.nback = string(raw_data.nback);
 
 %separate out the people who failed from the people who didn't 
 tasknumlist = double(string(raw_data.tasknum));
-tasknumlist = unique(tasknumlist(~isnan(tasknumlist)));
+tasknumlist = unique(tasknumlist(~isnan(tasknumlist)&tasknumlist>-1));
 if sum(~isnan(tasknumlist))>0
     if length(tasknumlist) < default_length
         data.failed = true;
@@ -80,6 +80,8 @@ logrts = log(rts);
 overall_list = double(string(table2array(raw_data(:,overallidx)))); %overall accuracy
 overall = unique(overall_list(~isnan(overall_list)));
 total_length = str2num(char(table2array(raw_data(end,TOTidx))))/60000; %convert msec to minutes
+totalTOT = [raw_data.time_elapsed(end)-raw_data.time_elapsed(3)]/60000;
+
 task_list = table2array(raw_data(:,taskidx));
 exp_version = table2array(raw_data(1,version_idx));
 
@@ -98,6 +100,10 @@ end
 tasks = [categorical(cellstr('detection'));categorical(cellstr('combine'));categorical(cellstr('n-switch'));categorical(cellstr('n-back')); categorical(cellstr('ndetection'))];
 BDM_label = categorical(cellstr('BDM')); % find BDM trials in the sequence
 BDMs = find(task_list == BDM_label);
+if length(BDMs)>default_length %more than 32 BDMs saved = there's a duplicate trial saved
+    match = find(diff(raw_data.tasknum(BDMs))==0);
+    BDMs(match) = []; %delete tag to duplicate trial
+end
 BDM_rt = NaN(1,default_length);
 BDM_rt(1:length(BDMs)) = rts(BDMs);
 displayed = raw_data.task_displayed(BDMs,:)';
@@ -110,7 +116,12 @@ for block = 1:default_length
     tasknum = block-1;
     relevant = raw_data(raw_data.tasknum == tasknum,:);
     if height(relevant)>3
-        first_trials(block) = find(raw_data.trial_index == relevant.trial_index(2));
+        try
+            first_trials(block) = find(raw_data.trial_index == relevant.trial_index(2));
+        catch
+            random_duplicates = find(raw_data.trial_index == relevant.trial_index(2));
+            first_trials(block) = random_duplicates(2);
+        end
         last_trials(block) = find(raw_data.trial_index == relevant.trial_index(end));
         TOT(block) = [relevant.time_elapsed(end)-relevant.time_elapsed(2)]/1000;
     else
@@ -119,7 +130,6 @@ for block = 1:default_length
         TOT(block) = NaN;
     end 
 end
-
 last_trials(isnan(first_trials)) = [];
 first_trials(isnan(first_trials)) = [];
 
@@ -130,6 +140,8 @@ if length(perf_by_block)<default_length
     disp(['check perf_by_block, subject ' string(subjnum) ' data may have stopped saving'])
     d = default_length-length(perf_by_block);
     perf_by_block = [perf_by_block; NaN(d,1)];
+elseif length(perf_by_block)>default_length
+    perf_by_block(1) = []; %practice block snuck in, seen this once when length(perf) = 33
 end
 if isempty(overall)
    overall = nanmean(perf_by_block);
@@ -168,6 +180,7 @@ end
 task_progression = repmat(categorical(cellstr('NULL')),1,default_length);
 nbackacc = NaN(2,default_length); detectacc = NaN(1,default_length); ndetectacc = NaN(1,default_length);
 detectrts = NaN(2,default_length); n1rts = NaN(2,default_length); n2rts = NaN(2,default_length); ndetectrts = NaN(2,default_length); %defaults for concatenating failed subjects
+meanRTs = NaN(1,default_length);
 
 for block = 1:length(first_trials)
     tasknum = block-1;
@@ -190,6 +203,7 @@ for block = 1:length(first_trials)
             ndetectrts(:,block) = [nanmean(correct); nanmean(incorrect)];
             ndetectacc(:,block) = perf_by_block(block);
     end
+    meanRTs(block) = nanmean(correct);
 end
 %% look into characteristics of individual task completion (e.g. ER post-first error)
 init = NaN(1,default_length);
@@ -234,10 +248,14 @@ for block = 1:length(first_trials)
         end
         for i = 1:nmatches(block)
             idx = idxes(i);
+            try
             within = relevant(idx-n:idx,:);
             other = nansum(within.stimnum(1:n-1)~=within.stimnum(n)); %count stimuli that are not the same
             % for 3detect this should always be 0
             distractors(block) = distractors(block) + other;
+            catch
+                distractors(block) = distractors(block) + 0; % do nothing
+            end
         end
     elseif task == tasks(5) %ndetect (2-back but continuous evidence accumulation)
         detect = relevant.detect == '1';
@@ -266,40 +284,40 @@ nbackmatches = matchcount; %count number of matches, n
 
 %% Calculate "effect" of n-back matches on BDM value (like set size effect)
 
-%pick out individual tasks for match effect calculations
-tasks = [categorical({'n1'}),categorical({'n2'})];
-n1effect = []; n2effect = []; % keep track of numbers pulled out here for stats later
-for task = 1:2 %cycle through 1- and 2-back
-    idx = find(displayed == task); 
-    completed = find(task_progression==tasks(task));
-    for trial = 1:length(idx)
-        now = idx(trial);
-        if sum(completed<now)>0 %they've done the last once before
-            last = completed(completed<now); last = last(end);
-            delay = now-last;
-            eval(['n' num2str(task) 'effect = [n' num2str(task) 'effect; matchcount(last) delay values(now) perf_by_block(now)];'])
-        end
-    end
-end
-
-range = 2:4;
-n1matcheffect = NaN(1,length(range)); n2matcheffect = NaN(1,length(range));
-for i = 1:length(range)
-    match = range(i);
-    idx = matchcount == match;
-    idx(end) = []; idx = [false idx];
-    idx2 = missedmatches == match-1;
-    idx2(end) = []; idx2 = [false idx2];
-    matcheffect(i) = nanmean(values(idx));
-    missedeffect(i) = nanmean(values(idx2));
-    existlogical = [~isempty(n1effect) ~isempty(n2effect)]; %sum(n1effect(:,1)==match)>0 sum(n2effect(:,1)==match)>0
-    if existlogical(1)
-        n1matcheffect(i) = nanmean(n1effect(n1effect(:,1)==match,3)); %pull out BDM in n1 when preceding matches was match
-    end
-    if existlogical(2)
-        n2matcheffect(i) = nanmean(n2effect(n2effect(:,1)==match,3));
-    end
-end
+% %pick out individual tasks for match effect calculations
+% tasks = [categorical({'n1'}),categorical({'n2'})];
+% n1effect = []; n2effect = []; % keep track of numbers pulled out here for stats later
+% for task = 1:2 %cycle through 1- and 2-back
+%     idx = find(displayed == task); 
+%     completed = find(task_progression==tasks(task));
+%     for trial = 1:length(idx)
+%         now = idx(trial);
+%         if sum(completed<now)>0 %they've done the last once before
+%             last = completed(completed<now); last = last(end);
+%             delay = now-last;
+%             eval(['n' num2str(task) 'effect = [n' num2str(task) 'effect; matchcount(last) delay values(now) perf_by_block(now)];'])
+%         end
+%     end
+% end
+% 
+% range = 2:4;
+% n1matcheffect = NaN(1,length(range)); n2matcheffect = NaN(1,length(range));
+% for i = 1:length(range)
+%     match = range(i);
+%     idx = matchcount == match;
+%     idx(end) = []; idx = [false idx];
+%     idx2 = missedmatches == match-1;
+%     idx2(end) = []; idx2 = [false idx2];
+%     matcheffect(i) = nanmean(values(idx));
+%     missedeffect(i) = nanmean(values(idx2));
+%     existlogical = [~isempty(n1effect) ~isempty(n2effect)]; %sum(n1effect(:,1)==match)>0 sum(n2effect(:,1)==match)>0
+%     if existlogical(1)
+%         n1matcheffect(i) = nanmean(n1effect(n1effect(:,1)==match,3)); %pull out BDM in n1 when preceding matches was match
+%     end
+%     if existlogical(2)
+%         n2matcheffect(i) = nanmean(n2effect(n2effect(:,1)==match,3));
+%     end
+% end
 
 
 %% look into frustration effects, changed answers, missed trials
@@ -371,6 +389,7 @@ data.subjnum = subjnum;
 data.version = exp_version;
 data.fullscreen = fullscreen;
 data.overall = overall;
+data.totalTOT = totalTOT;
 data.practiceacc = practice_acc;
 data.n1acc = nbackacc(1,:);
 data.n2acc = nbackacc(2,:);
@@ -378,6 +397,7 @@ data.detectacc = detectacc;
 data.ndetectacc = ndetectacc;
 data.values = values;
 data.perf = perf_by_block';
+data.meanRTs = meanRTs;
 data.task_progression = task_progression;
 data.TOT = TOT;
 data.n1rts = n1rts(1,:);
@@ -389,10 +409,10 @@ data.BDMrt = BDM_rt;
 data.nbackmatches = nbackmatches;
 data.nbackmisses = missedmatches;
 data.intendednbackmatches = nmatches;
-data.matcheffect = matcheffect;
-data.n1matcheffect = n1matcheffect;
-data.n2matcheffect = n2matcheffect;
-data.missedeffect = missedeffect;
+% data.matcheffect = matcheffect;
+% data.n1matcheffect = n1matcheffect;
+% data.n2matcheffect = n2matcheffect;
+% data.missedeffect = missedeffect;
 data.posterrorER = furthererrors;
 data.posterrorRT = posterrorRT;
 data.ndetectmatches = ndetectcount;
