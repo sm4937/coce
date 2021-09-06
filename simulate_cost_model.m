@@ -3,11 +3,11 @@ function [simdata] = simulate_cost_model(modeltosim,allparams,toanalyze)
 %parameters
 %Get simdata out, which is plottable and analyzable
     %lower level parameters
-    global real_epsilon_opt realparamlist 
-    nparams = modeltosim.nparams; nsubjs = size(allparams,1);
+    global real_epsilon_opt  
+    nsubjs = size(allparams,1);
     %global simdata %initialize empty
     simdata = [];
-    tasks = unique(toanalyze.task); subjnums = unique(toanalyze.subj);
+    subjnums = unique(toanalyze.subj);
     for subj = 1:nsubjs  %simulate the model for one subject at a time
     real_epsilon = []; params = allparams(subj,:);
     subjnum = subjnums(subj);
@@ -20,9 +20,15 @@ function [simdata] = simulate_cost_model(modeltosim,allparams,toanalyze)
     trialScalar = 1;
     onesubj = repmat(toanalyze(toanalyze.subj==subjnum,:),trialScalar,1); %if
     %using only real subjects
-    nupdates = zeros(length(onesubj.nupdates),1); nupdates(onesubj.nupdates>0,:) = zscore(onesubj.nupdates(onesubj.nupdates>0,:)); % need to edit nupdates because it has so many zeros from irrelevant task 1
-    nmisses = zscore(onesubj.nmisses); nmaintained = zscore(onesubj.maintained); nmatches = zscore(onesubj.nmatches);
-    noisiness = zscore(onesubj.noisiness); responses = zscore(onesubj.nresponses); nlures = zscore(onesubj.nlures);
+    if modeltosim.alpha
+        nupdates = zeros(length(onesubj.nupdates),1); nupdates(onesubj.nupdates>0,:) = zscore(onesubj.nupdates(onesubj.nupdates>0,:)); % need to edit nupdates because it has so many zeros from irrelevant task 1
+        nmisses = zscore(onesubj.nmisses); nmaintained = zscore(onesubj.maintained); nmatches = zscore(onesubj.nmatches);
+        noisiness = zscore(onesubj.noisiness); responses = zscore(onesubj.nresponses); nlures = zscore(onesubj.nlures);
+    elseif (modeltosim.delta || modeltosim.deltai)
+        nupdates = onesubj.nupdates; % need to edit nupdates because it has so many zeros from irrelevant task 1
+        nmisses = onesubj.nmisses; nmaintained = onesubj.maintained; nmatches = onesubj.nmatches;
+        noisiness = onesubj.noisiness; responses = onesubj.nresponses; nlures = onesubj.nlures;        
+    end
     ntrials = sum(~isnan(onesubj.BDM)&~isnan(onesubj.display)); %height(onesubj);
     for trial = 1:ntrials
         torate = onesubj.display(trial);
@@ -33,7 +39,7 @@ function [simdata] = simulate_cost_model(modeltosim,allparams,toanalyze)
         else
             rating = NaN;
         end
-        if modeltosim.delta & trial > 1
+        if (modeltosim.delta || modeltosim.deltai) & trial > 1
             costs = setNewCosts(costs,delta,trial);
         end
         task = onesubj.task(trial);
@@ -43,7 +49,8 @@ function [simdata] = simulate_cost_model(modeltosim,allparams,toanalyze)
             ratings(task) = ratings(task) + alpha*(cost-ratings(task)); %delta rule
         else %alpha fixed or no alpha
             %ratings(stim) = ratings(stim) + alpha*(cost); %compounding cost model
-            ratings(task) = cost; %no learning, no compounding, no delta rule. just a basic regression on last round
+            %ratings(task) = cost; %no learning, no compounding, no delta rule. just a basic regression on last round
+            ratings(task) = ratings(task)+ 1*(cost-ratings(task));
         end
         simdata = [simdata; subjnum task rating torate updates misses mains matches noise nresp lures];
     end %of one subj run-through

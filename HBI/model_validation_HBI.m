@@ -1,19 +1,24 @@
 %% Plot simulated data from HBI model fits
 taskcolors = [0.75 0.75 0.75;0 0.75 0.75; 0.75 0.75 0; 0.75 0 0.75];
 paramcolors = [1 0 0; 1 0.5 0; 1 0 0.5; 0 0 1; 0 0.5 1; 0 0.7 0; 1 1 0];
+tasklabels = {'1-detect','1-back','3-detect','2-back'};
 
-responsibility = cbm.output.responsibility; modelstofit = best_model.overallfit.fitmodels;
-lowparams = cbm.output.parameters; %for accessibility, grab important info from cbi structures
+% responsibility = cbm.output.responsibility; modelstofit = best_model.overallfit.fitmodels;
+% lowparams = cbm.output.parameters; %for accessibility, grab important info from cbi structures
 
 simdata = [];
+% %simulate data from fit parameters, best fitting model for each subject
+% for subj = 1:nsubjs
+%     onesubj = toanalyze(toanalyze.subj == subj,:);
+%     [score,num] = max(responsibility(subj,:)); %identify model which best fit this subject, in particular
+%     %then simulate their data with that model
+%     subj_model = coc_createModels(modelstofit{num});
+%     % input to simulate_cost_model the model specs, then the transformed
+%     % parameters for that subject, then that subject's data
+%     simdata = [simdata; simulate_cost_model(subj_model,applyTrans_parameters(subj_model,lowparams{num}(subj,:)),onesubj)];
+% end
 for subj = 1:nsubjs
-    onesubj = toanalyze(toanalyze.subj == subj,:);
-    [score,num] = max(responsibility(subj,:)); %identify model which best fit this subject, in particular
-    %then simulate their data with that model
-    subj_model = coc_createModels(modelstofit{num});
-    % input to simulate_cost_model the model specs, then the transformed
-    % parameters for that subject, then that subject's data
-    simdata = [simdata; simulate_cost_model(subj_model,applyTrans_parameters(subj_model,lowparams{num}(subj,:)),onesubj)];
+    simdata = [simdata; data{subj}];
 end
 
 %scale things appropriately

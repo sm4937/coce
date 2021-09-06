@@ -1,4 +1,4 @@
-function [llh] = fit_epsilon_init_delta_mainc(params,data)
+function [llh] = dictate_model(params,data)
 %DICTATE_MODEL Dictate which inputs to put into get probs cost learning
 %   Then output llh to be used by CBM fitting procedure
 global HBI_flag onesim modeltofit 

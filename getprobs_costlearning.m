@@ -23,13 +23,23 @@ else %fitting real subject data
     stimuli = onesim.task;
     realratings = (onesim.BDM); %scale down? just added this 11/08/2020 - see how this works
     display = onesim.display;
-    nupdates = zeros(length(onesim.nupdates),1); nupdates(onesim.nupdates>0,:) = zscore(onesim.nupdates(onesim.nupdates>0,:)); % need to edit nupdates because it has so many zeros from irrelevant task 1
-    nmisses = zscore(onesim.nmisses);
-    mains = zscore(onesim.maintained); 
-    nmatches = zscore(onesim.nmatches);
-    noisiness = zscore(onesim.noisiness);
-    responses = zscore(onesim.nresponses);
-    nlures = zscore(onesim.nlures);
+    if modeltofit.alpha
+        nupdates = zeros(length(onesim.nupdates),1); nupdates(onesim.nupdates>0,:) = zscore(onesim.nupdates(onesim.nupdates>0,:)); % need to edit nupdates because it has so many zeros from irrelevant task 1
+        nmisses = zscore(onesim.nmisses);
+        mains = zscore(onesim.maintained); 
+        nmatches = zscore(onesim.nmatches);
+        noisiness = zscore(onesim.noisiness);
+        responses = zscore(onesim.nresponses);
+        nlures = zscore(onesim.nlures);
+    elseif (modeltofit.delta || modeltofit.deltai)
+        nupdates = onesim.nupdates; % need to edit nupdates because it has so many zeros from irrelevant task 1
+        nmisses = onesim.nmisses;
+        mains = onesim.maintained; 
+        nmatches = onesim.nmatches;
+        noisiness = onesim.noisiness;
+        responses = onesim.nresponses;
+        nlures = onesim.nlures;
+    end
 end
 
 if HBI_flag
@@ -46,9 +56,9 @@ end
 %simulate the model for one subject at a time
 ratings = init*(ones(1,max(display))); ratings_list = NaN(ntrials,1); %init for each subject 
 costs = repmat(costs,ntrials,1);
-if model.delta 
-    for trial = 1:ntrials
-        costs(trial,:) = setNewCosts(costs(trial,:),delta,trial);
+if (modeltofit.delta || modeltofit.deltai)
+    for trial = 2:ntrials
+        costs(trial,:) = setNewCosts(costs(trial-1,:),delta,trial);
     end
 end
 components = [nupdates nmisses mains nmatches noisiness responses nlures];
@@ -60,11 +70,12 @@ for trial = 1:ntrials
         rating = ratings(torate); ratings_list(trial) = rating; %ratings(stim) 
     end %end of disqualifying data type for displayed task
     
-    if model.alpha
-        ratings(stim) = ratings(stim) + alpha.*(cost(trial)-ratings(stim)); %delta rule
+    if modeltofit.alpha
+        ratings(stim) = ratings(stim) + alpha.*(cost(trial,:)-ratings(stim)); %delta rule
     else %alpha fixed or no alpha
         %ratings(stim) = ratings(stim) + alpha*(cost); %compounding cost model
-        ratings(stim) = cost(trial); %no learning, no compounding, no delta rule. just a basic regression on last round
+        %ratings(stim) = cost(trial); %no learning, no compounding, no delta rule. just a basic regression on last round
+        ratings(stim) = ratings(stim)+ 0.5*(cost(trial,:)-ratings(stim));
     end
 end
 %calculate epsilon optimally

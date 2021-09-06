@@ -1,50 +1,41 @@
-cbm_hbi_hbi                                       22-Jun-2021 22:44:52
+cbm_hbi_hbi                                       04-Aug-2021 01:35:11
 Running hierarchical bayesian inference (HBI)...
 
 HBI has been initialized according to
-	epsilon_init_alpha_mc_mainc_lurec_uc_respc.mat [for model 1]
+	epsilon_init_mc_mainc_lurec_uc_respc_delta.mat [for model 1]
  
 Number of samples: 100
 Number of models: 1
 ======================================================================
 Iteration 01
 Iteration 02
-                                                           dL:   57.00
-                                                           dx:    0.29
+                                                           dL:  301.76
+                                                           dx:    0.91
 Iteration 03
-                                                           dL:   64.47
-                                                           dx:    0.22
+                                                           dL:   64.13
+                                                           dx:    0.42
 Iteration 04
-                                                           dL:   23.60
-                                                           dx:    0.15
+                                                           dL:   14.85
+                                                           dx:    0.19
 Iteration 05
-                                                           dL:   10.50
-                                                           dx:    0.11
+                                                           dL:    4.67
+                                                           dx:    0.08
 Iteration 06
-                                                           dL:    5.49
-                                                           dx:    0.07
+                                                           dL:    1.82
+                                                           dx:    0.04
 Iteration 07
-                                                           dL:    3.90
-                                                           dx:    0.04
+                                                           dL:    0.80
+                                                           dx:    0.03
 Iteration 08
-                                                           dL:    5.84
-                                                           dx:    0.04
+                                                           dL:    0.36
+                                                           dx:    0.02
 Iteration 09
-                                                           dL:    2.60
-                                                           dx:    0.03
+                                                           dL:    0.13
+                                                           dx:    0.02
 Iteration 10
-                                                           dL:    0.44
-                                                           dx:    0.03
-Iteration 11
-                                                           dL:    0.41
-                                                           dx:    0.02
-Iteration 12
-                                                           dL:    0.32
-                                                           dx:    0.02
-Iteration 13
-                                                           dL:    0.23
+                                                           dL:    0.00
                                                            dx:    0.01
-Iteration 14
-                                                           dL:    0.16
+Iteration 11
+                                                           dL:   -0.07
                                                            dx:    0.01
                                                           Converged :]

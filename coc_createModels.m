@@ -6,10 +6,14 @@ function [model] = coc_createModels(name)
 %   number of parameters, and which ones they are.
 
 modelStruct = struct;
-possibleparams = {'uc','epsilon','init','mc','mainc','alpha','delta','matchc','noisec','respc','lurec'};
+possibleparams = {'uc','epsilon','init','mc','mainc','alpha','delta','deltai','matchc','noisec','respc','lurec'};
 
-params = strsplit(name,'_'); params = strsplit(name,'-'); %split by both in case you've mixed them up somewhere
-model.nparams = length(params);
+params = strsplit(name,'_'); 
+if length(params)<2
+    params = strsplit(name,'-');
+    %split by both in case you've mixed them up somewhere
+end
+
 for p = 1:length(possibleparams)
     if sum(contains(params,possibleparams{p}))>0
         eval(['model.' possibleparams{p} ' = true;'])
@@ -17,6 +21,59 @@ for p = 1:length(possibleparams)
         eval(['model.' possibleparams{p} ' = false;'])
     end
 end
+% I'm implementing it this way so deltai is always last on the list of
+% parameters
+% This way, the extra delta parameters which are implied by the 'deltai'
+% parameter are able to expand into the end of the total nparams and list
+% of parameters when model fitting & simulating is trying to assign values
+% to delta parameters which are not explicitly defined here
+
+if sum(contains(params,'deltai'))>0
+    model.deltai = true;
+    model.delta = false; %this is what you'll use if all parameters 
+    % have the same delta, which is false when deltai is in play
+    params(contains(params,'deltai')) = [];
+    % delete deltai entry
+    %model is specified to have diff deltas for diff costs
+    if model.uc
+        model.deltaupdate = true;
+        params{end+1} = 'deltaupdate';
+    else
+        model.deltaupdate = false;
+    end
+    if model.mc
+        model.deltamiss = true;
+        params{end+1} = 'deltamiss';
+    else
+        model.deltamiss = false;
+    end
+    if model.mainc
+        model.deltamain = true;
+        params{end+1} = 'deltamain';
+    else
+        model.deltamain = false;
+    end
+    if model.respc
+        model.deltaresp = true;
+        params{end+1} = 'deltaresp';
+    else
+        model.deltaresp = false;
+    end
+    if model.lurec
+        model.deltalure = true;
+        params{end+1} = 'deltalure';
+    else
+        model.deltalure = false;
+    end
+else
+    model.deltaupdate = false;
+    model.deltamiss = false;
+    model.deltamain = false;
+    model.deltaresp = false;
+    model.deltalure = false;
+end
+
+model.nparams = length(params);
 model.paramnames = params;
 
 end

@@ -1,9 +1,9 @@
 function [uc,epsilon,init,mc,mainc,matchc,noisec,respc,lurec,alpha,delta] = setParamValues(params,model)
 %   Scale, set parameter values for cost learning models
-global realparamlist scalingvector canbeneg
+global scalingvector canbeneg
 
 labels = fieldnames(model); not_params = sum(contains(labels,'paramnames')|contains(labels,'nparams'));
-cost_scaling = 25; %put at 1 for testing HBI_coc code, broke
+cost_scaling = 20; %put at 1 for testing HBI_coc code, broke
 scalingvector = ones(1,length(params)); canbeneg = false(1,length(params));
 
 epsilon = 10; init = 0; alpha = 0; delta = 0;
@@ -60,9 +60,22 @@ if model.alpha
 end
 if model.delta
     idx = find(contains(model.paramnames,'delta'));
-    scalingvector(idx) = 0.1; %tiny delta 
+    idx = idx(1);
+    scalingvector(idx) = 0.20;
     canbeneg(idx) = true;
     delta = params(idx)*scalingvector(idx);
+end
+if model.deltai
+    idx = find(contains(model.paramnames,'delta'));
+    %because of the way code upstream of this has been written
+    % (model definition code) deltai should always be at 
+    % the end of the list of params
+    % such that any additional space at the end of a vector of 
+    % numbers belongs to the extra unnamed delta parameters
+    scalingvector(idx) = 0.20;
+    canbeneg(idx) = true;
+    delta = params(idx).*scalingvector(idx);
+    % delta should now be a vector, not a single number
 end
 
 end

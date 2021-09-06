@@ -41,7 +41,7 @@ meanBDM = nanmean(data.values(:,2:end),2);
 subjcolors = rand(n);subjcolors(:,4:end) = []; %delete unnecessary columns
 taskcolors = [0.75 0.75 0.75;0 0.75 0.75; 0.75 0.75 0; 0.75 0 0.75];
 %style variables
-NFCcolors = [.5 0 .5; .75 0 .75; .95 0 .95];
+NFCcolors = [.25 0 .25; .60 0 .60; .95 0 .95];
 SAPScolors = [0 .25 .25; 0 .5 .5; 0 .75 .75];
 
 % list = data.subjnum;
@@ -304,30 +304,6 @@ xticklabels({'Autocorr 1-back','Autocorr 3-detect','Cross corr'})
 xtickangle(45)
 fig = gcf; fig.Color = 'w';
 
-% figure
-% %what does this bdm x iter thing look like subj by subj?
-% for task = 1:2
-%     subplot(1,2,task)
-%     eval(['toplot = n' num2str(task) 'subjvalue;'])
-%     for subj = 1:n
-%         plot(1:default_length+1,toplot(subj,:))
-%         hold on
-%     end
-%     title(['BDM by iteration: ' num2str(task) '-back'])
-% end
-
-%plot task avoidance, well, sort of
-% for i = 1:n
-%     plot(1:3,data.taskfreqs(i,:),'LineWidth',1)
-%     hold on
-% end
-% ylabel('# of times task completed')
-% title('Task avoidance by subject')
-% xlabel('Task')
-% xticks([1:3])
-% xticklabels(tasklabels)
-% ax = gca; fig = gcf;
-% ax.FontSize = 12; fig.Color = 'w';
 
 % plot task performance by block, any learning or decay?
 figure
@@ -638,72 +614,8 @@ ylabel('Missed matches')
 title('Effect of delay since last time task completed')
 ax = gca; ax.FontSize = 12; fig = gcf; fig.Color = 'w';
 
-figure
-subplot(2,2,1)
-for subj = 1:n
-   effect = data.matcheffect(subj,:); 
-   plot(1:3,effect,'LineWidth',1.5)
-   hold on
-end
-errorbar(1:3,nanmean(data.matcheffect),nanstd(data.matcheffect)/sqrt(n),'k','LineWidth',2)
-legend({'Subj 1','Subj 2','Subj ...','Subj N'},'Location','Best')
-title('"Effect" of N-Back Matches for Each Subject, irrespective of task')
-xticks([1:3])
-xticklabels({'3 matches','4 matches','5 matches'})
-xlabel('Correctly answered n-back matches')
-ylabel('mean BDM value following that number of matches')
-fig = gcf; fig.Color = 'w';
-xlim([0.5 3.5])
-
-subplot(2,2,2)
-for subj = 1:n
-   effect = data.missedeffect(subj,:); 
-   plot(1:3,effect,'LineWidth',1.5)
-   hold on
-end
-errorbar(1:3,nanmean(data.missedeffect),nanstd(data.missedeffect)/sqrt(n),'k','LineWidth',2)
-legend({'Subj 1','Subj 2','Subj ...','Subj N'},'Location','Best')
-title('"Effect" of Missed N-Back Matches for Each Subject, irrespective of task')
-xticks([1:3])
-xticklabels({'2 missed','3 missed','4 missed'})
-xlabel('Missed n-back matches')
-ylabel('mean BDM value')
-fig = gcf; fig.Color = 'w';
-xlim([0.5 3.5])
-
-subplot(2,2,4)
-for subj = 1:n
-    nback = find((data.task_progression(subj,:)==tasks(2))|(data.task_progression(subj,:)==tasks(3)));
-    next = (nback)+1; nback(next==default_length+1) = []; next(next==default_length+1) = []; 
-    BDMs = data.values(subj,next);
-    missed = data.nbackmisses(subj,nback);
-    scatter(missed,BDMs,'Filled')
-    hold on
-end
-xlabel('Number of Missed N-Back Matches')
-ylabel('BDM value')
-title('"Effect" of Missed N-Back Matches for Each Subject')
-
-subplot(2,2,3)
-for subj = 1:n
-    nback = find((data.task_progression(subj,:)==tasks(2))|(data.task_progression(subj,:)==tasks(3)));
-    next = (nback)+1; nback(next==default_length+1) = []; next(next==default_length+1) = []; 
-    BDMs = data.values(subj,next);
-    missed = data.intendednbackmatches(subj,nback);
-    scatter(missed,BDMs,'Filled')
-    hold on
-end
-xlabel('Number of N-Back Matches, missed or correct')
-ylabel('BDM value')
-
-% look at survivor analysis
-% if they made one error on either task, how likely were they to just give
-% up?
 
 %% deal with individual differences in perfectionism
-%style variables
-SAPScolors = [0 .25 .25; 0 .5 .5; 0 .75 .75];
-
 figure
 subplot(1,3,1)
 histogram(data.NFC)
@@ -1164,7 +1076,7 @@ ax = gca; fig = gcf;
 fig.Color = 'w'; ax.FontSize = 12;
 
 %is high NFC-er's baseline EF better/higher? maybe
-[~,~,stats] = anova1(pracn2acc,split);
+[~,~,stats] = anova1(pracn2acc,split,'off');
 
 %group breakdowns
 maxlength = min([sum(split==1) sum(split==2) sum(split==3)]);
@@ -1174,7 +1086,7 @@ for t = 1:length(trim)
     idxes = find(split==trim(t)); matrix(idxes(end-(distances(trim(t))-1):end),:) = []; %trim larger NFC groups, need standard size for ANOVA
 end
 matrix = sortrows(matrix,5); matrix(isnan(matrix(:,5)),:) = [];
-[~,~,stats] = anova2(matrix(:,1:4),maxlength);
+[~,~,stats] = anova2(matrix(:,1:4),maxlength,'off');
 
 %2-way anova on overall accuracy by task and NFC group
 tasklist = [repmat(1,n,1); repmat(2,n,1); repmat(3,n,1); repmat(4,n,1)];
@@ -1188,39 +1100,6 @@ matrix = [reshape(tasks_overall,numel(tasks_overall),1) repmat(split,4,1) taskli
 %% try to understand random effects by plotting one plot/subject, BDM vs.
 %nswitches, NFC as title %%%%%%%
 split = tertileSplit(data.NFC);
-
-% figure
-% for row = 1:n
-%     subplot(6,7,row)
-%     for task = 2:3
-%         nback = find(data.task_progression(row,:)==tasks(task));
-%         nback(ismember(nback,find(inattentive(row,:)))) = []; %prune blocks where subjects obviously weren't paying attention
-%         next = nback+1; nback(next==default_length+1) = []; next(next==default_length+1) = [];
-%         x = data.nbackmatches(row,nback); %x(24) = []; %last value doesn't have a corresponding BDM value
-%         y = data.values(row,next); %y(1) = []; %what do they ask for next time? first value doesn't have a corresponding perf level
-%         if task == 2
-%             color = 'ob';
-%         elseif task == 3
-%             color = 'or';
-%         end
-%         scatter(x,y,color,'Filled')
-%         hold on
-%         title(num2str(data.NFC(row)))
-%         ax = gca; fig = gcf;
-%         ax.FontSize = 12;
-%         fig.Color = 'w';
-%     end
-%     if row>(n-7)
-%         xlabel('N back matches')
-%     end
-%     if mod(row,7)==1
-%         ylabel('BDM value')
-%     end
-%     if row == n
-%         legend({'1-back','2-back'},'Location','Best')
-%     end
-%     linkaxes
-% end
 
 n1 = data.task_displayed == 1;
 n2 = data.task_displayed == 2;
@@ -1575,11 +1454,18 @@ all_params = best_model.overallfit.parameters;
 for measure = 1:2
     if measure == 1
         split = tertileSplit(data.NFC); colors = NFCcolors;
+        % Also, run multiple linear regressions
+        X = [ones(n,1) data.NFC data.NFC.^2];
     elseif measure == 2
         split = tertileSplit(data.SAPS); colors = SAPScolors;
+        X = [ones(n,1) data.SAPS data.SAPS.^2];
     end
+    invalid = sum(isnan(X),2)>0; X(invalid,:) = [];
+    
+    % initialize plotting variables
     plotted = []; count = 0;
     figure; fig = gcf; fig.Color = 'w';
+    
     for m = 1:length(models_at_play)
         modelnum = models_at_play(m);
         nparams = size(all_params{modelnum},2);
@@ -1590,6 +1476,26 @@ for measure = 1:2
         values = all_params{modelnum}(:,costs);
         for c = 1:size(costs,2)
             count = count+1;
+            
+            % run stats on measurement groups
+            [p,~,stats] = anova1(values(:,1),split,'off');
+            if p < 0.05; [compared] = multcompare(stats,'display','on'); end
+            % run group-based & continuous stats
+            [h,pval] = ttest2(values(split==1,c),values(split==2,c));
+            disp([paramnames{costs(c)} ': ' num2str(pval) 'difference between low and mid ' names{measure}])
+            [h,pval] = ttest2(values(split==3,c),values(split==2,c));
+            disp([paramnames{costs(c)} ': ' num2str(pval) 'difference between high and mid ' names{measure}])
+            [h,pval] = ttest2(values(split==1,c),values(split==3,c));
+            disp([paramnames{costs(c)} ': ' num2str(pval) 'difference between low and high ' names{measure}])
+            
+            Y = nanmean(values,2); Y(invalid,:) = [];
+            [betas,BINV,~,~,stats] = regress(Y,X);
+            % get betas for quadratic term
+            predicted = X*betas;
+            distance = predicted-Y; MSE = distance'*distance; %squared distance
+            disp([names{measure} ' betas on ' paramnames{costs(c)} ', linear & quadratic: ' num2str(betas')])
+            
+            % plot effect of measure group on parameter values
             subplot(3,2,count)
             for group = 1:3
                 relevant = values(split==group,c);
@@ -1601,73 +1507,15 @@ for measure = 1:2
             title(paramnames{costs(c)})
             xticks([1:group])
             xticklabels({['Low ' names{measure}],['Mid ' names{measure}],['High ' names{measure}]})
-            [r,pval] = corr(values(~isnan(data.NFC),c),data.NFC(~isnan(data.NFC)));
-            disp([paramnames{costs(c)} ' vs ' names{measure} ': r = ' num2str(r) ', p = ' num2str(pval)])
-            [h,pval] = ttest2(values(split==1,c),values(split==2,c));
-            disp([paramnames{costs(c)} ': ' num2str(pval) 'difference between low and mid ' names{measure}])
-            [h,pval] = ttest2(values(split==3,c),values(split==2,c));
-            disp([paramnames{costs(c)} ': ' num2str(pval) 'difference between high and mid ' names{measure}])
-            [h,pval] = ttest2(values(split==1,c),values(split==3,c));
-            disp([paramnames{costs(c)} ': ' num2str(pval) 'difference between low and high ' names{measure}])
-        end
+            
+        end %of cycling over each cost
+        
         plotted = [plotted paramnames(costs)];
-    end
-end
+    end %of cycling over each model
+    
+end %of cycling over SAPS & NFC
 
-%% At N = 58, we have too little power to correlate NFC and
-% update/maintenance costs
-% with the r's what they are, how many people would we need to find a
-% significant correlation?
-samplesize_name = {'maintenance','update'};
-rs = [0.14 0.04];
-
-N = 100; %look for 95% power with alpha = 0.05
-
-for measure = 1:length(samplesize_name)
-    nsamples = 10000;
-    alpha = 0.05;
-    conf = 1-alpha;
-    r = zeros(1,nsamples);
-    for j = 1:nsamples
-        xy = normrnd(0,1,N,2);
-        r(j) = corr(xy(:,1),xy(:,2));
-    end
-    cutoff = quantile(r,conf)
-
-    nsamples = 1000;
-    mu = [0; 0];
-    sig = [1 rs(measure); rs(measure) 1];
-    r = zeros(1,nsamples);
-    for j = 1:nsamples
-        xy = mvnrnd(mu,sig,N);
-        r(j) = corr(xy(:,1),xy(:,2));
-    end
-    [power,powerci] = binofit(sum(r>cutoff),nsamples)
-    disp(['power analysis for ' samplesize_name{measure} ' & NFC correlation, N = ' num2str(N)])
-end
-
-%% why high dropout rates?
-% figure
-% subplot(1,2,1)
-% % plot for experiment 1, no longer relevant here
-% % bar([sum(excluded.values(excluded.exp_version==1,1:4)) 0 n1])
-% % labels = [excluded.labels(1,1:4) ' ' 'finished'];
-% % xticklabels([labels])
-% % title('Dropout over course of experiment 1')
-% % ylabel('n')
-% % ax = gca; fig = gcf;
-% % ax.FontSize = 14;
-% % fig.Color = 'w';
-% for i = 1:height(excluded)
-%     curve = excluded.practice_accuracy(i,:);
-%     plot(1:length(curve),curve)
-%     hold on
-% end
-% title('Accuracy by Practice #, for excluded subjects')
-% ylabel('Accuracy')
-% xlabel('Block #')
-% ax = gca; fig = gcf;
-% ax.FontSize = 12; fig.Color = 'w';
+%% Where in the task is dropout occurring?
 
 figure
 bar([sum(excluded.values(excluded.exp_version==4,1:4))+n n])
@@ -1678,64 +1526,4 @@ ylabel('n')
 ax = gca; fig = gcf;
 ax.FontSize = 14;
 fig.Color = 'w';
-
-%% Timing analyses for 1-detect task - no longer relevant but may be again
-figure
-subplot(2,2,1)
-detecttiming = [];
-for subj = 1:n
-    thing = data.detect_time_breakdown{subj}; thing(:,1) = subj;
-    detecttiming = [detecttiming; thing];
-    scatter(subj,nanmean(thing(:,end)),'Filled')
-    hold on
-end
-title('Mean TOT for each subject')
-
-subplot(2,2,2)
-for subj = 1:n
-    thing = data.detect_time_breakdown{subj}; 
-    scatter(subj,nanmean(thing(:,2)),'Filled')
-    hold on
-end
-title('Mean time on trials for each subject')
-
-subplot(2,2,3)
-for subj = 1:n
-    thing = data.detect_time_breakdown{subj};
-    scatter(subj,nanmean(thing(:,3)),'Filled')
-    hold on
-end
-title('Mean time on feedback for each subject')
-
-subplot(2,2,4)
-for subj = 1:n
-    thing = data.detect_time_breakdown{subj};
-    scatter(subj,nanmean(thing(:,4)),'Filled')
-    hold on
-end
-title('Mean time on ITI for each subject')
-
-figure
-for example = 1:length(detecttiming)
-    row = detecttiming(example,:);
-    subj = row(1);
-    color = subjcolors(subj,:);
-    %scatter(example,row(:,2)/1000,[],color,'Filled') %how much is trial timing contributing to total timing?
-    hold on
-    point = (row(:,3)+row(:,2))/1000;
-    scatter(example,point,[],color,'Filled') %how much is feedback timing contributing?
-    point = (row(:,3)+row(:,2)+row(:,4))/1000;
-    %scatter(example,point,[],color,'Filled') %how much is ITI timing contributing to outliers?
-    scatter(example,row(:,5),'k','Filled')
-end
-
-figure
-[r,p] = corr(detecttiming(:,6),detecttiming(:,5))
-scatter(detecttiming(:,5),detecttiming(:,6),'Filled')
-title('Does num responses have an effect on timing?')
-xlabel('TOT')
-ylabel('# responses that block')
-if p < 0.05
-    lsline
-end
 
