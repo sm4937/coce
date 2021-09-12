@@ -514,7 +514,7 @@ for measure = 1:2
             disp([names{measure} ' betas on ' paramnames{costs(c)} ', linear & quadratic: ' num2str(betas')])
             
             % plot effect of measure group on parameter values
-            subplot(3,2,count)
+            subplot(4,3,count)
             superbar([nanmean(values(split==1,c)) nanmean(values(split==2,c)) nanmean(values(split==3,c))], ...
                 'E',[nanstd(values(split==1,c)) nanstd(values(split==2,c)) nanstd(values(split==3,c))]./sqrt(n), ...
                 'P',ps,'BarFaceColor',colors,'PStarShowNS',false);

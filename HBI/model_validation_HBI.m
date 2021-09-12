@@ -3,30 +3,40 @@ taskcolors = [0.75 0.75 0.75;0 0.75 0.75; 0.75 0.75 0; 0.75 0 0.75];
 paramcolors = [1 0 0; 1 0.5 0; 1 0 0.5; 0 0 1; 0 0.5 1; 0 0.7 0; 1 1 0];
 tasklabels = {'1-detect','1-back','3-detect','2-back'};
 
-% responsibility = cbm.output.responsibility; modelstofit = best_model.overallfit.fitmodels;
-% lowparams = cbm.output.parameters; %for accessibility, grab important info from cbi structures
+responsibility = cbm.output.responsibility; modelstofit = best_model.overallfit.fitmodels;
+lowparams = cbm.output.parameters; %for accessibility, grab important info from cbi structures
 
-simdata = [];
 % %simulate data from fit parameters, best fitting model for each subject
-% for subj = 1:nsubjs
-%     onesubj = toanalyze(toanalyze.subj == subj,:);
-%     [score,num] = max(responsibility(subj,:)); %identify model which best fit this subject, in particular
-%     %then simulate their data with that model
-%     subj_model = coc_createModels(modelstofit{num});
-%     % input to simulate_cost_model the model specs, then the transformed
-%     % parameters for that subject, then that subject's data
-%     simdata = [simdata; simulate_cost_model(subj_model,applyTrans_parameters(subj_model,lowparams{num}(subj,:)),onesubj)];
-% end
+simdata = [];
 for subj = 1:nsubjs
-    simdata = [simdata; data{subj}];
+    onesubj = toanalyze(toanalyze.subj == subj,:);
+    [score,num] = max(responsibility(subj,:)); %identify model which best fit this subject, in particular
+    %then simulate their data with that model
+    subj_model = coc_createModels(modelstofit{num});
+    % input to simulate_cost_model the model specs, then the transformed
+    % parameters for that subject, then that subject's data
+    simdata = [simdata; simulate_cost_model(subj_model,applyTrans_parameters(subj_model,lowparams{num}(subj,:)),onesubj)];
 end
+% for subj = 1:nsubjs
+%     simdata = [simdata; data{subj}];
+% end
+
+% % Load up real subject's data
+load('simdata/toanalyze.mat')
+
+
+
+figure
+subplot(2,2,1)
+% Plot real subject data for comparison
+
+
 
 %scale things appropriately
 simdata(:,3) = (simdata(:,3)./25)+1;
 ntasks = length(unique(simdata(:,2)));
 
-figure
-subplot(2,1,1)
+subplot(2,2,2)
 errorbar([nanmean(simdata(simdata(:,4)==2,3)) nanmean(simdata(simdata(:,4)==4,3)) nanmean(simdata(simdata(:,4)==3,3))],[nanstd(simdata(simdata(:,4)==2,3)) nanstd(simdata(simdata(:,4)==4,3)) nanstd(simdata(simdata(:,4)==3,3))]./sqrt(nsubjs),'k','LineWidth',1.5)
 hold on 
 % for subj = 1:nsubjs
@@ -41,7 +51,7 @@ xticklabels({'1-back','3-detect','2-back'})
 xlabel('Task')
 ylabel('Mean rating (sim)')
 
-subplot(2,1,2)
+subplot(2,2,4)
 task1 = []; task2 = []; task3 = [];
 for task = 1:(ntasks-1)
     for subj = 1:nsubjs
@@ -56,7 +66,7 @@ hold on
 errorbar(nanmean(task2),nanstd(task2)/sqrt(nsubjs),'Color',taskcolors(2,:),'LineWidth',2)
 errorbar(nanmean(task3),nanstd(task3)/sqrt(nsubjs),'Color',taskcolors(3,:),'LineWidth',2)
 legend({'1-back','2-back','3-detect'})
-title('Group learning curves for each task')
+title('Group learning curves for each task (sim)')
 fig = gcf; fig.Color = 'w';
 
 subjs = randperm(nsubjs,6);

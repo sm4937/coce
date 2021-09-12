@@ -217,7 +217,7 @@ end
 %subjects' data properly and hope for the best.
 clear all
 realsubjectsflag = true; HBI_flag = true;
-fitflag = true;
+fitflag = false;
 %add relevant paths
 addpath('cbm-master/codes/');
 addpath('./..'); %other COC code, like model loading
@@ -324,7 +324,7 @@ best_models = find(cbm.output.model_frequency>=0.01);
 for m = 1:length(best_models)
     modeltofit = coc_createModels(modelstofit{best_models(m)});
     means = applyTrans_parameters(modeltofit,cbm.output.group_mean{best_models(m)});
-    subplot(4,2,1+m)
+    subplot(4,3,m)
     for p = 1:modeltofit.nparams
         bar(p,means(p),'FaceColor',paramcolors(p,:))
         hold on
@@ -336,7 +336,7 @@ for m = 1:length(best_models)
     title('Parameter means from subjects best fit by model')
 end
 
-subplot(2,2,4); 
+subplot(4,3,m+1); 
 costs = find(costs(1:best_model.nparams)); 
 means = applyTrans_parameters(modeltofit,cbm.output.group_mean{2});
 bar(means(:,costs),'FaceColor',[0 0.7 0])
