@@ -77,9 +77,10 @@ disp (['t-test 2-back versus 3-detect BDM values p = ' num2str(p)]); %task 2 val
 disp (['t-test 1-back versus 3-detect BDM values p = ' num2str(p)]); %task 1 values versus task 3 values
 % basically it's task 2 versus the world
 
+% PULL A BUNCH OF INFORMATION BY TASK ITERATION
+% FOR EXAMPLE, FAIR WAGE BY TASK ITERATION
 n0subjlearning = NaN(n,default_length+1); n0subjvalue = NaN(n,default_length+1); n0subjrt = NaN(n,default_length+1);
 n1subjlearning = NaN(n,default_length+1); n2subjlearning = NaN(n,default_length+1); n3subjlearning = NaN(n,default_length+1);
-n1subjvalue = NaN(n,default_length+1); n2subjvalue = NaN(n,default_length+1); n3subjvalue = NaN(n,default_length+1);
 n1subjrt = NaN(n,default_length+1); n2subjrt = NaN(n,default_length+1); n3subjrt = NaN(n,default_length+1);
 for row = 1:n %cycle through subjects
     for task = 1:4 %cycle through tasks
@@ -87,10 +88,19 @@ for row = 1:n %cycle through subjects
             iters = sum(data.task_progression(row,1:(trial-1)) == tasks(task))+1;
             if data.task_progression(row,trial) == tasks(task)
                 eval(['n' num2str(task-1) 'subjlearning(row,iters) = data.perf(row,trial);'])
-                eval(['n' num2str(task-1) 'subjvalue(row,iters) = data.values(row,trial);'])
                 eval(['n' num2str(task-1) 'subjrt(row,iters) = data.BDMrt(row,trial);'])
             end
         end
+    end
+end
+
+n1subjvalue = []; n2subjvalue = []; n3subjvalue = [];
+for task = 1:3
+    for subj = 1:n
+        BDM = data.values(subj,:);
+        curve = NaN(1,11);
+        curve(1:sum(data.task_displayed(subj,:)==tasknumbers(task+1))) = BDM(data.task_displayed(subj,:)==tasknumbers(task+1));
+        eval(['n' num2str(task) 'subjvalue = [n' num2str(task) 'subjvalue; curve];'])
     end
 end
 

@@ -1,9 +1,8 @@
 %% Plot simulated data from HBI model fits
 taskcolors = [0.75 0.75 0.75;0 0.75 0.75; 0.75 0.75 0; 0.75 0 0.75];
-paramcolors = [1 0 0; 1 0.5 0; 1 0 0.5; 0 0 1; 0 0.5 1; 0 0.7 0; 1 1 0];
 tasklabels = {'1-detect','1-back','3-detect','2-back'};
 
-responsibility = cbm.output.responsibility; modelstofit = best_model.overallfit.fitmodels;
+responsibility = cbm.output.responsibility; %modelstofit = best_model.overallfit.fitmodels;
 lowparams = cbm.output.parameters; %for accessibility, grab important info from cbi structures
 
 % %simulate data from fit parameters, best fitting model for each subject
@@ -22,19 +21,23 @@ end
 % end
 
 % % Load up real subject's data
-load('simdata/toanalyze.mat')
-
-
+load('../simdata/toanalyze.mat')
+%scale things appropriately
+simdata(:,3) = (simdata(:,3)./25)+1;
+toanalyze.BDM = (toanalyze.BDM./25) + 1;
+ntasks = length(unique(simdata(:,2)));
 
 figure
 subplot(2,2,1)
 % Plot real subject data for comparison
-
-
-
-%scale things appropriately
-simdata(:,3) = (simdata(:,3)./25)+1;
-ntasks = length(unique(simdata(:,2)));
+errorbar([nanmean(toanalyze.BDM(toanalyze.display==2,:)) nanmean(toanalyze.BDM(toanalyze.display==4,:)) nanmean(toanalyze.BDM(toanalyze.display==3,:))],[nanstd(toanalyze.BDM(toanalyze.display==2,:)) nanstd(toanalyze.BDM(toanalyze.display==4,:)) nanstd(toanalyze.BDM(toanalyze.display==3,:))]/sqrt(nsubjs),'k','LineWidth',1.5);
+title('Mean fair wage (real)')
+xticks([1:3])
+xlim([0.5 3.5])
+ylim([1 5])
+xticklabels({'1-back','3-detect','2-back'})
+xlabel('Task')
+ylabel('Mean fair wage')
 
 subplot(2,2,2)
 errorbar([nanmean(simdata(simdata(:,4)==2,3)) nanmean(simdata(simdata(:,4)==4,3)) nanmean(simdata(simdata(:,4)==3,3))],[nanstd(simdata(simdata(:,4)==2,3)) nanstd(simdata(simdata(:,4)==4,3)) nanstd(simdata(simdata(:,4)==3,3))]./sqrt(nsubjs),'k','LineWidth',1.5)
@@ -43,24 +46,41 @@ hold on
 %     onesubj = simdata(simdata(:,1)==subj,:);
 %     errorbar([nanmean(onesubj(onesubj(:,2)==2,3)) nanmean(onesubj(onesubj(:,2)==4,3)) nanmean(onesubj(onesubj(:,2)==3,3))],[nanstd(onesubj(onesubj(:,2)==2,3)) nanstd(onesubj(onesubj(:,2)==4,3)) nanstd(onesubj(onesubj(:,2)==3,3))]/sqrt(length(onesubj)),'LineWidth',1);
 % end
-title('Mean rating of tasks (sim)')
+title('Mean fair wage (sim)')
 xticks([1:3])
 xlim([0.5 3.5])
 ylim([1 5])
 xticklabels({'1-back','3-detect','2-back'})
 xlabel('Task')
-ylabel('Mean rating (sim)')
+ylabel('Mean fair wage')
 
-subplot(2,2,4)
 task1 = []; task2 = []; task3 = [];
+rtask1 = []; rtask2 = []; rtask3 = [];
 for task = 1:(ntasks-1)
-    for subj = 1:nsubjs
+    for subj = 1:nsubjs %Cycle over subjects
         onesubj = simdata(simdata(:,1)==subj,:);
+        onereal = toanalyze(toanalyze.subj==subj,:);
         curve = NaN(1,11);
         curve(1:sum(onesubj(:,4)==task+1)) = onesubj(onesubj(:,4)==task+1,3)';
+        % Pick out task iterations and their corresponding fair wage
+        % ratings
         eval(['task' num2str(task) ' = [task' num2str(task) '; curve];'])
+        curve = NaN(1,11);
+        curve(1:sum(onereal.display==task+1)) = onereal.BDM(onereal.display==task+1,:)';
+        eval(['rtask' num2str(task) ' = [rtask' num2str(task) '; curve];'])
     end
 end
+
+subplot(2,2,3)
+errorbar(nanmean(rtask1),nanstd(rtask1)/sqrt(nsubjs),'Color',taskcolors(1,:),'LineWidth',2)
+hold on
+errorbar(nanmean(rtask2),nanstd(rtask2)/sqrt(nsubjs),'Color',taskcolors(2,:),'LineWidth',2)
+errorbar(nanmean(rtask3),nanstd(rtask3)/sqrt(nsubjs),'Color',taskcolors(3,:),'LineWidth',2)
+legend({'1-back','2-back','3-detect'})
+title('Group learning curves for each task (real)')
+fig = gcf; fig.Color = 'w';
+
+subplot(2,2,4)
 errorbar(nanmean(task1),nanstd(task1)/sqrt(nsubjs),'Color',taskcolors(1,:),'LineWidth',2)
 hold on
 errorbar(nanmean(task2),nanstd(task2)/sqrt(nsubjs),'Color',taskcolors(2,:),'LineWidth',2)
@@ -82,7 +102,7 @@ for i = 1:length(subjs)
     onesim = simdata(simdata(:,1)==subj,:);
     simulated = onesim(:,3); 
     onereal = toanalyze(toanalyze.subj==subj,:);
-    real = onereal.BDM; real = (real./25)+1;
+    real = onereal.BDM; 
     for trial = 1:sum(~isnan(real))
         task = onereal.display(trial);
         if ~isnan(task)
@@ -108,29 +128,3 @@ for i = 1:length(subjs)
 end
 fig = gcf; fig.Color = 'w';
 
-%rank subjects by how they're fit by the model
-for subj = 1:nsubjs
-    onesim = simdata(simdata(:,1)==subj,:);
-    simulated = onesim(:,3);
-    onereal = toanalyze(toanalyze.subj==subj,:);
-    real = onereal.BDM; real = (real./25)+1;
-    idx = true(length(simulated),1); idx(isnan(real(idx))) = false; 
-    MSE(subj) = sqrt(nanmean((real(idx)-simulated(idx)).^2));
-end
-subjrankings = sortrows([MSE' (1:nsubjs)'],1);
-
-figure
-nparams = length(best_model.paramnames);
-for p = 1:nparams 
-    subplot(4,2,p)
-    for i = 1:length(subjrankings)
-        subj = subjrankings(i,2);
-        scatter(i,best_model.lowparams(subj,p),[],paramcolors(p,:),'Filled')
-        hold on
-        name = best_model.paramnames{p};
-        title(['Fit ' name])
-        xlabel('Fit rank')
-        ylabel('Param value')
-    end
-end
-fig = gcf; fig.Color = 'w';

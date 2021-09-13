@@ -300,6 +300,7 @@ best_model.lowparams = cbm.output.parameters{best};
 best_model.highparams = cbm.output.group_mean{best}; best_model.overallfit = cbm.output;
 best_model.overallfit.fitmodels = model_labels; best_model.name = model_labels{best};
 modelStruct.best_model = best_model; save('HBI_modelStruct.mat','modelStruct');
+
 cbm_hbi_plot(fname_hbi, model_labels, param_names(1:best_model.nparams), transform(1:best_model.nparams))
 % this function creates a model comparison plot (exceednace probability and model frequency) as well as 
 % a plot of transformed parameters of the most frequent model.
@@ -351,5 +352,11 @@ xlabel('Cost parameter')
 
 %% model simulations and validation figures
 
+% Plot comparisons between simulated data and real subject behavior
 model_validation_HBI()
+
+% Plot individual model information if you want confirmation it's fitting
+% well
+cbm.input.model_names = modelstofit;
+model_inspection(2,cbm)
 
