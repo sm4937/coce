@@ -77,7 +77,7 @@ hold on
 errorbar(nanmean(rtask2),nanstd(rtask2)/sqrt(nsubjs),'Color',taskcolors(2,:),'LineWidth',2)
 errorbar(nanmean(rtask3),nanstd(rtask3)/sqrt(nsubjs),'Color',taskcolors(3,:),'LineWidth',2)
 legend({'1-back','2-back','3-detect'})
-title('Group learning curves for each task (real)')
+title('Fair wage by rating # (real)')
 fig = gcf; fig.Color = 'w';
 
 subplot(2,2,4)
@@ -86,7 +86,7 @@ hold on
 errorbar(nanmean(task2),nanstd(task2)/sqrt(nsubjs),'Color',taskcolors(2,:),'LineWidth',2)
 errorbar(nanmean(task3),nanstd(task3)/sqrt(nsubjs),'Color',taskcolors(3,:),'LineWidth',2)
 legend({'1-back','2-back','3-detect'})
-title('Group learning curves for each task (sim)')
+title('Fair wage by rating (sim)')
 fig = gcf; fig.Color = 'w';
 
 subjs = randperm(nsubjs,6);

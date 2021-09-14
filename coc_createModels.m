@@ -6,7 +6,7 @@ function [model] = coc_createModels(name)
 %   number of parameters, and which ones they are.
 
 modelStruct = struct;
-possibleparams = {'uc','epsilon','init','mc','mainc','alpha','delta','deltai','matchc','noisec','respc','lurec'};
+possibleparams = {'uc','epsilon','init','initi','mc','mainc','alpha','delta','deltai','matchc','noisec','respc','lurec'};
 
 params = strsplit(name,'_'); 
 if length(params)<2
@@ -17,10 +17,23 @@ end
 for p = 1:length(possibleparams)
     if sum(contains(params,possibleparams{p}))>0
         eval(['model.' possibleparams{p} ' = true;'])
-    else
+    else % if this parameter isn't in the model list, set it to false
         eval(['model.' possibleparams{p} ' = false;'])
     end
+end 
+
+if model.initi
+    % If initi is in play, create one init parameter for each task
+    model.init_1 = true;
+    model.init_2 = true;
+    model.init_3 = true;
+    params = [params 'init_1' 'init_2' 'init_3'];
+else
+    model.init_1 = false;
+    model.init_2 = false;
+    model.init_3 = false;
 end
+
 % I'm implementing it this way so deltai is always last on the list of
 % parameters
 % This way, the extra delta parameters which are implied by the 'deltai'

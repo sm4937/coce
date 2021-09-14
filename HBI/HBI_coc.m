@@ -358,5 +358,5 @@ model_validation_HBI()
 % Plot individual model information if you want confirmation it's fitting
 % well
 cbm.input.model_names = modelstofit;
-model_inspection(2,cbm)
+model_inspection(best_models(end),cbm)
 

@@ -13,6 +13,7 @@ nparams = size(params,2);
 model_name = models{m};
 modeltofit = coc_createModels(models{m});
 n = size(params,1);
+subset = 1:n;
 
 load(['model-details/' model_name '.mat']);
 load('../simdata/toanalyze.mat')
@@ -23,7 +24,7 @@ figure
 rows = ceil(nparams)/2; 
 for p = 1:nparams
     subplot(rows,rows,p)
-    scatter(realparamlist(:,p),fitparams(:,p),[],rand(size(fitparams,1),3),'Filled');
+    scatter(realparamlist(subset,p),fitparams(:,p),[],rand(size(fitparams,1),3),'Filled');
     hold on
     plot([0 0],[1 1],'--')
     xlabel(['Real ' modeltofit.paramnames{p}])
@@ -31,7 +32,7 @@ for p = 1:nparams
     xlim([0 1]); ylim([0 1]);
 end
 fig = gcf; fig.Color = 'w';
-[r,p] = corr(realparamlist,fitparams); %have to do some selecting since there are some nans in the simulated parameter values
+[r,p] = corr(realparamlist(subset,:),fitparams); %have to do some selecting since there are some nans in the simulated parameter values
 rs = diag(r)
 ps = diag(p)
 disp(['Model ' num2str(m)])
