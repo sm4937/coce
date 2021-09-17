@@ -16,6 +16,7 @@ for subj = 1:nsubjs
     % parameters for that subject, then that subject's data
     simdata = [simdata; simulate_cost_model(subj_model,applyTrans_parameters(subj_model,lowparams{num}(subj,:)),onesubj)];
 end
+
 % for subj = 1:nsubjs
 %     simdata = [simdata; data{subj}];
 % end

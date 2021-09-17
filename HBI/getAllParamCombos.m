@@ -6,12 +6,13 @@ function [modellist] = getAllParamCombos(paramlist)
 %   modellist is all possible models combining those params, some
 %   standalone like "mainc_epsilon_init_alpha", others like
 %   "mainc_lurec_epsilon_init_alpha"
-%   for COCE, there are three mandatory parameters: epsilon, init, and
-%   alpha
+%   for COCE, there is only one mandatory parameter: epsilon
+%   all models have one update parameter, either delta, deltai, or alpha
+%   all models also have one initialization parameter, init or initi
 
 if sum(contains(paramlist,{'delta','deltai'}))>0 %choose one update rule for now
     if sum(contains(paramlist,'deltai'))>0 %is it delta or deltai?
-        % one delta for all, for one per cost parameter?
+        % one delta for all, or one per cost parameter?
         name = 'epsilon_init_deltai';
     else
         name = 'epsilon_init_delta';
@@ -19,6 +20,11 @@ if sum(contains(paramlist,{'delta','deltai'}))>0 %choose one update rule for now
     paramlist(contains(paramlist,{'delta','deltai'})) = []; %trim it here
 else
     name = 'epsilon_init_alpha';
+end
+
+if sum(contains(paramlist,'initi'))>0
+    name = strrep(name,'init','initi');
+    paramlist(contains(paramlist,'initi')) = []; %trim it here
 end
 
 nparams = length(paramlist); model_specs = [];

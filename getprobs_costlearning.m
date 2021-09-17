@@ -49,12 +49,9 @@ end
 ntrials = sum(~isnan(realratings)); %length(stimuli);
 
 costs = [uc mc mainc matchc noisec respc lurec];
-if ~modeltofit.init %remove intercept by 0-centering judgments
-    realratings = realratings-mean(realratings); %remove mean, center at 0
-end
 
 %simulate the model for one subject at a time
-ratings = init*(ones(1,max(display))); ratings_list = NaN(ntrials,1); %init for each subject 
+ratings = [1 init].*(ones(1,max(display))); ratings_list = NaN(ntrials,1); %init for each subject 
 costs = repmat(costs,ntrials,1);
 if (modeltofit.delta || modeltofit.deltai)
     for trial = 2:ntrials
@@ -75,7 +72,7 @@ for trial = 1:ntrials
     else %alpha fixed or no alpha
         %ratings(stim) = ratings(stim) + alpha*(cost); %compounding cost model
         %ratings(stim) = cost(trial); %no learning, no compounding, no delta rule. just a basic regression on last round
-        ratings(stim) = ratings(stim)+ 0.5*(cost(trial,:)-ratings(stim));
+        ratings(stim) = ratings(stim)+ 1*(cost(trial,:)-ratings(stim));
     end
 end
 %calculate epsilon optimally

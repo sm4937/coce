@@ -6,7 +6,7 @@ function [model] = coc_createModels(name)
 %   number of parameters, and which ones they are.
 
 modelStruct = struct;
-possibleparams = {'uc','epsilon','init','initi','mc','mainc','alpha','delta','deltai','matchc','noisec','respc','lurec'};
+possibleparams = {'epsilon','init','initi','mc','uc','mainc','alpha','delta','deltai','matchc','noisec','respc','lurec'};
 
 params = strsplit(name,'_'); 
 if length(params)<2
@@ -23,11 +23,12 @@ for p = 1:length(possibleparams)
 end 
 
 if model.initi
+    model.init = false;
+    params(contains(params,'initi')) = [];
     % If initi is in play, create one init parameter for each task
-    model.init_1 = true;
-    model.init_2 = true;
-    model.init_3 = true;
-    params = [params 'init_1' 'init_2' 'init_3'];
+    model.init_1 = true;params{end+1} = 'init_1';
+    model.init_2 = true;params{end+1} = 'init_2';
+    model.init_3 = true;params{end+1} = 'init_3';
 else
     model.init_1 = false;
     model.init_2 = false;

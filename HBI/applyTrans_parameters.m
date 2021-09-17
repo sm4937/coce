@@ -3,7 +3,7 @@ function [parameters] = applyTrans_parameters(model,parameters)
 %parameter values that CBM package requires
 %   Transforms parameters which requires positive only values, or which are
 %   bounded in some way (like learning rates)
-if model.epsilon %learning rate, like from RL model - must be between 0 and 1
+if model.epsilon %standard deviation of ratings, can't be negative
     idx = find(contains(model.paramnames,'epsilon'));
     x = parameters(:,idx);
     parameters(:,idx) = exp(x); %transform with exp so no neg values, unbounded positive values

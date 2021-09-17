@@ -21,7 +21,7 @@ model_detail_folder = dir('model-details'); list_existing = cellstr(string(char(
 % Run a test to ensure that individual parameters are being fit reasonably
 function_folder = dir('model-functions'); list_existing_functions = cellstr(string(char(function_folder.name)));
 % WHICH PARAMS DO YOU WANT YOUR MODEL TO CONTAIN?
-paramsofinterest = {'mc','mainc','lurec','respc','deltai'};
+paramsofinterest = {'mc','mainc','lurec','respc','initi'};
 % GET ALL POSSIBLE PARAM COMBOS
 modelstosim = getAllParamCombos(paramsofinterest); 
 modelstosim(~contains(modelstosim,'c')) = [];
@@ -30,7 +30,7 @@ modelstofit = modelstosim;
 subjnums = unique(toanalyze.subj);
 nsubjs = length(subjnums); 
 
-forcefit = true;
+forcefit = false;
 
 for m = 1:length(modelstosim)
     model_name = modelstosim{m};
@@ -131,7 +131,7 @@ for m = 1:length(modelstosim)
         % try again. With Type II MLE, is the genrec better?
         disp(['Model ' num2str(m)])
         reliable = input('does this model fit look reliable? y/n','s'); close 1
-        % reliable = 'n'; 
+        %reliable = 'n'; 
         save(['model-details/' model_name],'realparamlist','fitparams','subset','reliable','data','subsetdata')
     end
     
@@ -139,6 +139,7 @@ end
 
 %% Now, add in some hierarchical model assignments, re-simulate, test that
 % portion of the HBI
+
 clear data params fitparams onesubj
 for m = 1:length(modelstofit)
     file = load(['model-details/' modelstofit{m}]);
@@ -212,30 +213,50 @@ for m = 1:length(true_models)
     reliable = input('does this model fit look reliable? y/n','s'); close 1
     save(['model-details/' model_name],'realparamlist','fitparams','reliable')
 end
+
+
 %% % % FIT REAL SUBJECTS! % % %%
 %All of the above stuff can remain as-is. Now I'm just going to format the
 %subjects' data properly and hope for the best.
+
 clear all
+% Clean slate
 realsubjectsflag = true; HBI_flag = true;
+
 fitflag = false;
+% Run the whole model fitting, or just display previous fits?
+
 %add relevant paths
 addpath('cbm-master/codes/');
 addpath('./..'); %other COC code, like model loading
 load('./../simdata/toanalyze.mat');
 % grab task characteristics from real subjects
-
-paramsofinterest = {'mc','mainc','lurec','uc','respc'};
-modelstofit = getAllParamCombos(paramsofinterest);
-modelstofit = [modelstofit getAllParamCombos({'mc','mainc','lurec','respc','deltai'})];
-
 paramcolors = [1 0 0; 1 0.5 0; 1 0 0.5; 0 0 1; 0 0.5 1; 0 0.7 0; 1 1 0];
-for m = 1:length(modelstofit) %grab only recoverable models
+% Set up some plotting variables
+
+% Dictate models to fit here by specifying which parameters are of interest
+paramsofinterest = {'mc','mainc','lurec','respc','initi'};
+modelstofit = getAllParamCombos(paramsofinterest);
+modelstofit = [modelstofit getAllParamCombos({'mc','mainc','lurec','respc','deltai','initi'})];
+
+% Run model fitting over reliable models only (i.e. over models where the
+% fidelity of recovered parameters is significant)
+for m = 1:length(modelstofit)
     file = load(['model-details/' modelstofit{m}]);
     recoverability(m) = file.reliable=='y';
 end
 modelstofit = modelstofit(recoverability);
+
+% Go over existing models to ensure they have corresponding functions for
+% their execution. In HBI framework, every model needs its own function.
+% In my model fitting code, there is one fitting function which flexibly
+% fits all models, so each model function is just named for the model, but
+% contains the same call to that general model fitting function
+% (getprobscostlearning.m).
+
 function_folder = dir('model-functions'); list_existing = cellstr(string(char(function_folder.name)));
-for m = 1:length(modelstofit) %now, cycling through models which are recoverable, create function
+for m = 1:length(modelstofit)
+    % now, cycling through models which are recoverable, create function
     % calls for running those models if they don't already exist
     diff = length(list_existing{end})-length(['fit_' modelstofit{m} '.m']);
     if sum(contains(list_existing,['fit_' modelstofit{m} '.m' repmat(' ',1,diff)]))==0 %no function for running this model, yet
@@ -244,11 +265,14 @@ for m = 1:length(modelstofit) %now, cycling through models which are recoverable
     %otherwise, do nothing
 end
 
+% Format real subject data for feeding in to the HBI framework. HBI is
+% looking for 1 struct entry per subject.
 nsubjs = length(unique(toanalyze.subj));
 for subj = 1:length(unique(toanalyze.subj))
     data{subj} = toanalyze(toanalyze.subj==subj,:);
 end
 
+% Define the parameters/inputs to HBI, including MLE fits of each model
 v = 6.25;
 for m = 1:length(modelstofit)
     model_name = modelstofit{m}; modeltofit = coc_createModels(model_name);
@@ -258,17 +282,23 @@ for m = 1:length(modelstofit)
     model_labels{m} = strrep(modelstofit{m},'_','-');
     if fitflag; cbm_lap(data, func, priors{m}, fnames{m}); end
 end
-fname_hbi = 'HBI_coc_44models.mat'; %big model search over tenable
-%models, like the 6 param lurec_mc_respc
+fname_hbi = 'HBI_coc_26models.mat'; 
 % 63 models includes all alpha/delta combos
 % 37 models includes all alpha/deltai combos (reduced cost space)
 % 44 models includes all alpha/deltai combos (adding miss costs back in)
+% 26 models includes new initi paramater, and excludes update costs entirely.
 
+% % RUN HBI %%
+
+% Inputs are:
 %data {cell per subj}, model-specific fitting functions, filenames from
 %cbm_lap, %filename for saving full running to
 if fitflag
     cbm_hbi(data,funcs,fnames,fname_hbi);
 end
+
+% Model fits get saved in a structure called cbm, load that up here and
+% grab variables of interest from it.
 fits = load(fname_hbi);
 cbm   = fits.cbm;
 freqs = cbm.output.model_frequency;
@@ -278,7 +308,7 @@ freqs = cbm.output.model_frequency;
 % 2nd input: a cell input containing model names
 % 3rd input: another cell input containing parameter names of the winning model
 [~,best] = max(cbm.output.exceedance_prob);
-best_model = coc_createModels(modelstofit{best}); morecomplexmodel = coc_createModels(modelstofit{1});
+best_model = coc_createModels(modelstofit{best});
 for p = 1:length(best_model.paramnames)
     original_name = best_model.paramnames{p};
     param_names{p}= original_name; transform{p} = 'none';
@@ -295,7 +325,11 @@ for p = 1:length(best_model.paramnames)
         costs(p) = true;
     end
 end
-%best_model.paramnames = param_names; 
+
+% Here I create my own structure, best_model, for saving other measures of
+% interest, like the name of every model that ran in this model fitting
+% regime. This gets called in other analysis scripts, like
+% paper_graphs_and_stats.m, which lives one directory up.
 best_model.lowparams = cbm.output.parameters{best};
 best_model.highparams = cbm.output.group_mean{best}; best_model.overallfit = cbm.output;
 best_model.overallfit.fitmodels = model_labels; best_model.name = model_labels{best};
@@ -350,7 +384,10 @@ xtickangle(30)
 ylabel('Mean parameter value')
 xlabel('Cost parameter')
 
-%% model simulations and validation figures
+%% Model simulations and validation figures
+% Call a couple functions to see the downstream effects of previous model
+% fitting. For example, is there a good match between simulated and real
+% subject behavior, using these best-fit models?
 
 % Plot comparisons between simulated data and real subject behavior
 model_validation_HBI()

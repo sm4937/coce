@@ -16,7 +16,7 @@ function [simdata] = simulate_cost_model(modeltosim,allparams,toanalyze)
     [uc,epsilon,init,mc,mainc,matchc,noisec,respc,lurec,alpha,delta] = setParamValues(params,modeltosim);
     costs = [uc mc mainc matchc noisec respc lurec];
 
-    ratings = init.*(ones(1,max(toanalyze.display))); %init for each subject
+    ratings = [1 init].*(ones(1,max(toanalyze.display))); %init for each subject
     trialScalar = 1;
     onesubj = repmat(toanalyze(toanalyze.subj==subjnum,:),trialScalar,1); %if
     %using only real subjects

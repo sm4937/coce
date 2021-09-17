@@ -19,10 +19,10 @@ if model.epsilon
     epsilon = params(idx)*scalingvector(idx);
     if epsilon == 0; epsilon = 0.00000001; end
 end
-if model.init
+if model.init || model.initi
     idx = find(contains(model.paramnames,'init'));
     scalingvector(idx) = 100;
-    init = params(idx)*scalingvector(idx);
+    init = params(idx).*scalingvector(idx);
 end
 if model.mc
     idx = find(contains(model.paramnames,'mc'));
