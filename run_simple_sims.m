@@ -138,6 +138,10 @@ for subj = 1:length(unique(tosim.subj))
         nmisses = sum((blockdata.detect|blockdata.nback)==true&blockdata.correct==false);
         nresponses = sum(~isnan(blockdata.keypress(2:end)));
         maintained(1,:) = []; maintained = nanmean(sum(maintained>0,2));
+        % this is a weird measure, it's maintainence adjusted for errors,
+        % this should be confounded with errors
+        % let's just set it to N and see if that's different in any way
+        maintained = n;
         
         components = [components; subj nmatches maintained nupdates nmisses blockdata.display(1)+1 task blockdata.BDM(1) noisiness nresponses nlures];
     end %end of block by block loop
