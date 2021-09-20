@@ -430,7 +430,7 @@ column = measures(:,measure);
 eval(['colors =' names{measure} 'colors;']);
 figure
 for p = 1:nparams
-    subplot(3,2,p)
+    subplot(3,3,p)
     scatter(column,params(:,p),[],colors(2,:),'Filled')
     [r,pval] = corr(column(~isnan(column)),params(~isnan(column),p));
     if pval < 0.05
@@ -452,7 +452,7 @@ for p = 1:nparams
     [h,pval3] = ttest2(params(split==1,p),params(split==3,p));
     ps = [NaN pval1 pval3; pval1 NaN pval2; pval3 pval2 NaN];
     
-    subplot(3,2,p)
+    subplot(3,3,p)
     superbar([nanmean(params(split==1,p)) nanmean(params(split==2,p)) nanmean(params(split==3,p))], ...
                 'E',[nanstd(params(split==1,p)) nanstd(params(split==2,p)) nanstd(params(split==3,p))]./sqrt(n), ...
                 'P',ps,'BarFaceColor',colors,'PStarShowNS',false);

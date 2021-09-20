@@ -21,7 +21,7 @@ model_detail_folder = dir('model-details'); list_existing = cellstr(string(char(
 % Run a test to ensure that individual parameters are being fit reasonably
 function_folder = dir('model-functions'); list_existing_functions = cellstr(string(char(function_folder.name)));
 % WHICH PARAMS DO YOU WANT YOUR MODEL TO CONTAIN?
-paramsofinterest = {'mc','mainc','lurec','respc','initi'};
+paramsofinterest = {'mc','mainc','lurec','respc','initi','deltai'};
 % GET ALL POSSIBLE PARAM COMBOS
 modelstosim = getAllParamCombos(paramsofinterest); 
 modelstosim(~contains(modelstosim,'c')) = [];
@@ -30,9 +30,9 @@ modelstofit = modelstosim;
 subjnums = unique(toanalyze.subj);
 nsubjs = length(subjnums); 
 
-forcefit = false;
+forcefit = true;
 
-for m = 1:length(modelstosim)
+for m = 6:length(modelstosim)
     model_name = modelstosim{m};
     modeltosim = coc_createModels(model_name); modeltofit = modeltosim;
     diff = length(list_existing{end})-length([model_name '.mat']);
@@ -45,6 +45,9 @@ for m = 1:length(modelstosim)
             %params(:,end-1:end) = -params(:,end-1:end);
             onesubj = toanalyze(toanalyze.subj==subjnum,:);
             data{subj} = simulate_cost_model(modeltosim,params,onesubj);
+            %names = modeltofit.paramnames;
+            %params(contains(names,'delta')) = 0.1*params(contains(names,'delta'));
+            %params(contains(names,'init_2')) = normrnd(0.7,0.3); params(contains(names,'c')) = normrnd(1,0.5);
             realparamlist(subj,1:length(params)) = params;
         end
         
@@ -349,17 +352,17 @@ cbm_hbi_plot(fname_hbi, model_labels, param_names(1:best_model.nparams), transfo
 % [p,stats] = cbm_hbi_ttest(cbm,k,m,i);
 
 figure
-subplot(2,2,1)
+subplot(4,3,1)
 bar(freqs)
 title('Fit model freq (HBI)')
-xticklabels(model_labels)
-xtickangle(45)
+%xticklabels(model_labels)
+%xtickangle(45)
 fig = gcf; fig.Color = 'w';
 best_models = find(cbm.output.model_frequency>=0.01);
 for m = 1:length(best_models)
     modeltofit = coc_createModels(modelstofit{best_models(m)});
     means = applyTrans_parameters(modeltofit,cbm.output.group_mean{best_models(m)});
-    subplot(4,3,m)
+    subplot(4,3,m+1)
     for p = 1:modeltofit.nparams
         bar(p,means(p),'FaceColor',paramcolors(p,:))
         hold on
@@ -371,7 +374,7 @@ for m = 1:length(best_models)
     title('Parameter means from subjects best fit by model')
 end
 
-subplot(4,3,m+1); 
+subplot(4,3,m+2); 
 costs = find(costs(1:best_model.nparams)); 
 means = applyTrans_parameters(modeltofit,cbm.output.group_mean{2});
 bar(means(:,costs),'FaceColor',[0 0.7 0])

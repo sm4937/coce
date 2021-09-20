@@ -58,21 +58,14 @@ if model.alpha
     idx = find(contains(model.paramnames,'alpha'));
     alpha = params(idx)*scalingvector(idx);
 end
-if model.delta
-    idx = find(contains(model.paramnames,'delta'));
-    idx = idx(1);
-    scalingvector(idx) = 0.20;
-    canbeneg(idx) = true;
-    delta = params(idx)*scalingvector(idx);
-end
-if model.deltai
+if model.deltai || model.delta
     idx = find(contains(model.paramnames,'delta'));
     %because of the way code upstream of this has been written
     % (model definition code) deltai should always be at 
     % the end of the list of params
     % such that any additional space at the end of a vector of 
     % numbers belongs to the extra unnamed delta parameters
-    scalingvector(idx) = 0.20;
+    scalingvector(idx) = 0.05;
     canbeneg(idx) = true;
     delta = params(idx).*scalingvector(idx);
     % delta should now be a vector, not a single number
