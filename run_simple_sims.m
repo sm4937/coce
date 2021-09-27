@@ -6,10 +6,10 @@ if preloadflag
     files = {'29.04.2020.mat','07.05.2020.mat','12.05.2020.mat','13.05.2020.mat',...
     '18.05.2020.mat','25.01.2021.mat','26.01.2021.mat','01.02.2021.mat', ...
     '05.17.2021.mat','05.21.2021.mat','05.24.2021.mat','06.02.2021.mat', '06.08.2021.mat'};
-    load('simdata\fullsubjnumbers.mat') %grab usable subjects
+    load('simdata/fullsubjnumbers.mat') %grab usable subjects
     tosim = [];
     for file = 1:length(files)
-        load(['data\' files{file}])
+        load(['data/' files{file}])
         clear tasklist oneperson
         for row = 1:length(list)
             subj = list(row);
@@ -76,9 +76,9 @@ if preloadflag
             end
         end
     end %end of loading/formatting
-    save('simdata\simdata_n100.mat','tosim')
+    save('simdata/simdata_n100.mat','tosim')
 else
-    load('simdata\simdata_n58.mat')
+    load('simdata/simdata_n100.mat')
 end
 
 n_tasks = length(unique(tosim.task(~isnan(tosim.task))));

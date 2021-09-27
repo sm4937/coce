@@ -22,6 +22,7 @@ model_detail_folder = dir('model-details'); list_existing = cellstr(string(char(
 function_folder = dir('model-functions'); list_existing_functions = cellstr(string(char(function_folder.name)));
 % WHICH PARAMS DO YOU WANT YOUR MODEL TO CONTAIN?
 paramsofinterest = {'mc','mainc','lurec','respc','initi','deltai'};
+paramsofinterest = {'mc','mainc','initi'};
 % GET ALL POSSIBLE PARAM COMBOS
 modelstosim = getAllParamCombos(paramsofinterest); 
 modelstosim(~contains(modelstosim,'c')) = [];
@@ -32,7 +33,7 @@ nsubjs = length(subjnums);
 
 forcefit = true;
 
-for m = 6:length(modelstosim)
+for m = 3 %1:length(modelstosim)
     model_name = modelstosim{m};
     modeltosim = coc_createModels(model_name); modeltofit = modeltosim;
     diff = length(list_existing{end})-length([model_name '.mat']);
@@ -52,7 +53,7 @@ for m = 6:length(modelstosim)
         end
         
         %plot simulated dataset to see whether it contains sensical values
-        %model_validation_HBI()
+        % model_validation_HBI()
         
         fnames{m} = [modelstosim{m} '.mat'];
         diff = length(list_existing_functions{end})-length(['fit_' modelstosim{m} '.m']);
@@ -263,7 +264,7 @@ for m = 1:length(modelstofit)
     % calls for running those models if they don't already exist
     diff = length(list_existing{end})-length(['fit_' modelstofit{m} '.m']);
     if sum(contains(list_existing,['fit_' modelstofit{m} '.m' repmat(' ',1,diff)]))==0 %no function for running this model, yet
-        copyfile 'dictate_model.m' ['model-functions/fit_' modelstofit{m} '.m']
+        copyfile('dictate_model.m',['model-functions/fit_' modelstofit{m} '.m'])
     end
     %otherwise, do nothing
 end
@@ -285,11 +286,14 @@ for m = 1:length(modelstofit)
     model_labels{m} = strrep(modelstofit{m},'_','-');
     if fitflag; cbm_lap(data, func, priors{m}, fnames{m}); end
 end
-fname_hbi = 'HBI_coc_26models.mat'; 
+fname_hbi = 'HBI_coc_26models_compareMaintenance.mat'; 
 % 63 models includes all alpha/delta combos
 % 37 models includes all alpha/deltai combos (reduced cost space)
 % 44 models includes all alpha/deltai combos (adding miss costs back in)
 % 26 models includes new initi paramater, and excludes update costs entirely.
+% 26models_compareMaintenance compares the old way of computing
+% maintenance, with the new way (which is just main = n)
+
 
 % % RUN HBI %%
 
@@ -326,6 +330,8 @@ for p = 1:length(best_model.paramnames)
     if contains(original_name,'c')
         param_names{p} = strrep(original_name,'c',' cost');
         costs(p) = true;
+    else
+        costs(p) = false;
     end
 end
 
@@ -398,5 +404,5 @@ model_validation_HBI()
 % Plot individual model information if you want confirmation it's fitting
 % well
 cbm.input.model_names = modelstofit;
-model_inspection(best_models(end),cbm)
-
+% model_inspection(best_models(end),cbm)
+model_inspection(8,cbm)

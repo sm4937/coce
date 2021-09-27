@@ -65,7 +65,7 @@ if model.deltai || model.delta
     % the end of the list of params
     % such that any additional space at the end of a vector of 
     % numbers belongs to the extra unnamed delta parameters
-    scalingvector(idx) = 0.05;
+    scalingvector(idx) = 0.20;
     canbeneg(idx) = true;
     delta = params(idx).*scalingvector(idx);
     % delta should now be a vector, not a single number

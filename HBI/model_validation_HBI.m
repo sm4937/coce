@@ -2,24 +2,24 @@
 taskcolors = [0.75 0.75 0.75;0 0.75 0.75; 0.75 0.75 0; 0.75 0 0.75];
 tasklabels = {'1-detect','1-back','3-detect','2-back'};
 
-% responsibility = cbm.output.responsibility; %modelstofit = best_model.overallfit.fitmodels;
-% lowparams = cbm.output.parameters; %for accessibility, grab important info from cbi structures
+responsibility = cbm.output.responsibility; %modelstofit = best_model.overallfit.fitmodels;
+lowparams = cbm.output.parameters; %for accessibility, grab important info from cbi structures
 
-% %simulate data from fit parameters, best fitting model for each subject
+%simulate data from fit parameters, best fitting model for each subject
 simdata = [];
-% for subj = 1:nsubjs
-%     onesubj = toanalyze(toanalyze.subj == subj,:);
-%     [score,num] = max(responsibility(subj,:)); %identify model which best fit this subject, in particular
-%     %then simulate their data with that model
-%     subj_model = coc_createModels(modelstofit{num});
-%     % input to simulate_cost_model the model specs, then the transformed
-%     % parameters for that subject, then that subject's data
-%     simdata = [simdata; simulate_cost_model(subj_model,applyTrans_parameters(subj_model,lowparams{num}(subj,:)),onesubj)];
-% end
-
 for subj = 1:nsubjs
-    simdata = [simdata; data{subj}];
+    onesubj = toanalyze(toanalyze.subj == subj,:);
+    [score,num] = max(responsibility(subj,:)); %identify model which best fit this subject, in particular
+    %then simulate their data with that model
+    subj_model = coc_createModels(modelstofit{num});
+    % input to simulate_cost_model the model specs, then the transformed
+    % parameters for that subject, then that subject's data
+    simdata = [simdata; simulate_cost_model(subj_model,applyTrans_parameters(subj_model,lowparams{num}(subj,:)),onesubj)];
 end
+
+% for subj = 1:nsubjs
+%     simdata = [simdata; data{subj}];
+% end
 
 % % Load up real subject's data
 load('../simdata/toanalyze.mat')

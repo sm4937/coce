@@ -13,9 +13,14 @@ catch
 end
 % the executable delta vector of the proper size
 
-%costs = costs + (1/(trial-1)).*excdelta;
-costs = costs.*exp(-excdelta.*((trial-1)/ntrials));
-%costs = costs.*(1+(excdelta.*((trial-1)/ntrials)));
+
+% Exponential multiplicative cost changing scheme
+%costs = costs.*exp(-excdelta.*((trial-1)/ntrials));
+
+% Linear, additive cost changing scheme
+costs = costs.*(1+(excdelta.*((trial-1)/ntrials)));
+%costs = costs.*(1+excdelta)
+
 % ^ last delta scheme
 %costs = costs.*(1+excdelta);
 %costs = costs+(excdelta.*(trial-1)/trial);

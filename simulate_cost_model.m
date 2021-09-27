@@ -41,7 +41,7 @@ function [simdata] = simulate_cost_model(modeltosim,allparams,toanalyze)
         end
         if (modeltosim.delta || modeltosim.deltai) & trial > 1
             costs = setNewCosts(costs,delta,trial);
-            %figure(10);scatter(trial*ones(1,sum(costs~=0)),costs(costs~=0));hold on
+            % figure(10);scatter(trial*ones(1,sum(costs~=0)),costs(costs~=0));hold on
         end
         task = onesubj.task(trial);
         updates = nupdates(trial);misses = nmisses(trial); mains = nmaintained(trial); matches = nmatches(trial); noise = noisiness(trial); nresp = responses(trial); lures = nlures(trial);

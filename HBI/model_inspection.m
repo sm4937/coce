@@ -21,7 +21,7 @@ load('../simdata/toanalyze.mat')
 % Plot real versus fit parameters
 
 figure
-rows = ceil(nparams)/2; 
+rows = ceil(nparams/2); 
 for p = 1:nparams
     subplot(rows,rows,p)
     scatter(realparamlist(subset,p),fitparams(:,p),[],rand(size(fitparams,1),3),'Filled');
