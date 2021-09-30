@@ -22,7 +22,6 @@ model_detail_folder = dir('model-details'); list_existing = cellstr(string(char(
 function_folder = dir('model-functions'); list_existing_functions = cellstr(string(char(function_folder.name)));
 % WHICH PARAMS DO YOU WANT YOUR MODEL TO CONTAIN?
 paramsofinterest = {'mc','mainc','lurec','respc','initi','deltai'};
-paramsofinterest = {'mc','mainc','initi'};
 % GET ALL POSSIBLE PARAM COMBOS
 modelstosim = getAllParamCombos(paramsofinterest); 
 modelstosim(~contains(modelstosim,'c')) = [];
@@ -33,7 +32,7 @@ nsubjs = length(subjnums);
 
 forcefit = true;
 
-for m = 3 %1:length(modelstosim)
+for m = 11 %1:length(modelstosim)
     model_name = modelstosim{m};
     modeltosim = coc_createModels(model_name); modeltofit = modeltosim;
     diff = length(list_existing{end})-length([model_name '.mat']);
@@ -53,7 +52,7 @@ for m = 3 %1:length(modelstosim)
         end
         
         %plot simulated dataset to see whether it contains sensical values
-        % model_validation_HBI()
+        model_validation_HBI()
         
         fnames{m} = [modelstosim{m} '.mat'];
         diff = length(list_existing_functions{end})-length(['fit_' modelstosim{m} '.m']);
@@ -63,7 +62,7 @@ for m = 3 %1:length(modelstosim)
         eval(['func = @fit_' modelstosim{m} ';']); funcs{m} = func;
         priors{m} = struct('mean',zeros(modeltofit.nparams,1),'variance',6.25); 
         
-        subset = randperm(100,50);
+        subset = randperm(100,30);
         for sii = 1:length(subset) %%use subset for this part, to check MLE fits
             subsetdata{sii} = data{subset(sii)};
         end
@@ -91,8 +90,8 @@ for m = 3 %1:length(modelstosim)
     rs = diag(r)
     ps = diag(p)
     disp(['Model ' num2str(m)])
-    reliable = input('does this model fit look reliable? y/n','s'); close 1
-    %reliable = 'n'; close 1
+    %reliable = input('does this model fit look reliable? y/n','s'); close 1
+    reliable = 'n'; close 1
     save(['model-details/' modelstosim{m}],'realparamlist','fitparams','subset','reliable','data','subsetdata')
     
     % Just llh not cutting it?

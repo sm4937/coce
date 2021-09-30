@@ -18,7 +18,8 @@ end
 %costs = costs.*exp(-excdelta.*((trial-1)/ntrials));
 
 % Linear, additive cost changing scheme
-costs = costs.*(1+(excdelta.*((trial-1)/ntrials)));
+%costs = costs.*(1+(excdelta.*((trial-1)/ntrials)));
+costs(costs~=0) = costs(costs~=0).*(1-exp(-excdelta(costs~=0)*(trial-1)));
 %costs = costs.*(1+excdelta)
 
 % ^ last delta scheme

@@ -20,15 +20,15 @@ function [simdata] = simulate_cost_model(modeltosim,allparams,toanalyze)
     trialScalar = 1;
     onesubj = repmat(toanalyze(toanalyze.subj==subjnum,:),trialScalar,1); %if
     %using only real subjects
-    if modeltosim.alpha
+%     if modeltosim.alpha
         nupdates = zeros(length(onesubj.nupdates),1); nupdates(onesubj.nupdates>0,:) = zscore(onesubj.nupdates(onesubj.nupdates>0,:)); % need to edit nupdates because it has so many zeros from irrelevant task 1
         nmisses = zscore(onesubj.nmisses); nmaintained = zscore(onesubj.maintained); nmatches = zscore(onesubj.nmatches);
         noisiness = zscore(onesubj.noisiness); responses = zscore(onesubj.nresponses); nlures = zscore(onesubj.nlures);
-    elseif (modeltosim.delta || modeltosim.deltai)
-        nupdates = onesubj.nupdates; % need to edit nupdates because it has so many zeros from irrelevant task 1
-        nmisses = onesubj.nmisses; nmaintained = onesubj.maintained; nmatches = onesubj.nmatches;
-        noisiness = onesubj.noisiness; responses = onesubj.nresponses; nlures = onesubj.nlures;        
-    end
+%     elseif (modeltosim.delta || modeltosim.deltai)
+%         nupdates = onesubj.nupdates; % need to edit nupdates because it has so many zeros from irrelevant task 1
+%         nmisses = onesubj.nmisses; nmaintained = onesubj.maintained; nmatches = onesubj.nmatches;
+%         noisiness = onesubj.noisiness; responses = onesubj.nresponses; nlures = onesubj.nlures;        
+%     end
     ntrials = sum(~isnan(onesubj.BDM)&~isnan(onesubj.display)); %height(onesubj);
     for trial = 1:ntrials
         torate = onesubj.display(trial);
@@ -41,7 +41,7 @@ function [simdata] = simulate_cost_model(modeltosim,allparams,toanalyze)
         end
         if (modeltosim.delta || modeltosim.deltai) & trial > 1
             costs = setNewCosts(costs,delta,trial);
-            % figure(10);scatter(trial*ones(1,sum(costs~=0)),costs(costs~=0));hold on
+            %figure(10);scatter(trial*ones(1,sum(costs~=0)),costs(costs~=0));hold on
         end
         task = onesubj.task(trial);
         updates = nupdates(trial);misses = nmisses(trial); mains = nmaintained(trial); matches = nmatches(trial); noise = noisiness(trial); nresp = responses(trial); lures = nlures(trial);

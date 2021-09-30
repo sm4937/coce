@@ -3,7 +3,7 @@ function [uc,epsilon,init,mc,mainc,matchc,noisec,respc,lurec,alpha,delta] = setP
 global scalingvector canbeneg
 
 labels = fieldnames(model); not_params = sum(contains(labels,'paramnames')|contains(labels,'nparams'));
-cost_scaling = 20; %put at 1 for testing HBI_coc code, broke
+cost_scaling = 20;
 scalingvector = ones(1,length(params)); canbeneg = false(1,length(params));
 
 epsilon = 10; init = 0; alpha = 0; delta = 0;
@@ -65,7 +65,7 @@ if model.deltai || model.delta
     % the end of the list of params
     % such that any additional space at the end of a vector of 
     % numbers belongs to the extra unnamed delta parameters
-    scalingvector(idx) = 0.20;
+    scalingvector(idx) = 5; %0.20
     canbeneg(idx) = true;
     delta = params(idx).*scalingvector(idx);
     % delta should now be a vector, not a single number

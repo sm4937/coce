@@ -23,7 +23,7 @@ else %fitting real subject data
     stimuli = onesim.task;
     realratings = (onesim.BDM); %scale down? just added this 11/08/2020 - see how this works
     display = onesim.display;
-    if modeltofit.alpha
+%     if modeltofit.alpha
         nupdates = zeros(length(onesim.nupdates),1); nupdates(onesim.nupdates>0,:) = zscore(onesim.nupdates(onesim.nupdates>0,:)); % need to edit nupdates because it has so many zeros from irrelevant task 1
         nmisses = zscore(onesim.nmisses);
         mains = zscore(onesim.maintained); 
@@ -31,15 +31,15 @@ else %fitting real subject data
         noisiness = zscore(onesim.noisiness);
         responses = zscore(onesim.nresponses);
         nlures = zscore(onesim.nlures);
-    elseif (modeltofit.delta || modeltofit.deltai)
-        nupdates = onesim.nupdates; % need to edit nupdates because it has so many zeros from irrelevant task 1
-        nmisses = onesim.nmisses;
-        mains = onesim.maintained; 
-        nmatches = onesim.nmatches;
-        noisiness = onesim.noisiness;
-        responses = onesim.nresponses;
-        nlures = onesim.nlures;
-    end
+%     elseif (modeltofit.delta || modeltofit.deltai)
+%         nupdates = onesim.nupdates; % need to edit nupdates because it has so many zeros from irrelevant task 1
+%         nmisses = onesim.nmisses;
+%         mains = onesim.maintained; 
+%         nmatches = onesim.nmatches;
+%         noisiness = onesim.noisiness;
+%         responses = onesim.nresponses;
+%         nlures = onesim.nlures;
+%     end
 end
 
 if HBI_flag
