@@ -21,7 +21,7 @@ model_detail_folder = dir('model-details'); list_existing = cellstr(string(char(
 % Run a test to ensure that individual parameters are being fit reasonably
 function_folder = dir('model-functions'); list_existing_functions = cellstr(string(char(function_folder.name)));
 % WHICH PARAMS DO YOU WANT YOUR MODEL TO CONTAIN?
-paramsofinterest = {'mc','mainc','lurec','respc','initi','deltai'};
+paramsofinterest = {'uc','mainc','lurec','missc','fac','initi','deltai'};
 % GET ALL POSSIBLE PARAM COMBOS
 modelstosim = getAllParamCombos(paramsofinterest); 
 modelstosim(~contains(modelstosim,'c')) = [];
@@ -30,9 +30,9 @@ modelstofit = modelstosim;
 subjnums = unique(toanalyze.subj);
 nsubjs = length(subjnums); 
 
-forcefit = true;
+forcefit = false;
 
-for m = 11 %1:length(modelstosim)
+for m = 1:length(modelstosim)
     model_name = modelstosim{m};
     modeltosim = coc_createModels(model_name); modeltofit = modeltosim;
     diff = length(list_existing{end})-length([model_name '.mat']);
@@ -52,7 +52,7 @@ for m = 11 %1:length(modelstosim)
         end
         
         %plot simulated dataset to see whether it contains sensical values
-        model_validation_HBI()
+        %model_validation_HBI()
         
         fnames{m} = [modelstosim{m} '.mat'];
         diff = length(list_existing_functions{end})-length(['fit_' modelstosim{m} '.m']);
@@ -90,53 +90,53 @@ for m = 11 %1:length(modelstosim)
     rs = diag(r)
     ps = diag(p)
     disp(['Model ' num2str(m)])
-    %reliable = input('does this model fit look reliable? y/n','s'); close 1
-    reliable = 'n'; close 1
+    reliable = input('does this model fit look reliable? y/n','s'); close 1
+    %reliable = 'n'; close 1
     save(['model-details/' modelstosim{m}],'realparamlist','fitparams','subset','reliable','data','subsetdata')
     
     % Just llh not cutting it?
-    if reliable == 'n'
-        % Run the full hierarchical fitting and test how it does on recovering true simulated models
-        fname_hbi = 'genrec_onemodel.mat';
-        
-        clear funcs priors
-        eval(['funcs{1} = @fit_' modelstosim{m} ';']); fnames_typeIIML{1} = [modelstosim{m} '.mat']; 
-        priors{1} = struct('mean',zeros(modeltofit.nparams,1),'variance',6.25);
-        cbm_hbi(subsetdata,funcs,fnames_typeIIML,fname_hbi);
-        %inputs: data {cell per subj}, model-specific fitting functions, filenames from
-        %cbm_lap, %filename for saving full running to
-
-        % Analyze fit hierarchical generate/recover
-        fits = load(fname_hbi);
-        cbm   = fits.cbm;
-        freqs = cbm.output.model_frequency;
-
-        figure(1)
-        fitparams = cbm.output.parameters{1};
-        fitparams = applyTrans_parameters(modeltofit,fitparams);
-        nparams = size(fitparams,2);
-        for p = 1:nparams
-            subplot(5,3,p)
-            scatter(realparamlist(subset,p),fitparams(:,p),[],rand(length(subset),3),'Filled')
-            hold on
-            plot([0 0],[1 1],'--')
-            xlabel(['Real ' modeltofit.paramnames{p}])
-            ylabel('Fit values')
-            xlim([0 1]); ylim([0 1]);
-        end
-        fig = gcf; fig.Color = 'w';
-        MSEs = mean((realparamlist(1:size(fitparams,2))-fitparams).^2);
-        disp(['MSE = ' num2str(MSEs)])
-
-        [rs,ps] = corr(fitparams,realparamlist(subset,:))
-        disp(['Param fits for ' model_name])  
-        
-        % try again. With Type II MLE, is the genrec better?
-        disp(['Model ' num2str(m)])
-        reliable = input('does this model fit look reliable? y/n','s'); close 1
-        %reliable = 'n'; 
-        save(['model-details/' model_name],'realparamlist','fitparams','subset','reliable','data','subsetdata')
-    end
+%     if reliable == 'n'
+%         % Run the full hierarchical fitting and test how it does on recovering true simulated models
+%         fname_hbi = 'genrec_onemodel.mat';
+%         
+%         clear funcs priors
+%         eval(['funcs{1} = @fit_' modelstosim{m} ';']); fnames_typeIIML{1} = [modelstosim{m} '.mat']; 
+%         priors{1} = struct('mean',zeros(modeltofit.nparams,1),'variance',6.25);
+%         cbm_hbi(subsetdata,funcs,fnames_typeIIML,fname_hbi);
+%         %inputs: data {cell per subj}, model-specific fitting functions, filenames from
+%         %cbm_lap, %filename for saving full running to
+% 
+%         % Analyze fit hierarchical generate/recover
+%         fits = load(fname_hbi);
+%         cbm   = fits.cbm;
+%         freqs = cbm.output.model_frequency;
+% 
+%         figure(1)
+%         fitparams = cbm.output.parameters{1};
+%         fitparams = applyTrans_parameters(modeltofit,fitparams);
+%         nparams = size(fitparams,2);
+%         for p = 1:nparams
+%             subplot(5,3,p)
+%             scatter(realparamlist(subset,p),fitparams(:,p),[],rand(length(subset),3),'Filled')
+%             hold on
+%             plot([0 0],[1 1],'--')
+%             xlabel(['Real ' modeltofit.paramnames{p}])
+%             ylabel('Fit values')
+%             xlim([0 1]); ylim([0 1]);
+%         end
+%         fig = gcf; fig.Color = 'w';
+%         MSEs = mean((realparamlist(1:size(fitparams,2))-fitparams).^2);
+%         disp(['MSE = ' num2str(MSEs)])
+% 
+%         [rs,ps] = corr(fitparams,realparamlist(subset,:))
+%         disp(['Param fits for ' model_name])  
+%         
+%         % try again. With Type II MLE, is the genrec better?
+%         disp(['Model ' num2str(m)])
+%         reliable = input('does this model fit look reliable? y/n','s'); close 1
+%         %reliable = 'n'; 
+%         save(['model-details/' model_name],'realparamlist','fitparams','subset','reliable','data','subsetdata')
+%     end
     
 end
 
@@ -238,9 +238,9 @@ paramcolors = [1 0 0; 1 0.5 0; 1 0 0.5; 0 0 1; 0 0.5 1; 0 0.7 0; 1 1 0];
 % Set up some plotting variables
 
 % Dictate models to fit here by specifying which parameters are of interest
-paramsofinterest = {'mc','mainc','lurec','respc','initi'};
+paramsofinterest = {'missc','mainc','lurec','respc','fac','initi'};
 modelstofit = getAllParamCombos(paramsofinterest);
-modelstofit = [modelstofit getAllParamCombos({'mc','mainc','lurec','respc','deltai','initi'})];
+modelstofit = [modelstofit getAllParamCombos({'missc','mainc','lurec','respc','fac','deltai','initi'})];
 
 % Run model fitting over reliable models only (i.e. over models where the
 % fidelity of recovered parameters is significant)

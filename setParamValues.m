@@ -1,4 +1,4 @@
-function [uc,epsilon,init,mc,mainc,matchc,noisec,respc,lurec,alpha,delta] = setParamValues(params,model)
+function [uc,epsilon,init,missc,mainc,matchc,noisec,respc,lurec,errorc,fac,alpha,delta] = setParamValues(params,model)
 %   Scale, set parameter values for cost learning models
 global scalingvector canbeneg
 
@@ -7,7 +7,8 @@ cost_scaling = 20;
 scalingvector = ones(1,length(params)); canbeneg = false(1,length(params));
 
 epsilon = 10; init = 0; alpha = 0; delta = 0;
-uc = 0; mc = 0; mainc = 0; matchc = 0; noisec = 0; respc = 0; lurec = 0;
+uc = 0; missc = 0; mainc = 0; matchc = 0; noisec = 0; 
+respc = 0; lurec = 0; errorc = 0; fac = 0;
 if model.uc
     idx = find(contains(model.paramnames,'uc'));
     scalingvector(idx) = cost_scaling; canbeneg(idx) = true;
@@ -24,10 +25,10 @@ if model.init || model.initi
     scalingvector(idx) = 100;
     init = params(idx).*scalingvector(idx);
 end
-if model.mc
-    idx = find(contains(model.paramnames,'mc'));
+if model.missc
+    idx = find(contains(model.paramnames,'missc'));
     scalingvector(idx) = cost_scaling; canbeneg(idx) = true;
-    mc = params(idx)*scalingvector(idx);
+    missc = params(idx)*scalingvector(idx);
 end
 if model.mainc
     idx = find(contains(model.paramnames,'mainc'));
@@ -54,8 +55,19 @@ if model.lurec
     scalingvector(idx) = cost_scaling; canbeneg(idx) = true;
     lurec = params(idx)*scalingvector(idx);
 end
+if model.fac
+    idx = find(contains(model.paramnames,'fac'));
+    scalingvector(idx) = cost_scaling; canbeneg(idx) = true;
+    fac = params(idx)*scalingvector(idx);
+end
+if model.errorc
+    idx = find(contains(model.paramnames,'errorc'));
+    scalingvector(idx) = cost_scaling; canbeneg(idx) = true;
+    errorc = params(idx)*scalingvector(idx);
+end
 if model.alpha
     idx = find(contains(model.paramnames,'alpha'));
+    canbeneg(idx) = false;
     alpha = params(idx)*scalingvector(idx);
 end
 if model.deltai || model.delta
@@ -65,7 +77,7 @@ if model.deltai || model.delta
     % the end of the list of params
     % such that any additional space at the end of a vector of 
     % numbers belongs to the extra unnamed delta parameters
-    scalingvector(idx) = 5; %0.20
+    scalingvector(idx) = 1; %0.20
     canbeneg(idx) = true;
     delta = params(idx).*scalingvector(idx);
     % delta should now be a vector, not a single number

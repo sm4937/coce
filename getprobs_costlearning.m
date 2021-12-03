@@ -18,6 +18,8 @@ if ~realsubjectsflag
     noisiness = onesim(:,9);
     responses = onesim(:,10);
     nlures = onesim(:,11);
+    nerrors = onesim(:,12);
+    nFAs = onesim(:,13);
 else %fitting real subject data
     subj = unique(onesim.subj);
     stimuli = onesim.task;
@@ -31,6 +33,8 @@ else %fitting real subject data
         noisiness = zscore(onesim.noisiness);
         responses = zscore(onesim.nresponses);
         nlures = zscore(onesim.nlures);
+        nerrors = zscore(onesim.nerrors);
+        nFAs = zscore(onesim.nFAs);
 %     elseif (modeltofit.delta || modeltofit.deltai)
 %         nupdates = onesim.nupdates; % need to edit nupdates because it has so many zeros from irrelevant task 1
 %         nmisses = onesim.nmisses;
@@ -39,16 +43,18 @@ else %fitting real subject data
 %         noisiness = onesim.noisiness;
 %         responses = onesim.nresponses;
 %         nlures = onesim.nlures;
+%         nerrors = onesim.nerrors;
+%         nFAs = onesim.nFAs;
 %     end
 end
 
 if HBI_flag
     params = applyTrans_parameters(modeltofit,params);
 end
-[uc,epsilon,init,mc,mainc,matchc,noisec,respc,lurec,alpha,delta] = setParamValues(params,modeltofit);
+[uc,epsilon,init,missc,mainc,matchc,noisec,respc,lurec,errorc,fac,alpha,delta] = setParamValues(params,modeltofit);
 ntrials = sum(~isnan(realratings)); %length(stimuli);
 
-costs = [uc mc mainc matchc noisec respc lurec];
+costs = [uc missc mainc matchc noisec respc lurec errorc fac];
 
 %simulate the model for one subject at a time
 ratings = [1 init].*(ones(1,max(display))); ratings_list = NaN(ntrials,1); %init for each subject 
@@ -58,7 +64,7 @@ if (modeltofit.delta || modeltofit.deltai)
         costs(trial,:) = setNewCosts(costs(trial-1,:),delta,trial);
     end
 end
-components = [nupdates nmisses mains nmatches noisiness responses nlures];
+components = [nupdates nmisses mains nmatches noisiness responses nlures nerrors nFAs];
 cost = sum(costs.*components(1:ntrials,:),2); %add all the costs together
 for trial = 1:ntrials
     torate = display(trial); stim = stimuli(trial);

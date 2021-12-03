@@ -6,7 +6,7 @@ function [model] = coc_createModels(name)
 %   number of parameters, and which ones they are.
 
 modelStruct = struct;
-possibleparams = {'epsilon','init','initi','mc','uc','mainc','alpha','delta','deltai','matchc','noisec','respc','lurec'};
+possibleparams = {'epsilon','init','initi','missc','uc','mainc','alpha','delta','deltai','matchc','noisec','respc','lurec','errorc','fac'};
 
 params = strsplit(name,'_'); 
 if length(params)<2
@@ -55,7 +55,7 @@ if sum(contains(params,'deltai'))>0
     else
         model.deltaupdate = false;
     end
-    if model.mc
+    if model.missc
         model.deltamiss = true;
         params{end+1} = 'deltamiss';
     else
@@ -79,12 +79,26 @@ if sum(contains(params,'deltai'))>0
     else
         model.deltalure = false;
     end
+    if model.errorc
+        model.deltaerror = true;
+        params{end+1} = 'deltaerror';
+    else
+        model.deltaerror = false;
+    end
+    if model.fac
+        model.deltaFA = true;
+        params{end+1} = 'deltaFA';
+    else
+        model.deltaFA = false;
+    end
 else
     model.deltaupdate = false;
     model.deltamiss = false;
     model.deltamain = false;
     model.deltaresp = false;
     model.deltalure = false;
+    model.deltaerror = false;
+    model.deltaFA = false;
 end
 
 model.nparams = length(params);

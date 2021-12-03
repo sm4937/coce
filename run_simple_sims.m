@@ -136,7 +136,10 @@ for subj = 1:length(unique(tosim.subj))
         noisiness = sum((blockdata.detect|blockdata.nback)==true&blockdata.correct==false)/max([sum(blockdata.detect|blockdata.nback) 1]);
         nmatches = sum((blockdata.detect|blockdata.nback)==true&blockdata.correct==true);
         nmisses = sum((blockdata.detect|blockdata.nback)==true&blockdata.correct==false);
-        nerrors
+        % count times they were supposed to respond & didn't
+        nFAs = sum((blockdata.detect|blockdata.nback)==false & ~isnan(blockdata.keypress));
+        nerrors = nmisses + nFAs;
+        % count times they responded & weren't supposed to (false alarm)
         nresponses = sum(~isnan(blockdata.keypress(2:end)));
         maintained(1,:) = []; maintained = nanmean(sum(maintained>0,2));
         % this is a weird measure, it's maintainence adjusted for errors,
@@ -144,7 +147,7 @@ for subj = 1:length(unique(tosim.subj))
         % let's just set it to N and see if that's different in any way
         maintained = n;
         
-        components = [components; subj nmatches maintained nupdates nmisses blockdata.display(1)+1 task blockdata.BDM(1) noisiness nresponses nlures nerrors];
+        components = [components; subj nmatches maintained nupdates nmisses blockdata.display(1)+1 task blockdata.BDM(1) noisiness nresponses nlures nerrors nFAs];
     end %end of block by block loop
 %     if sum(completed(subj,2:end)>2)<3 %3 iterations or more for each rated task?
 %         disp(['excluding subj ' num2str(subj)])
@@ -164,7 +167,8 @@ toanalyze.maintained = components(:,3); toanalyze.nupdates = components(:,4);
 toanalyze.nmisses = components(:,5); toanalyze.display = components(:,6); 
 toanalyze.task = components(:,7); toanalyze.BDM = components(:,8); 
 toanalyze.noisiness = components(:,9); toanalyze.nresponses = components(:,10);
-toanalyze.nlures = components(:,11);
+toanalyze.nlures = components(:,11); toanalyze.nerrors = components(:,12);
+toanalyze.nFAs = components(:,13);
 save('simdata/toanalyze.mat','toanalyze','trim')
 
 %% Check out individual differences in measures
