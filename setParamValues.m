@@ -2,13 +2,26 @@ function [uc,epsilon,init,missc,mainc,matchc,noisec,respc,lurec,errorc,fac,alpha
 %   Scale, set parameter values for cost learning models
 global scalingvector canbeneg
 
-labels = fieldnames(model); not_params = sum(contains(labels,'paramnames')|contains(labels,'nparams'));
-cost_scaling = 20;
 scalingvector = ones(1,length(params)); canbeneg = false(1,length(params));
+ncosts = sum(contains(model.paramnames,'c'));
+cost_scaling = 50./ncosts; %works well at 20 also
 
 epsilon = 10; init = 0; alpha = 0; delta = 0;
 uc = 0; missc = 0; mainc = 0; matchc = 0; noisec = 0; 
 respc = 0; lurec = 0; errorc = 0; fac = 0;
+if model.alpha
+    idx = find(contains(model.paramnames,'alpha'));
+    canbeneg(idx) = false;
+    alpha = params(idx)*scalingvector(idx);
+end
+if model.deltai || model.delta
+    idx = find(contains(model.paramnames,'delta'));
+    scalingvector(idx) = 1; %1; %0.05; 
+    canbeneg(idx) = true;
+    delta = params(idx).*scalingvector(idx);
+    % delta should now be a vector, not a single number
+end
+
 if model.uc
     idx = find(contains(model.paramnames,'uc'));
     scalingvector(idx) = cost_scaling; canbeneg(idx) = true;
@@ -64,23 +77,6 @@ if model.errorc
     idx = find(contains(model.paramnames,'errorc'));
     scalingvector(idx) = cost_scaling; canbeneg(idx) = true;
     errorc = params(idx)*scalingvector(idx);
-end
-if model.alpha
-    idx = find(contains(model.paramnames,'alpha'));
-    canbeneg(idx) = false;
-    alpha = params(idx)*scalingvector(idx);
-end
-if model.deltai || model.delta
-    idx = find(contains(model.paramnames,'delta'));
-    %because of the way code upstream of this has been written
-    % (model definition code) deltai should always be at 
-    % the end of the list of params
-    % such that any additional space at the end of a vector of 
-    % numbers belongs to the extra unnamed delta parameters
-    scalingvector(idx) = 1; %0.20
-    canbeneg(idx) = true;
-    delta = params(idx).*scalingvector(idx);
-    % delta should now be a vector, not a single number
 end
 
 end

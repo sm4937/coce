@@ -21,7 +21,7 @@ model_detail_folder = dir('model-details'); list_existing = cellstr(string(char(
 % Run a test to ensure that individual parameters are being fit reasonably
 function_folder = dir('model-functions'); list_existing_functions = cellstr(string(char(function_folder.name)));
 % WHICH PARAMS DO YOU WANT YOUR MODEL TO CONTAIN?
-paramsofinterest = {'uc','mainc','lurec','missc','fac','initi','deltai'};
+paramsofinterest = {'mainc','lurec','missc','fac','respc','initi'};
 % GET ALL POSSIBLE PARAM COMBOS
 modelstosim = getAllParamCombos(paramsofinterest); 
 modelstosim(~contains(modelstosim,'c')) = [];
@@ -30,12 +30,19 @@ modelstofit = modelstosim;
 subjnums = unique(toanalyze.subj);
 nsubjs = length(subjnums); 
 
-forcefit = false;
+nsubjstofit = 30;
+repeated_subset = randperm(100,nsubjstofit);
 
-for m = 1:length(modelstosim)
+forcefit = true;
+
+for m = 31
+    
     model_name = modelstosim{m};
     modeltosim = coc_createModels(model_name); modeltofit = modeltosim;
     diff = length(list_existing{end})-length([model_name '.mat']);
+    
+    subsetdata = cell(1,nsubjstofit);
+    
     if sum(contains(list_existing,[model_name '.mat' repmat(' ',1,diff)]))==0 || forcefit %have you run gen-rec on this model already?
         %if no, run it and save results
         realparamlist = []; 
@@ -52,7 +59,7 @@ for m = 1:length(modelstosim)
         end
         
         %plot simulated dataset to see whether it contains sensical values
-        %model_validation_HBI()
+        model_validation_HBI()
         
         fnames{m} = [modelstosim{m} '.mat'];
         diff = length(list_existing_functions{end})-length(['fit_' modelstosim{m} '.m']);
@@ -62,7 +69,7 @@ for m = 1:length(modelstosim)
         eval(['func = @fit_' modelstosim{m} ';']); funcs{m} = func;
         priors{m} = struct('mean',zeros(modeltofit.nparams,1),'variance',6.25); 
         
-        subset = randperm(100,30);
+        subset = repeated_subset;
         for sii = 1:length(subset) %%use subset for this part, to check MLE fits
             subsetdata{sii} = data{subset(sii)};
         end
@@ -95,48 +102,48 @@ for m = 1:length(modelstosim)
     save(['model-details/' modelstosim{m}],'realparamlist','fitparams','subset','reliable','data','subsetdata')
     
     % Just llh not cutting it?
-%     if reliable == 'n'
-%         % Run the full hierarchical fitting and test how it does on recovering true simulated models
-%         fname_hbi = 'genrec_onemodel.mat';
-%         
-%         clear funcs priors
-%         eval(['funcs{1} = @fit_' modelstosim{m} ';']); fnames_typeIIML{1} = [modelstosim{m} '.mat']; 
-%         priors{1} = struct('mean',zeros(modeltofit.nparams,1),'variance',6.25);
-%         cbm_hbi(subsetdata,funcs,fnames_typeIIML,fname_hbi);
-%         %inputs: data {cell per subj}, model-specific fitting functions, filenames from
-%         %cbm_lap, %filename for saving full running to
-% 
-%         % Analyze fit hierarchical generate/recover
-%         fits = load(fname_hbi);
-%         cbm   = fits.cbm;
-%         freqs = cbm.output.model_frequency;
-% 
-%         figure(1)
-%         fitparams = cbm.output.parameters{1};
-%         fitparams = applyTrans_parameters(modeltofit,fitparams);
-%         nparams = size(fitparams,2);
-%         for p = 1:nparams
-%             subplot(5,3,p)
-%             scatter(realparamlist(subset,p),fitparams(:,p),[],rand(length(subset),3),'Filled')
-%             hold on
-%             plot([0 0],[1 1],'--')
-%             xlabel(['Real ' modeltofit.paramnames{p}])
-%             ylabel('Fit values')
-%             xlim([0 1]); ylim([0 1]);
-%         end
-%         fig = gcf; fig.Color = 'w';
-%         MSEs = mean((realparamlist(1:size(fitparams,2))-fitparams).^2);
-%         disp(['MSE = ' num2str(MSEs)])
-% 
-%         [rs,ps] = corr(fitparams,realparamlist(subset,:))
-%         disp(['Param fits for ' model_name])  
-%         
-%         % try again. With Type II MLE, is the genrec better?
-%         disp(['Model ' num2str(m)])
-%         reliable = input('does this model fit look reliable? y/n','s'); close 1
-%         %reliable = 'n'; 
-%         save(['model-details/' model_name],'realparamlist','fitparams','subset','reliable','data','subsetdata')
-%     end
+    if reliable == 'n'
+        % Run the full hierarchical fitting and test how it does on recovering true simulated models
+        fname_hbi = 'genrec_onemodel.mat';
+        
+        clear funcs priors
+        eval(['funcs{1} = @fit_' modelstosim{m} ';']); fnames_typeIIML{1} = [modelstosim{m} '.mat']; 
+        priors{1} = struct('mean',zeros(modeltofit.nparams,1),'variance',6.25);
+        cbm_hbi(subsetdata,funcs,fnames_typeIIML,fname_hbi);
+        %inputs: data {cell per subj}, model-specific fitting functions, filenames from
+        %cbm_lap, %filename for saving full running to
+
+        % Analyze fit hierarchical generate/recover
+        fits = load(fname_hbi);
+        cbm   = fits.cbm;
+        freqs = cbm.output.model_frequency;
+
+        figure(1)
+        fitparams = cbm.output.parameters{1};
+        fitparams = applyTrans_parameters(modeltofit,fitparams);
+        nparams = size(fitparams,2);
+        for p = 1:nparams
+            subplot(5,3,p)
+            scatter(realparamlist(subset,p),fitparams(:,p),[],rand(length(subset),3),'Filled')
+            hold on
+            plot([0 0],[1 1],'--')
+            xlabel(['Real ' modeltofit.paramnames{p}])
+            ylabel('Fit values')
+            xlim([0 1]); ylim([0 1]);
+        end
+        fig = gcf; fig.Color = 'w';
+        MSEs = mean((realparamlist(1:size(fitparams,2))-fitparams).^2);
+        disp(['MSE = ' num2str(MSEs)])
+
+        [rs,ps] = corr(fitparams,realparamlist(subset,:))
+        disp(['Param fits for ' modelstosim{m}])  
+        
+        % try again. With Type II MLE, is the genrec better?
+        disp(['Model ' num2str(m)])
+        reliable = input('does this model fit look reliable? y/n','s'); close 1
+        %reliable = 'n'; 
+        save(['model-details/' modelstosim{m}],'realparamlist','fitparams','subset','reliable','data','subsetdata')
+    end
     
 end
 
