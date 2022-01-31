@@ -33,9 +33,9 @@ nsubjs = length(subjnums);
 nsubjstofit = 30;
 repeated_subset = randperm(100,nsubjstofit);
 
-forcefit = true;
+forcefit = false;
 
-for m = 31
+for m = 1:length(modelstosim)
     
     model_name = modelstosim{m};
     modeltosim = coc_createModels(model_name); modeltofit = modeltosim;
@@ -245,9 +245,9 @@ paramcolors = [1 0 0; 1 0.5 0; 1 0 0.5; 0 0 1; 0 0.5 1; 0 0.7 0; 1 1 0];
 % Set up some plotting variables
 
 % Dictate models to fit here by specifying which parameters are of interest
-paramsofinterest = {'missc','mainc','lurec','respc','fac','initi'};
+paramsofinterest = {'mainc','lurec','missc','fac','respc','initi'};
 modelstofit = getAllParamCombos(paramsofinterest);
-modelstofit = [modelstofit getAllParamCombos({'missc','mainc','lurec','respc','fac','deltai','initi'})];
+modelstofit = [modelstofit getAllParamCombos({'mainc','lurec','missc','fac','respc','deltai','initi'})];
 
 % Run model fitting over reliable models only (i.e. over models where the
 % fidelity of recovered parameters is significant)
@@ -292,13 +292,16 @@ for m = 1:length(modelstofit)
     model_labels{m} = strrep(modelstofit{m},'_','-');
     if fitflag; cbm_lap(data, func, priors{m}, fnames{m}); end
 end
-fname_hbi = 'HBI_coc_26models_compareMaintenance.mat'; 
+fname_hbi = 'HBI_coc_48models_2022.mat'; 
 % 63 models includes all alpha/delta combos
 % 37 models includes all alpha/deltai combos (reduced cost space)
 % 44 models includes all alpha/deltai combos (adding miss costs back in)
 % 26 models includes new initi paramater, and excludes update costs entirely.
 % 26models_compareMaintenance compares the old way of computing
 % maintenance, with the new way (which is just main = n)
+% 48models_2022 incorporates new cost schemes w new maintenance costs, multiple deltas,
+% and multiple initial fair wages
+
 
 
 % % RUN HBI %%
@@ -411,4 +414,4 @@ model_validation_HBI()
 % well
 cbm.input.model_names = modelstofit;
 % model_inspection(best_models(end),cbm)
-model_inspection(8,cbm)
+model_inspection(best,cbm)
