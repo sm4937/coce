@@ -150,10 +150,12 @@ xlabel('Iteration #')
 % What's the relationship of fair wage and accuracy?
 meanBDM = [nanmean(n1subjvalue,2) nanmean(n2subjvalue,2) nanmean(n3subjvalue,2)];
 meanAcc = tasks_overall(:,2:4);
+tocorr = [meanBDM meanAcc];
+tocorr = tocorr(sum(isnan(tocorr),2)<1,:);
 
-[r,p] = corr(meanBDM(:,1),meanAcc(:,1)) %1-back
-[r,p] = corr(meanBDM(:,2),meanAcc(:,2)) %3-detect
-[r,p] = corr(meanBDM(:,3),meanAcc(:,3)) %2-back
+[r,p] = corr(tocorr(:,1),tocorr(:,4)) %1-back
+[r,p] = corr(tocorr(:,2),tocorr(:,5)) %3-detect
+[r,p] = corr(tocorr(:,3),tocorr(:,6)) %2-back
 
 % % % subjects are RELATIVELY STABLE IN THEIR BDMs % % 
 % subplot(2,2,4)
@@ -412,12 +414,38 @@ no_fits = load('simdata/toanalyze.mat','trim'); no_fits = no_fits.trim;
 % remove subjects who weren't fit to models
 % grab best model
 best_model = modelfits.modelStruct.best_model;
-responsibility = modelfits.modelStruct.best_model.overallfit.responsibility;
-models_at_play = find(sum(responsibility>=0.01,1)>0);
-assignments(responsibility(:,models_at_play(1))>responsibility(:,models_at_play(2))) = models_at_play(1); 
-assignments(responsibility(:,models_at_play(2))>responsibility(:,models_at_play(1))) = models_at_play(2); %split into best model groups
 
-modelnames = best_model.overallfit.fitmodels;
+responsibility = modelfits.modelStruct.best_model.overallfit.responsibility;
+freqs = modelfits.modelStruct.best_model.overallfit.model_frequency;
+models_at_play = find(freqs>0.01);
+[~,assignments] = max(responsibility,[],2);
+
+disp([num2str(sum(assignments>4)) ' subjects best explained by a model with more than 1 cost'])
+
+full_labels = modelfits.modelStruct.best_model.overallfit.fitmodels;
+model_labels = cell(length(full_labels),1);
+for ll = 1:length(full_labels)
+    % trim model labels down to just the cost labels
+    temp_label = strsplit(full_labels{ll},'epsilon-initi-alpha-');
+    if length(temp_label) == 1
+        temp_label = strsplit(full_labels{ll},'epsilon-initi-');
+        % indicate that it's a delta cost model
+    end
+    just_costs = temp_label{2};
+    trim = strsplit(just_costs,'c');
+    new_name = ['c_{' trim{1} '}'];
+    
+    if length(trim)>2
+        for ii = 2:(length(trim)-1)
+            new_name = [new_name ' & ' strrep(trim{ii},'-','c_{')];
+            new_name = [new_name '}'];
+        end
+    end
+    
+    model_labels{ll} = new_name;
+end
+
+
 nparams = best_model.nparams; 
 params = applyTrans_parameters(best_model,best_model.lowparams); paramnames = best_model.paramnames;
 measures = [data.NFC data.SAPS]; measures(no_fits,:) = []; 
@@ -470,21 +498,22 @@ errorbar([nanmean(column(assignments==models_at_play(1))); nanmean(column(assign
 scatter(ones(sum(assignments==models_at_play(1)),1),column(assignments==models_at_play(1)),[],colors(2,:),'Filled')
 scatter(2*ones(sum(assignments==models_at_play(2)),1),column(assignments==models_at_play(2)),[],colors(2,:),'Filled')
 ylabel(names{measure})
-xticklabels(modelnames(models_at_play))
+xticklabels(model_labels(models_at_play))
 xtickangle(45)
 fig = gcf; fig.Color = 'w';
 title(['Mean ' names{measure} ' by model class'])
 end
-[h,p] = ttest2(measures([assignments==models_at_play(1)]'&sum(~isnan(measures),2)==2,1),measures([assignments==models_at_play(2)]'&sum(~isnan(measures),2)==2,1))
+[h,p] = ttest2(measures([assignments==models_at_play(1)]&sum(~isnan(measures),2)==2,1),measures([assignments==models_at_play(2)]&sum(~isnan(measures),2)==2,1))
 disp('NFC across models 1 and 2')
-[h,p] = ttest2(measures([assignments==models_at_play(1)]'&sum(~isnan(measures),2)==2,1),measures([assignments==models_at_play(1)]'&sum(~isnan(measures),2)==2,2))
+[h,p] = ttest2(measures([assignments==models_at_play(1)]&sum(~isnan(measures),2)==2,1),measures([assignments==models_at_play(1)]&sum(~isnan(measures),2)==2,2))
 disp('SAPS across models 1 and 2')
-[h,p] = ttest2(measures([assignments==models_at_play(2)]'&sum(~isnan(measures),2)==2,1),measures([assignments==models_at_play(3)]'&sum(~isnan(measures),2)==2,1))
+[h,p] = ttest2(measures([assignments==models_at_play(2)]&sum(~isnan(measures),2)==2,1),measures([assignments==models_at_play(3)]&sum(~isnan(measures),2)==2,1))
 disp('NFC across models 2 and 3')
-[h,p] = ttest2(measures([assignments==models_at_play(2)]'&sum(~isnan(measures),2)==2,1),measures([assignments==models_at_play(3)]'&sum(~isnan(measures),2)==2,2))
+[h,p] = ttest2(measures([assignments==models_at_play(2)]&sum(~isnan(measures),2)==2,1),measures([assignments==models_at_play(3)]&sum(~isnan(measures),2)==2,2))
 disp('SAPS across models 2 and 3')
 
-% Assign subjects to their model, plot parameters that way
+%% Assign subjects to their model, plot parameters that way
+
 all_params = best_model.overallfit.parameters; 
 for measure = 1:2
     if measure == 1
@@ -498,8 +527,17 @@ for measure = 1:2
     invalid = sum(isnan(X),2)>0; X(invalid,:) = [];
     
     % initialize plotting variables
-    plotted = []; count = 0;
+    plotted = []; count = 4;
     figure; fig = gcf; fig.Color = 'w';
+    
+    %At the top, plot each model frequency.
+    subplot(4,1,1)
+    bar(freqs(1:12))
+    title('Model frequencies')
+    xticklabels(model_labels(1:12));xtickangle(45)
+    ylim([0 1])
+    ax = gca; ax.FontSize = 14;
+
     
     for m = 1:length(models_at_play)
         modelnum = models_at_play(m);
@@ -509,13 +547,20 @@ for measure = 1:2
         paramnames = strrep(paramnames,'u ','update '); strrep(paramnames,'main ','maintenance ');
         costs = find(contains(paramnames,'cost'));
         values = all_params{modelnum}(:,costs);
+        %values = all_params{modelnum}(assignments==modelnum,costs);
+        % this is going to cause an N problem...
+        modelgroup = assignments==modelnum;
+        disp([num2str(sum(modelgroup)) ' subjects best fit by ' name])
+        
+        subplot(3,3,4)
+        
         for c = 1:size(costs,2)
             count = count+1;
             
             % run group-based & continuous stats
-            [h,pval1] = ttest2(values(split==1,c),values(split==2,c));
-            [h,pval2] = ttest2(values(split==3,c),values(split==2,c));
-            [h,pval3] = ttest2(values(split==1,c),values(split==3,c));
+            [h,pval1] = ttest2(values(split==1&modelgroup,c),values(split==2&modelgroup,c));
+            [h,pval2] = ttest2(values(split==3&modelgroup,c),values(split==2&modelgroup,c));
+            [h,pval3] = ttest2(values(split==1&modelgroup,c),values(split==3&modelgroup,c));
             ps = [NaN pval1 pval3; pval1 NaN pval2; pval3 pval2 NaN];
             
             Y = nanmean(values,2); Y(invalid,:) = [];
@@ -523,21 +568,26 @@ for measure = 1:2
             % get betas for quadratic term
             predicted = X*betas;
             distance = predicted-Y; MSE = distance'*distance; %squared distance
-            disp([names{measure} ' betas on ' paramnames{costs(c)} ', linear & quadratic: ' num2str(betas')])
+            if stats(3)<0.05
+                disp([names{measure} ' significant betas on ' paramnames{costs(c)} ', linear & quadratic: ' num2str(betas')])
+            end
             
             % plot effect of measure group on parameter values
-            subplot(4,3,count)
-            superbar([nanmean(values(split==1,c)) nanmean(values(split==2,c)) nanmean(values(split==3,c))], ...
-                'E',[nanstd(values(split==1,c)) nanstd(values(split==2,c)) nanstd(values(split==3,c))]./sqrt(n), ...
-                'P',ps,'BarFaceColor',colors,'PStarShowNS',false);
-            title(paramnames{costs(c)})
+            subplot(3,3,count) %starting at subplot 5
+            superbar([nanmean(values(split==1&modelgroup,c)) nanmean(values(split==2&modelgroup,c)) nanmean(values(split==3&modelgroup,c))], ...
+                'E',[nanstd(values(split==1&modelgroup,c)) nanstd(values(split==2&modelgroup,c)) nanstd(values(split==3&modelgroup,c))]./sqrt(n), ...
+                'P',ps,'BarFaceColor',colors,'PStarShowNS',false,'PStarBackgroundColor','None');
+            ylabel(paramnames{costs(c)})
+            title(model_labels{modelnum})
             xticks([1:3])
             xticklabels({['Low ' names{measure}],['Mid ' names{measure}],['High ' names{measure}]})
+            ax = gca; ax.FontSize = 14;
             
         end %of cycling over each cost
         
         plotted = [plotted paramnames(costs)];
     end %of cycling over each model
+    
     
 end %of cycling over SAPS & NFC
 
