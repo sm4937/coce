@@ -1,6 +1,9 @@
 %% A script to print stats and paper stuff, with more upfront formatting and 
 % fewer exploratory analyses
 addpath(genpath('../superbar_all_files'))
+addpath(genpath('/Users/sarah/Documents/MATLAB/violin'))
+
+modelcolors = [1 0 0; 1 0.5 0; 1 0 0.5; 0 0 1; 0 0.5 1; 0 0.7 0; 1 1 0];
 
 disp(['Sample of ' num2str(n) ' subjects (' num2str(sum(data.sex==2)) ' female). Mean(std) age: ' num2str(nanmean(data.age)) '(' num2str(nanstd(data.age)) ')'])
 disp(['Unspecified sex n: ' num2str(sum(isnan(data.sex))) '; unspecified age: ' num2str(sum(isnan(data.age)))])
@@ -13,12 +16,17 @@ figure
 subplot(2,2,1)
 fig = gcf; fig.Color = 'w';
 errorbar(1:length(tasklabels),[nanmean(tasks_overall(:,1)) nanmean(tasks_overall(:,2)) nanmean(tasks_overall(:,3)) nanmean(tasks_overall(:,4))],[nanstd(tasks_overall(:,1)) nanstd(tasks_overall(:,2)) nanstd(tasks_overall(:,3)) nanstd(tasks_overall(:,4))]/sqrt(n),'k','LineWidth',1.25)
+hold on
+violin([nanmean(tasks_overall(:,1)) nanmean(tasks_overall(:,2)) nanmean(tasks_overall(:,3)) nanmean(tasks_overall(:,4))],'facecolor',[taskcolors(1,:);taskcolors(2,:);taskcolors(3,:);taskcolors(4,:)],'medc','','mc','')
+
+legend('off')
 xticks(1:length(tasklabels))
 xticklabels(tasklabels)
 %xtickangle(45)
 xlabel('Task')
 ylim([70 100]); xlim([0.5 4.5])
 ylabel('Mean accuracy')
+ax = gca; ax.FontSize = 14;
 
 % % STATS ON ACCURACY, MEAN RT, and DIFFICULTY RATINGS
 % COMPARE MEAN ACCURACY BY TASK %
@@ -113,27 +121,43 @@ scatter(ones(n,1),nanmean(n1subjvalue,2),dotsize*ones(n,1),taskcolors(2,:),'fill
 hold on
 scatter(2*ones(n,1),nanmean(n2subjvalue,2),dotsize*ones(n,1),taskcolors(3,:),'filled','DisplayName','3-detect')
 scatter(3*ones(n,1),nanmean(n3subjvalue,2),dotsize*ones(n,1),taskcolors(4,:),'filled','DisplayName','2-back')
-
 %overlay group means
 errorbar([nanmean(data.values(n1)) nanmean(data.values(ndetect)) nanmean(data.values(n2))],[nanstd(data.values(n1)) nanstd(data.values(ndetect)) nanstd(data.values(n2))]./sqrt(n),'k','LineWidth',1.25)
+%xlim([0.75 3.25])
+%ylim([1 5])
 
+violin([nanmean(n1subjvalue,2) nanmean(n2subjvalue,2) nanmean(n3subjvalue,2)],'facecolor',[taskcolors(2,:);taskcolors(3,:);taskcolors(4,:)],'medc','','mc','')
 xticks(1:(length(tasklabels)-1))
-xlim([0.75 3.25])
-ylim([1 5])
 xticklabels(tasklabels(2:end))
 ylabel('Mean fair wage')
 xlabel('Task')
+legend('off')
+ax = gca; ax.FontSize = 14;
 
 % % ACCURACY BY TASK ITERATION % %
+scaling = 1;
 subplot(2,2,3)
 errorbar(nanmean(n0subjlearning(:,1:11)),nanstd(n0subjlearning(:,1:11))/sqrt(n),'Color',taskcolors(1,:),'LineWidth',1.25,'DisplayName',tasklabels{1})
 hold on
+n0points = sum(~isnan(n0subjlearning(:,1:11)));
 errorbar(nanmean(n1subjlearning),nanstd(n1subjlearning)/sqrt(n),'Color',taskcolors(2,:),'LineWidth',1.25,'DisplayName',tasklabels{2})
+n1points = sum(~isnan(n1subjlearning(:,1:10)));
 errorbar(nanmean(n2subjlearning),nanstd(n2subjlearning)/sqrt(n),'Color',taskcolors(3,:),'LineWidth',1.25,'DisplayName',tasklabels{3})
+n2points = sum(~isnan(n2subjlearning(:,1:11)));
 errorbar(nanmean(n3subjlearning),nanstd(n3subjlearning)/sqrt(n),'Color',taskcolors(4,:),'LineWidth',1.25,'DisplayName',tasklabels{4}) %task 3 is actually ndetect
+n3points = sum(~isnan(n3subjlearning(:,1:11)));
+
+% Plot overlay which depicts # of data points in each bar
+scatter(1:11,nanmean(n0subjlearning(:,1:11)),n0points*scaling,taskcolors(1,:),'Filled')
+scatter(1:10,nanmean(n1subjlearning(:,1:10)),n1points*scaling,taskcolors(2,:),'Filled')
+scatter(1:11,nanmean(n2subjlearning(:,1:11)),n2points*scaling,taskcolors(3,:),'Filled')
+scatter(1:11,nanmean(n3subjlearning(:,1:11)),n3points*scaling,taskcolors(4,:),'Filled')
+
+legend(tasklabels)
 legend('boxoff')
+xlim([0.5 11.5])
 fig = gcf; ax = gca;
-fig.Color = 'w';
+fig.Color = 'w'; ax.FontSize = 14;
 ylabel('Accuracy')
 xlabel('Iteration #')
 
@@ -146,6 +170,8 @@ errorbar(nanmean(n3subjvalue),nanstd(n3subjvalue)./sqrt(n),'Color',taskcolors(4,
 ylabel('Fair wage')
 legend('boxoff')
 xlabel('Iteration #')
+xlim([0.5 11.5])
+ax = gca; ax.FontSize = 14;
 
 % What's the relationship of fair wage and accuracy?
 meanBDM = [nanmean(n1subjvalue,2) nanmean(n2subjvalue,2) nanmean(n3subjvalue,2)];
@@ -244,17 +270,24 @@ disp(['Corr SAPS/age r = ' num2str(r) '; p = ' num2str(p)])
 
 % PLOT DISTRIBUTIONS
 figure
-subplot(2,2,1)
-histogram(data.NFC)
+subplot(2,3,1)
+histogram(data.NFC,[1 2 3 4 5])
 xlabel('Score'); ylabel('# subjects')
 title('Distribution of NFC')
-ax = gca; ax.FontSize = 12; 
-subplot(2,2,2)
-histogram(data.SAPS)
+ax = gca; ax.FontSize = 14; 
+subplot(2,3,2)
+histogram(data.SAPS,[1 2 3 4 5 6 7])
 xlabel('Score'); ylabel('# subjects')
 title('Distribution of SAPS')
 fig = gcf; fig.Color = 'w';
-ax = gca; ax.FontSize = 12; 
+ax = gca; ax.FontSize = 14; 
+subplot(2,3,3)
+scatter(data.NFC,data.SAPS,'Filled')
+lsline
+ylabel('SAPS score')
+xlabel('NFC score')
+xlim([1 5]); ylim([1 7])
+ax = gca; ax.FontSize = 14;
 
 % % LINEAR RELATIONSHIPS OF NFC/SAPS and ACCURACY/MEAN RTs/DIFF
 % RATINGS/BDMs
@@ -337,13 +370,14 @@ for measure = 1:2
     hold on
     errorbar([nanmean(midNFCvalues(n1(split==2,:))) nanmean(midNFCvalues(ndetect(split==2,:))) nanmean(midNFCvalues(n2(split==2,:)))],[nanstd(midNFCvalues(n1(split==2,:))) nanstd(midNFCvalues(ndetect(split==2,:))) nanstd(midNFCvalues(n2(split==2,:)))]/sqrt(sum(split==2)),'Color',colors(2,:),'Linewidth',1.5)
     errorbar([nanmean(highNFCvalues(n1(split==3,:))) nanmean(highNFCvalues(ndetect(split==3,:))) nanmean(highNFCvalues(n2(split==3,:)))],[nanstd(highNFCvalues(n1(split==3,:))) nanstd(highNFCvalues(ndetect(split==3,:))) nanstd(highNFCvalues(n2(split==3,:)))]/sqrt(sum(split==3)),'Color',colors(3,:),'Linewidth',1.5)
-    legend(['Low ' labels{measure}],['Mid ' labels{measure}],['High ' labels{measure}])
+    legend(['Low ' labels{measure}],['Mid ' labels{measure}],['High ' labels{measure}],'Location','Best')
     title(['Mean Fair Wage by ' labels{measure} ' group'])
     ylabel('Wage')
     xlabel('Task')
     xticklabels(tasklabels(2:end))
     xticks([1:3])
-    ax = gca; ax.FontSize = 12;
+    xlim([0.5 3.5])
+    ax = gca; ax.FontSize = 14;
 
     tasklist = [repmat(1,n,1); repmat(2,n,1); repmat(3,n,1)];
     ratings = [nanmean(n1subjvalue,2); nanmean(n3subjvalue,2); nanmean(n2subjvalue,2)];
@@ -503,18 +537,21 @@ xtickangle(45)
 fig = gcf; fig.Color = 'w';
 title(['Mean ' names{measure} ' by model class'])
 end
-[h,p] = ttest2(measures([assignments==models_at_play(1)]&sum(~isnan(measures),2)==2,1),measures([assignments==models_at_play(2)]&sum(~isnan(measures),2)==2,1))
-disp('NFC across models 1 and 2')
-[h,p] = ttest2(measures([assignments==models_at_play(1)]&sum(~isnan(measures),2)==2,1),measures([assignments==models_at_play(1)]&sum(~isnan(measures),2)==2,2))
+
+[h,p] = ttest2(measures([assignments==models_at_play(1)]&sum(~isnan(measures),2)==2,2),measures([assignments==models_at_play(1)]&sum(~isnan(measures),2)==2,2))
 disp('SAPS across models 1 and 2')
-[h,p] = ttest2(measures([assignments==models_at_play(2)]&sum(~isnan(measures),2)==2,1),measures([assignments==models_at_play(3)]&sum(~isnan(measures),2)==2,1))
-disp('NFC across models 2 and 3')
-[h,p] = ttest2(measures([assignments==models_at_play(2)]&sum(~isnan(measures),2)==2,1),measures([assignments==models_at_play(3)]&sum(~isnan(measures),2)==2,2))
+[h,p] = ttest2(measures([assignments==models_at_play(2)]&sum(~isnan(measures),2)==2,2),measures([assignments==models_at_play(3)]&sum(~isnan(measures),2)==2,2))
 disp('SAPS across models 2 and 3')
+
+[h,p] = ttest2(measures([assignments==models_at_play(1)|assignments==models_at_play(2)]&sum(~isnan(measures),2)==2,2),measures([assignments==models_at_play(3)|assignments==models_at_play(4)]&sum(~isnan(measures),2)==2,2))
+disp('SAPS across models 1/2 and 3/4')
 
 %% Assign subjects to their model, plot parameters that way
 
 all_params = best_model.overallfit.parameters; 
+
+figure
+count = 3;
 for measure = 1:2
     if measure == 1
         split = tertileSplit(data.NFC); colors = NFCcolors;
@@ -527,19 +564,29 @@ for measure = 1:2
     invalid = sum(isnan(X),2)>0; X(invalid,:) = [];
     
     % initialize plotting variables
-    plotted = []; count = 4;
-    figure; fig = gcf; fig.Color = 'w';
+    plotted = []; paramlabellist = [];
     
     %At the top, plot each model frequency.
-    subplot(4,1,1)
-    bar(freqs(1:12))
-    title('Model frequencies')
-    xticklabels(model_labels(1:12));xtickangle(45)
-    ylim([0 1])
-    ax = gca; ax.FontSize = 14;
+    subplot(3,2,1)
+    for mm = 1:length(models_at_play)
+        bar(mm,freqs(models_at_play(mm)),'FaceColor',modelcolors(mm,:))
+        hold on
+    end
+    ylabel('Model frequencies')
 
-    
-    for m = 1:length(models_at_play)
+%     for mm = 1:length(models_at_play)
+%         bar(mm,sum(assignments==models_at_play(mm)),'FaceColor',modelcolors(mm,:))
+%         hold on
+%     end
+%     ylabel('# subjects best fit by model')
+    xticks(1:mm)
+    xticklabels(model_labels(models_at_play));xtickangle(45)
+    ax = gca; ax.FontSize = 14;
+    fig = gcf; fig.Color = 'w';
+
+    for m = 1:length(models_at_play)-1
+        % the -1 leaves out the model w only 4 subjects & two cost
+        % parameters
         modelnum = models_at_play(m);
         nparams = size(all_params{modelnum},2);
         name = best_model.overallfit.fitmodels{modelnum};
@@ -552,10 +599,22 @@ for measure = 1:2
         modelgroup = assignments==modelnum;
         disp([num2str(sum(modelgroup)) ' subjects best fit by ' name])
         
-        subplot(3,3,4)
-        
         for c = 1:size(costs,2)
             count = count+1;
+            
+            if count < 7
+            % First plot magnitude of costs relative to each other,
+            % but make sure it only happens once, not once per loop
+                subplot(3,2,2)
+                bar(count-3,nanmean(values(modelgroup,c)),'FaceColor',modelcolors(m,:))
+                hold on
+                errorbar(count-3,nanmean(values(modelgroup,c)),nanstd(values(modelgroup,c))./sqrt(sum(modelgroup)),'k','LineWidth',1.5)
+                ylabel('Mean cost value')
+                paramlabellist = [paramlabellist paramnames(costs(c))];
+                xticks(1:length(paramlabellist))
+                xticklabels(paramlabellist); xtickangle(45)
+                ax = gca; ax.FontSize = 14;
+            end
             
             % run group-based & continuous stats
             [h,pval1] = ttest2(values(split==1&modelgroup,c),values(split==2&modelgroup,c));
@@ -570,6 +629,7 @@ for measure = 1:2
             distance = predicted-Y; MSE = distance'*distance; %squared distance
             if stats(3)<0.05
                 disp([names{measure} ' significant betas on ' paramnames{costs(c)} ', linear & quadratic: ' num2str(betas')])
+                disp(['p value = ' num2str(stats(3))])
             end
             
             % plot effect of measure group on parameter values

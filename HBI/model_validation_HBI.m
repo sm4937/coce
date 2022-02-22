@@ -4,6 +4,9 @@ tasklabels = {'1-detect','1-back','3-detect','2-back'};
 
 responsibility = cbm.output.responsibility; %modelstofit = best_model.overallfit.fitmodels;
 lowparams = cbm.output.parameters; %for accessibility, grab important info from cbi structures
+NFCsubjs = [21 36 22 74 79 73];
+% I grabbed two random subjects from each NFC group
+% Plot their individual fits by the model
 
 % %simulate data from fit parameters, best fitting model for each subject
 simdata = [];
@@ -39,6 +42,8 @@ ylim([1 5])
 xticklabels({'1-back','3-detect','2-back'})
 xlabel('Task')
 ylabel('Mean fair wage')
+fig = gcf; fig.Color = 'w';
+ax = gca; ax.FontSize = 14;
 
 subplot(2,2,2)
 errorbar([nanmean(simdata(simdata(:,4)==2,3)) nanmean(simdata(simdata(:,4)==4,3)) nanmean(simdata(simdata(:,4)==3,3))],[nanstd(simdata(simdata(:,4)==2,3)) nanstd(simdata(simdata(:,4)==4,3)) nanstd(simdata(simdata(:,4)==3,3))]./sqrt(nsubjs),'k','LineWidth',1.5)
@@ -54,6 +59,7 @@ ylim([1 5])
 xticklabels({'1-back','3-detect','2-back'})
 xlabel('Task')
 ylabel('Mean fair wage')
+ax = gca; ax.FontSize = 14;
 
 task1 = []; task2 = []; task3 = [];
 rtask1 = []; rtask2 = []; rtask3 = [];
@@ -73,24 +79,26 @@ for task = 1:(ntasks-1)
 end
 
 subplot(2,2,3)
-errorbar(nanmean(rtask1),nanstd(rtask1)/sqrt(nsubjs),'Color',taskcolors(1,:),'LineWidth',2)
+errorbar(nanmean(rtask1),nanstd(rtask1)/sqrt(nsubjs),'Color',taskcolors(2,:),'LineWidth',2)
 hold on
-errorbar(nanmean(rtask2),nanstd(rtask2)/sqrt(nsubjs),'Color',taskcolors(2,:),'LineWidth',2)
 errorbar(nanmean(rtask3),nanstd(rtask3)/sqrt(nsubjs),'Color',taskcolors(3,:),'LineWidth',2)
-legend({'1-back','2-back','3-detect'})
+errorbar(nanmean(rtask2),nanstd(rtask2)/sqrt(nsubjs),'Color',taskcolors(4,:),'LineWidth',2)
+legend({'1-back','3-detect','2-back'})
 title('Fair wage by rating # (real)')
-fig = gcf; fig.Color = 'w';
+ax = gca; ax.FontSize = 14;
+ylim([1.9 3.3])
 
 subplot(2,2,4)
-errorbar(nanmean(task1),nanstd(task1)/sqrt(nsubjs),'Color',taskcolors(1,:),'LineWidth',2)
+errorbar(nanmean(task1),nanstd(task1)/sqrt(nsubjs),'Color',taskcolors(2,:),'LineWidth',2)
 hold on
-errorbar(nanmean(task2),nanstd(task2)/sqrt(nsubjs),'Color',taskcolors(2,:),'LineWidth',2)
 errorbar(nanmean(task3),nanstd(task3)/sqrt(nsubjs),'Color',taskcolors(3,:),'LineWidth',2)
-legend({'1-back','2-back','3-detect'})
+errorbar(nanmean(task2),nanstd(task2)/sqrt(nsubjs),'Color',taskcolors(4,:),'LineWidth',2)
+legend({'1-back','3-detect','2-back'})
 title('Fair wage by rating (sim)')
-fig = gcf; fig.Color = 'w';
+ax = gca; ax.FontSize = 14;
+ylim([1.9 3.3])
 
-subjs = randperm(nsubjs,6);
+subjs = NFCsubjs;
 tasksymbols = {'s','o','d'}; %differentiate task with scatter symbol
 % and trial number with how dark the scatter symbol is
 ntrials = sum(simdata(:,1)==1); trialcolors = linspace(0.1,1,ntrials); trialcolors = repmat(trialcolors',1,3); 
@@ -126,6 +134,7 @@ for i = 1:length(subjs)
     %legend('location','best')
     %legend({'Real','Simulated'})
     xlabel('real values'); ylabel('simulated');
+    ax = gca; ax.FontSize = 14;
 end
 fig = gcf; fig.Color = 'w';
 

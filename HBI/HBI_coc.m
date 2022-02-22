@@ -33,7 +33,7 @@ nsubjs = length(subjnums);
 nsubjstofit = 30;
 repeated_subset = randperm(100,nsubjstofit);
 
-forcefit = false;
+forcefit = true;
 
 for m = 1:length(modelstosim)
     
@@ -341,7 +341,7 @@ for p = 1:length(best_model.paramnames)
         costs(p) = true;
     else
         costs(p) = false;
-    end
+    end 
 end
 
 % Here I create my own structure, best_model, for saving other measures of
@@ -414,4 +414,4 @@ model_validation_HBI()
 % well
 cbm.input.model_names = modelstofit;
 % model_inspection(best_models(end),cbm)
-model_inspection(8,cbm)
+model_inspection(19,cbm)
