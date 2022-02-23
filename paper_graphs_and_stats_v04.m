@@ -11,22 +11,6 @@ disp(['Mean total TOT: ' num2str(nanmean(data.totalTOT)) ', median total TOT: ' 
 % REMINDER OF TASK ORDERS in VARIABLES %
 %tasks = [detection,n1,3detection,n2];
 
-% % MEAN ACCURACY BY TASK % % 
-figure
-subplot(2,2,1)
-fig = gcf; fig.Color = 'w';
-errorbar(1:length(tasklabels),[nanmean(tasks_overall(:,1)) nanmean(tasks_overall(:,2)) nanmean(tasks_overall(:,3)) nanmean(tasks_overall(:,4))],[nanstd(tasks_overall(:,1)) nanstd(tasks_overall(:,2)) nanstd(tasks_overall(:,3)) nanstd(tasks_overall(:,4))]/sqrt(n),'k','LineWidth',1.25)
-hold on
-violin([nanmean(tasks_overall(:,1)) nanmean(tasks_overall(:,2)) nanmean(tasks_overall(:,3)) nanmean(tasks_overall(:,4))],'facecolor',[taskcolors(1,:);taskcolors(2,:);taskcolors(3,:);taskcolors(4,:)],'medc','','mc','')
-
-legend('off')
-xticks(1:length(tasklabels))
-xticklabels(tasklabels)
-%xtickangle(45)
-xlabel('Task')
-ylim([70 100]); xlim([0.5 4.5])
-ylabel('Mean accuracy')
-ax = gca; ax.FontSize = 14;
 
 % % STATS ON ACCURACY, MEAN RT, and DIFFICULTY RATINGS
 % COMPARE MEAN ACCURACY BY TASK %
@@ -37,11 +21,17 @@ Table1 = table; Table1.onedetect = nanmean(vector(taskidentity==1)); Table1.oneb
 Table1.threedetect = nanmean(vector(taskidentity==3)); Table1.twoback = nanmean(vector(taskidentity==4)); 
 Table1.Properties.RowNames{1} = 'Accuracy';
 [h,p] = ttest(vector(taskidentity==1),vector(taskidentity==2));
+p_mat = NaN(3,3); p_mat(1,2) = p; p_mat(2,1) = p;
 [h,p] = ttest(vector(taskidentity==4),vector(taskidentity==2));
+p_mat(2,4) = p; p_mat(4,2) = p;
 [h,p] = ttest(vector(taskidentity==1),vector(taskidentity==3));
+p_mat(1,3) = p; p_mat(3,1) = p;
 [h,p] = ttest(vector(taskidentity==1),vector(taskidentity==4));
+p_mat(1,4) = p; p_mat(4,1) = p;
 [h,p] = ttest(vector(taskidentity==3),vector(taskidentity==2));
+p_mat(3,2) = p; p_mat(2,3) = p;
 [h,p] = ttest(vector(taskidentity==3),vector(taskidentity==4));
+p_mat(3,4) = p; p_mat(4,3) = p;
 
 % COMPARE MEAN RTs ON TASK %
 clear vector; vector = tasks_rts(:); 
@@ -79,12 +69,16 @@ ndetect = data.task_displayed==tasknumbers(3); %7
 temp = table; temp.onedetect = NaN; temp.oneback = nanmean(data.values(n1));
 temp.threedetect = nanmean(data.values(ndetect)); temp.twoback = nanmean(data.values(n2)); 
 Table1 = [Table1; temp]; Table1.Properties.RowNames{4} = 'Fair wage';
+p_mat_BDM = NaN(3,3);
 [h,p] = ttest2(data.values(n1),data.values(n2));
 disp (['t-test 1-back versus 2-back BDM values p = ' num2str(p)]); 
+p_mat_BDM(1,3) = p; p_mat_BDM(3,1) = p;
 [h,p] = ttest2(data.values(ndetect),data.values(n2));
 disp (['t-test 2-back versus 3-detect BDM values p = ' num2str(p)]); %task 2 values versus task 3 values
+p_mat_BDM(3,2) = p; p_mat_BDM(2,3) = p;
 [h,p] = ttest2(data.values(n1),data.values(ndetect));
 disp (['t-test 1-back versus 3-detect BDM values p = ' num2str(p)]); %task 1 values versus task 3 values
+p_mat_BDM(1,2) = p; p_mat_BDM(2,1) = p;
 % basically it's task 2 versus the world
 
 % PULL A BUNCH OF INFORMATION BY TASK ITERATION
@@ -114,6 +108,23 @@ for task = 1:3
     end
 end
 
+% % MEAN ACCURACY BY TASK % % 
+figure
+subplot(2,2,1)
+fig = gcf; fig.Color = 'w';
+errorbar(1:length(tasklabels),[nanmean(tasks_overall(:,1)) nanmean(tasks_overall(:,2)) nanmean(tasks_overall(:,3)) nanmean(tasks_overall(:,4))],[nanstd(tasks_overall(:,1)) nanstd(tasks_overall(:,2)) nanstd(tasks_overall(:,3)) nanstd(tasks_overall(:,4))]/sqrt(n),'k','LineWidth',1.25)
+hold on
+violin([nanmean(tasks_overall(:,1)) nanmean(tasks_overall(:,2)) nanmean(tasks_overall(:,3)) nanmean(tasks_overall(:,4))],'facecolor',[taskcolors(1,:);taskcolors(2,:);taskcolors(3,:);taskcolors(4,:)],'medc','','mc','')
+superbar(1:length(tasklabels),[nanmean(tasks_overall(:,1)) nanmean(tasks_overall(:,2)) nanmean(tasks_overall(:,3)) nanmean(tasks_overall(:,4))],'BarFaceColor','none','BarEdgeColor','none','P',p_mat)
+legend('off')
+xticks(1:length(tasklabels))
+xticklabels(tasklabels)
+%xtickangle(45)
+xlabel('Task')
+ylim([80 125]); xlim([0.5 4.5])
+ylabel('Mean accuracy')
+ax = gca; ax.FontSize = 14;
+
 % % MEAN FAIR WAGE BY TASK % %
 subplot(2,2,2)
 dotsize = 5;
@@ -123,6 +134,7 @@ scatter(2*ones(n,1),nanmean(n2subjvalue,2),dotsize*ones(n,1),taskcolors(3,:),'fi
 scatter(3*ones(n,1),nanmean(n3subjvalue,2),dotsize*ones(n,1),taskcolors(4,:),'filled','DisplayName','2-back')
 %overlay group means
 errorbar([nanmean(data.values(n1)) nanmean(data.values(ndetect)) nanmean(data.values(n2))],[nanstd(data.values(n1)) nanstd(data.values(ndetect)) nanstd(data.values(n2))]./sqrt(n),'k','LineWidth',1.25)
+superbar(1:3,[nanmean(data.values(n1)) nanmean(data.values(ndetect)) nanmean(data.values(n2))],'BarFaceColor','none','BarEdgeColor','none','P',p_mat_BDM)
 %xlim([0.75 3.25])
 %ylim([1 5])
 
@@ -152,7 +164,6 @@ scatter(1:11,nanmean(n0subjlearning(:,1:11)),n0points*scaling,taskcolors(1,:),'F
 scatter(1:10,nanmean(n1subjlearning(:,1:10)),n1points*scaling,taskcolors(2,:),'Filled')
 scatter(1:11,nanmean(n2subjlearning(:,1:11)),n2points*scaling,taskcolors(3,:),'Filled')
 scatter(1:11,nanmean(n3subjlearning(:,1:11)),n3points*scaling,taskcolors(4,:),'Filled')
-
 legend(tasklabels)
 legend('boxoff')
 xlim([0.5 11.5])
@@ -160,6 +171,13 @@ fig = gcf; ax = gca;
 fig.Color = 'w'; ax.FontSize = 14;
 ylabel('Accuracy')
 xlabel('Iteration #')
+
+% run an ANOVA on task accuracy with iteration as a factor
+n1subjlearning = n1subjlearning(:,1:10); n2subjlearning = n2subjlearning(:,1:10); n3subjlearning = n3subjlearning(:,1:10);
+vector = [n1subjlearning(:);n2subjlearning(:);n3subjlearning(:)];
+taskidentity = [ones(length(n1subjlearning(:)),1);2*ones(length(n2subjlearning(:)),1);3*ones(length(n3subjlearning(:)),1)];
+iternum = repmat([1 2 3 4 5 6 7 8 9 10],n*3,1);
+[~,~,stats] = anovan(vector,[taskidentity iternum(:)],'display','off');
 
 % % FAIR WAGE BY TASK ITERATION % % 
 subplot(2,2,4)
@@ -173,15 +191,13 @@ xlabel('Iteration #')
 xlim([0.5 11.5])
 ax = gca; ax.FontSize = 14;
 
-% What's the relationship of fair wage and accuracy?
-meanBDM = [nanmean(n1subjvalue,2) nanmean(n2subjvalue,2) nanmean(n3subjvalue,2)];
-meanAcc = tasks_overall(:,2:4);
-tocorr = [meanBDM meanAcc];
-tocorr = tocorr(sum(isnan(tocorr),2)<1,:);
-
-[r,p] = corr(tocorr(:,1),tocorr(:,4)) %1-back
-[r,p] = corr(tocorr(:,2),tocorr(:,5)) %3-detect
-[r,p] = corr(tocorr(:,3),tocorr(:,6)) %2-back
+% test effect of iteration on BDM rating, run 2-way anova on iteration and
+% task
+n1subjvalue = n1subjvalue(:,1:10); n2subjvalue = n2subjvalue(:,1:10); n3subjvalue = n3subjvalue(:,1:10);
+vector = [n1subjvalue(:);n2subjvalue(:);n3subjvalue(:)];
+taskidentity = [ones(length(n1subjvalue(:)),1);2*ones(length(n2subjvalue(:)),1);3*ones(length(n3subjvalue(:)),1)];
+iternum = repmat([1 2 3 4 5 6 7 8 9 10],n*3,1);
+[~,~,stats] = anovan(vector,[taskidentity iternum(:)]);
 
 % % % subjects are RELATIVELY STABLE IN THEIR BDMs % % 
 % subplot(2,2,4)
@@ -204,6 +220,21 @@ tocorr = tocorr(sum(isnan(tocorr),2)<1,:);
 % end
 % fig = gcf; fig.Color = 'w';
 % xlim([0 11])
+
+
+%% END FIGURE 2
+
+% Work some stats out for results section
+
+% What's the relationship of fair wage and accuracy?
+meanBDM = [nanmean(n1subjvalue,2) nanmean(n2subjvalue,2) nanmean(n3subjvalue,2)];
+meanAcc = tasks_overall(:,2:4);
+tocorr = [meanBDM meanAcc];
+tocorr = tocorr(sum(isnan(tocorr),2)<1,:);
+
+[r,p] = corr(tocorr(:,1),tocorr(:,4)) %1-back
+[r,p] = corr(tocorr(:,2),tocorr(:,5)) %3-detect
+[r,p] = corr(tocorr(:,3),tocorr(:,6)) %2-back
 
 % % BDM RT STUFF % %
 % are people getting more decisive on how many BDM points they want?
@@ -239,20 +270,6 @@ blockbyperf_mat(isnan(blockbyperf_mat),:) = [];
 [r,p] = corr(blockbyperf_mat(:,1),blockbyperf_mat(:,2));
 disp(['Relationship round number/mean RTs p = ' num2str(p)])
 
-% test effect of iteration on BDM rating, run 2-way anova on iteration and
-% task
-n1subjvalue = n1subjvalue(:,1:10); n2subjvalue = n2subjvalue(:,1:10); n3subjvalue = n3subjvalue(:,1:10);
-vector = [n1subjvalue(:);n2subjvalue(:);n3subjvalue(:)];
-taskidentity = [ones(length(n1subjvalue(:)),1);2*ones(length(n2subjvalue(:)),1);3*ones(length(n3subjvalue(:)),1)];
-iternum = repmat([1 2 3 4 5 6 7 8 9 10],n*3,1);
-[~,~,stats] = anovan(vector,[taskidentity iternum(:)],'display','off');
-
-% run the same ANOVA on task accuracy
-n1subjlearning = n1subjlearning(:,1:10); n2subjlearning = n2subjlearning(:,1:10); n3subjlearning = n3subjlearning(:,1:10);
-vector = [n1subjlearning(:);n2subjlearning(:);n3subjlearning(:)];
-taskidentity = [ones(length(n1subjlearning(:)),1);2*ones(length(n2subjlearning(:)),1);3*ones(length(n3subjlearning(:)),1)];
-iternum = repmat([1 2 3 4 5 6 7 8 9 10],n*3,1);
-[~,~,stats] = anovan(vector,[taskidentity iternum(:)],'display','off');
 
 %% NFC and SAPS stuff
 measures = [data.NFC data.SAPS];
@@ -382,7 +399,7 @@ for measure = 1:2
     tasklist = [repmat(1,n,1); repmat(2,n,1); repmat(3,n,1)];
     ratings = [nanmean(n1subjvalue,2); nanmean(n3subjvalue,2); nanmean(n2subjvalue,2)];
     matrix = [ratings repmat(split,3,1) tasklist];
-    [~,~,stats] = anovan(matrix(:,1),{matrix(:,2),matrix(:,3)},'model','interaction','varnames',{labels{measure},'task'},'display','off');
+    [~,~,stats] = anovan(matrix(:,1),{matrix(:,2),matrix(:,3)},'model','interaction','varnames',{labels{measure},'task'});
     
 end
 
