@@ -115,13 +115,13 @@ fig = gcf; fig.Color = 'w';
 errorbar(1:length(tasklabels),[nanmean(tasks_overall(:,1)) nanmean(tasks_overall(:,2)) nanmean(tasks_overall(:,3)) nanmean(tasks_overall(:,4))],[nanstd(tasks_overall(:,1)) nanstd(tasks_overall(:,2)) nanstd(tasks_overall(:,3)) nanstd(tasks_overall(:,4))]/sqrt(n),'k','LineWidth',1.25)
 hold on
 violin([nanmean(tasks_overall(:,1)) nanmean(tasks_overall(:,2)) nanmean(tasks_overall(:,3)) nanmean(tasks_overall(:,4))],'facecolor',[taskcolors(1,:);taskcolors(2,:);taskcolors(3,:);taskcolors(4,:)],'medc','','mc','')
-superbar(1:length(tasklabels),[nanmean(tasks_overall(:,1)) nanmean(tasks_overall(:,2)) nanmean(tasks_overall(:,3)) nanmean(tasks_overall(:,4))],'BarFaceColor','none','BarEdgeColor','none','P',p_mat)
+%superbar(1:length(tasklabels),[nanmean(tasks_overall(:,1)) nanmean(tasks_overall(:,2)) nanmean(tasks_overall(:,3)) nanmean(tasks_overall(:,4))],'BarFaceColor','none','BarEdgeColor','none','P',p_mat)
 legend('off')
 xticks(1:length(tasklabels))
 xticklabels(tasklabels)
 %xtickangle(45)
 xlabel('Task')
-ylim([80 125]); xlim([0.5 4.5])
+ylim([70 100]); xlim([0.5 4.5])
 ylabel('Mean accuracy')
 ax = gca; ax.FontSize = 14;
 
@@ -134,9 +134,10 @@ scatter(2*ones(n,1),nanmean(n2subjvalue,2),dotsize*ones(n,1),taskcolors(3,:),'fi
 scatter(3*ones(n,1),nanmean(n3subjvalue,2),dotsize*ones(n,1),taskcolors(4,:),'filled','DisplayName','2-back')
 %overlay group means
 errorbar([nanmean(data.values(n1)) nanmean(data.values(ndetect)) nanmean(data.values(n2))],[nanstd(data.values(n1)) nanstd(data.values(ndetect)) nanstd(data.values(n2))]./sqrt(n),'k','LineWidth',1.25)
-superbar(1:3,[nanmean(data.values(n1)) nanmean(data.values(ndetect)) nanmean(data.values(n2))],'BarFaceColor','none','BarEdgeColor','none','P',p_mat_BDM)
+superbar(1:3,[nanmean(data.values(n1)) nanmean(data.values(ndetect)) nanmean(data.values(n2))]+1,'BarFaceColor','none','BarEdgeColor','none','P',p_mat_BDM,...
+    'PStarOffset',0.2,'PStarShowGT',false)
 %xlim([0.75 3.25])
-%ylim([1 5])
+ylim([1 8])
 
 violin([nanmean(n1subjvalue,2) nanmean(n2subjvalue,2) nanmean(n3subjvalue,2)],'facecolor',[taskcolors(2,:);taskcolors(3,:);taskcolors(4,:)],'medc','','mc','')
 xticks(1:(length(tasklabels)-1))
