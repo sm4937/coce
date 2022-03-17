@@ -32,34 +32,23 @@ toanalyze.BDM = (toanalyze.BDM./25) + 1;
 ntasks = length(unique(simdata(:,2)));
 
 figure
-subplot(2,2,1)
+subplot(2,1,1)
 % Plot real subject data for comparison
-errorbar([nanmean(toanalyze.BDM(toanalyze.display==2,:)) nanmean(toanalyze.BDM(toanalyze.display==4,:)) nanmean(toanalyze.BDM(toanalyze.display==3,:))],[nanstd(toanalyze.BDM(toanalyze.display==2,:)) nanstd(toanalyze.BDM(toanalyze.display==4,:)) nanstd(toanalyze.BDM(toanalyze.display==3,:))]/sqrt(nsubjs),'k','LineWidth',1.5);
-title('Mean fair wage (real)')
+errorbar([nanmean(toanalyze.BDM(toanalyze.display==2,:)) nanmean(toanalyze.BDM(toanalyze.display==4,:)) nanmean(toanalyze.BDM(toanalyze.display==3,:))],[nanstd(toanalyze.BDM(toanalyze.display==2,:)) nanstd(toanalyze.BDM(toanalyze.display==4,:)) nanstd(toanalyze.BDM(toanalyze.display==3,:))]/sqrt(nsubjs), ...
+    'k','LineWidth',1.5,'DisplayName','Real');
+hold on
+errorbar([nanmean(simdata(simdata(:,4)==2,3)) nanmean(simdata(simdata(:,4)==4,3)) nanmean(simdata(simdata(:,4)==3,3))],[nanstd(simdata(simdata(:,4)==2,3)) nanstd(simdata(simdata(:,4)==4,3)) nanstd(simdata(simdata(:,4)==3,3))]./sqrt(nsubjs), ...
+    'k--','LineWidth',1.5,'DisplayName','Simulated')
 xticks([1:3])
 xlim([0.5 3.5])
 ylim([1 5])
 xticklabels({'1-back','3-detect','2-back'})
 xlabel('Task')
 ylabel('Mean fair wage')
+legend('Location','Best')
 fig = gcf; fig.Color = 'w';
 ax = gca; ax.FontSize = 14;
 
-subplot(2,2,2)
-errorbar([nanmean(simdata(simdata(:,4)==2,3)) nanmean(simdata(simdata(:,4)==4,3)) nanmean(simdata(simdata(:,4)==3,3))],[nanstd(simdata(simdata(:,4)==2,3)) nanstd(simdata(simdata(:,4)==4,3)) nanstd(simdata(simdata(:,4)==3,3))]./sqrt(nsubjs),'k','LineWidth',1.5)
-hold on 
-% for subj = 1:nsubjs
-%     onesubj = simdata(simdata(:,1)==subj,:);
-%     errorbar([nanmean(onesubj(onesubj(:,2)==2,3)) nanmean(onesubj(onesubj(:,2)==4,3)) nanmean(onesubj(onesubj(:,2)==3,3))],[nanstd(onesubj(onesubj(:,2)==2,3)) nanstd(onesubj(onesubj(:,2)==4,3)) nanstd(onesubj(onesubj(:,2)==3,3))]/sqrt(length(onesubj)),'LineWidth',1);
-% end
-title('Mean fair wage (sim)')
-xticks([1:3])
-xlim([0.5 3.5])
-ylim([1 5])
-xticklabels({'1-back','3-detect','2-back'})
-xlabel('Task')
-ylabel('Mean fair wage')
-ax = gca; ax.FontSize = 14;
 
 task1 = []; task2 = []; task3 = [];
 rtask1 = []; rtask2 = []; rtask3 = [];
@@ -78,25 +67,21 @@ for task = 1:(ntasks-1)
     end
 end
 
-subplot(2,2,3)
+subplot(2,1,2)
 errorbar(nanmean(rtask1),nanstd(rtask1)/sqrt(nsubjs),'Color',taskcolors(2,:),'LineWidth',2)
 hold on
 errorbar(nanmean(rtask3),nanstd(rtask3)/sqrt(nsubjs),'Color',taskcolors(3,:),'LineWidth',2)
 errorbar(nanmean(rtask2),nanstd(rtask2)/sqrt(nsubjs),'Color',taskcolors(4,:),'LineWidth',2)
+errorbar(nanmean(task1),nanstd(task1)/sqrt(nsubjs),'--','Color',taskcolors(2,:)+0.1,'LineWidth',2)
+errorbar(nanmean(task3),nanstd(task3)/sqrt(nsubjs),'--','Color',taskcolors(3,:)+0.1,'LineWidth',2)
+errorbar(nanmean(task2),nanstd(task2)/sqrt(nsubjs),'--','Color',taskcolors(4,:)+0.1,'LineWidth',2)
 legend({'1-back','3-detect','2-back'})
-title('Fair wage by rating # (real)')
+title('Fair wage by rating iteration')
 ax = gca; ax.FontSize = 14;
 ylim([1.9 3.3])
+xlabel('Iteration')
+ylabel('Fair wage')
 
-subplot(2,2,4)
-errorbar(nanmean(task1),nanstd(task1)/sqrt(nsubjs),'Color',taskcolors(2,:),'LineWidth',2)
-hold on
-errorbar(nanmean(task3),nanstd(task3)/sqrt(nsubjs),'Color',taskcolors(3,:),'LineWidth',2)
-errorbar(nanmean(task2),nanstd(task2)/sqrt(nsubjs),'Color',taskcolors(4,:),'LineWidth',2)
-legend({'1-back','3-detect','2-back'})
-title('Fair wage by rating (sim)')
-ax = gca; ax.FontSize = 14;
-ylim([1.9 3.3])
 
 subjs = NFCsubjs;
 tasksymbols = {'s','o','d'}; %differentiate task with scatter symbol

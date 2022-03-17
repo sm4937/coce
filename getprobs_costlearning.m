@@ -25,34 +25,26 @@ else %fitting real subject data
     stimuli = onesim.task;
     realratings = (onesim.BDM); %scale down? just added this 11/08/2020 - see how this works
     display = onesim.display;
-%     if modeltofit.alpha
-        nupdates = zeros(length(onesim.nupdates),1); nupdates(onesim.nupdates>0,:) = zscore(onesim.nupdates(onesim.nupdates>0,:)); % need to edit nupdates because it has so many zeros from irrelevant task 1
-        nmisses = zscore(onesim.nmisses);
-        mains = zscore(onesim.maintained); 
-        nmatches = zscore(onesim.nmatches);
-        noisiness = zscore(onesim.noisiness);
-        responses = zscore(onesim.nresponses);
-        nlures = zscore(onesim.nlures);
-        nerrors = zscore(onesim.nerrors);
-        nFAs = zscore(onesim.nFAs);
-%     elseif (modeltofit.delta || modeltofit.deltai)
-%         nupdates = onesim.nupdates; % need to edit nupdates because it has so many zeros from irrelevant task 1
-%         nmisses = onesim.nmisses;
-%         mains = onesim.maintained; 
-%         nmatches = onesim.nmatches;
-%         noisiness = onesim.noisiness;
-%         responses = onesim.nresponses;
-%         nlures = onesim.nlures;
-%         nerrors = onesim.nerrors;
-%         nFAs = onesim.nFAs;
-%     end
+    nupdates = zeros(length(onesim.nupdates),1); nupdates(onesim.nupdates>0,:) = zscore(onesim.nupdates(onesim.nupdates>0,:)); % need to edit nupdates because it has so many zeros from irrelevant task 1
+    nmisses = zscore(onesim.nmisses);
+    mains = zscore(onesim.maintained); 
+    nmatches = zscore(onesim.nmatches);
+    noisiness = zscore(onesim.noisiness);
+    responses = zscore(onesim.nresponses);
+    nlures = zscore(onesim.nlures);
+    nerrors = zscore(onesim.nerrors);
+    nFAs = zscore(onesim.nFAs);
 end
 
+% Transform parameters if HBI model fitting being performed
+% The CBM package needs parameters to be normally distributed,
+% so not bounded at 0 and 1, for example.
 if HBI_flag
     params = applyTrans_parameters(modeltofit,params);
 end
+
 [uc,epsilon,init,missc,mainc,matchc,noisec,respc,lurec,errorc,fac,alpha,delta] = setParamValues(params,modeltofit);
-ntrials = sum(~isnan(realratings)); %length(stimuli);
+ntrials = sum(~isnan(realratings));
 
 costs = [uc missc mainc matchc noisec respc lurec errorc fac];
 
