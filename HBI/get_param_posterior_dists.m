@@ -1,8 +1,12 @@
-% TO DO:
-% The summing is probably meant to be done to get the marginal
-% distributions from the joint distribution over all 3 cost params of
-% interest. Not before.
+function [big_posterior,joint,xs] =  get_param_posterior_dists(best_model)
 
+%% Obtain posterior distributions over parameter values, taking into account
+% different solutions for different models, and different fits for
+% different subjects
+
+modelstofit = best_model.overallfit.fitmodels;
+cbm = best_model.cbm;
+nsubjs = size(best_model.lowparams,1);
 
 % Make a list of all param names, in the order the modelling procedure sees
 % them.
@@ -16,26 +20,21 @@ all_params_all_models = {'uc','epsilon','initi_1','initi_2','initi_3','missc', .
 nparams = length(all_params_all_models);
 
 % all possible values for all possible parameters
-xs = [-10:0.05:10];
+xs = [-2:0.01:2];
+% bins too big?
 
 % Write Theta for all the possible parameters across models with empirical
 % prior P(Theta)
 % Approximate P(Theta)
 p_theta = ones(nparams,length(xs));
 % Uniform prior for now, bounded at extreme values
-    
-% take subject s, with posterior model weightings rho^s_j for model j
-% [from Payam]
-
-% Get \rho^s_j
-rho = cbm.output.responsibility;
 
 % say model j involves parameters Theta_j but not Theta_{j'}
 
 parameters = false(length(all_params_all_models),length(modelstofit));
 for j = 1:length(modelstofit)
     model_j = modelstofit{j};
-    parameters_j = strsplit(model_j,'_');
+    parameters_j = strsplit(model_j,'-');
     for p = 1:length(parameters_j)
         parameters(contains(all_params_all_models,parameters_j(p)),j) = true;
     end
@@ -44,7 +43,7 @@ for j = 1:length(modelstofit)
     end
 end
 
-parameters_j_prime = ~parameters;
+
 % and subject s has posterior distribution P(Theta^s_j|D^s) for model j
 % where D^s is the data for subject s [from Payam]
 % The means are the fit values for each subject
@@ -52,125 +51,198 @@ parameters_j_prime = ~parameters;
 % Saved below in:
 % dists_j(:,:,p) = normpdf(xs,fit_values(:,p),subj_stds(p,:)');
 
-% Cycle over each model
-marginal = cell(length(all_params_all_models),1);
-for j = 1:length(modelstofit)
-    fit_values = cbm.output.parameters{j};
-    subj_stds = cbm.math.qhquad.Ainvdiag{j};
-
-    % get P(Theta^s_j|D^s)
-    dists_j = [];
-    for p = 1:sum(parameters(:,j))
-        % Individual posterior probability distributions over parameter
-        % values
-        % As in, each subject has their own posterior and I'm saving it in
-        % dists_j
-        % subjmeans are in cbm.math.qhquad.theta{j}(p)
-        dists_j(:,:,p) = normpdf(xs,fit_values(:,p),subj_stds(p,:)');
-        
-        p_param = p_theta(parameters(:,j),:);
-        p_theta_j = p_param(p,:);
-        % This is the "empirical prior", the flat prior
-        
-        overall_index = find(parameters(:,j));
-        overall_index = overall_index(p);
-        % In the model space, where does this parameter value live?
-        
-        pop_prior_j = normpdf(xs,cbm.math.thetabar{j}(p),cbm.math.Sdiag{j}(p));
-        % confirm with CBM paper soon that this is really the model's
-        % group-level posterior distribution
-        
-        marginal{overall_index} = [marginal{overall_index}; rho(:,j) .* dists_j(:,:,p) .* p_theta_j];
-        % so concatenate, from all models, the distribution of parameter
-        % values for each individual parameter
-    end
-    % approximating the distribution of these parameters this way for now
-    % so posterior distribution over all parameter values for all subjects
-    
-    % then, we might be interested in
-    % P(Theta | D^s) =
-    %   \sum_j P(Theta,j|D^s)
-    % = \sum_j [\rho^s_j P(Theta^s_j|D^s)*P(Theta_{j'})]
-        
-end
-
-% In this summing step, you can select only subjects in each NFC group
-% must make an index which reflects the length of marginal
-% So in this case it would be like:
-% split = tertileSplit(data.NFC);
-split = randi(3,100,1);
-for p = 1:length(all_params_all_models)
-    highidx = repmat(split==3,size(marginal{p},1)/nsubjs,1);
-    temp_high = sum(marginal{p}(highidx,:),1);
-    P_theta_given_D_high{p} = temp./sum(temp);
-    % Normalize here, which I'm not sure I should be doing
-end
-
 % Okay, so of particular interest are mainc, lurec, fac
 top_costs = {'mainc','lurec','fac'};
 overall_index = contains(all_params_all_models,top_costs);
 overall_index(contains(all_params_all_models,'delta')) = false;
 top_costs_indx = find(overall_index);
 
-% Now incorporate:
-% using the population prior P(Theta_{j'}) for those parameters not in
-% model j and the posterior
 
-% high NFC only for now, didn't get to the other groups yet
-mainc_dist = sum(P_theta_given_D_high{top_costs_indx(1)},1) .* ones(length(xs),1,1);
-lurec_dist = sum(P_theta_given_D_high{top_costs_indx(2)},1) .* ones(1,length(xs),1);
-fac_dist = sum(P_theta_given_D_high{top_costs_indx(3)},1) .* ones(1,1,length(xs));
+p_theta_j_prime = zeros(length(top_costs),length(xs));
 
-joint_dist = mainc_dist .* lurec_dist .* fac_dist;
-joint_dist = joint_dist./(sum(joint_dist(:)));
+big_posterior = zeros(length(xs),length(xs),length(xs));
 
-% Now I have a joint distribution over 
+% Get \rho^s_j
+rho = cbm.output.responsibility;
 
-% so then, if you have subjects s_1...s_k in your low tertile group (say),
-% you can work out the approximate posterior distribution
-% 
-% P(Theta ; low_tertile) =
-%    \prod_{i=1}^k \sum_j [\rho^{s_i}_j P(Theta^{s_i}_j|D^{s_i})*P(Theta_{j'})]
-% 
-% in the low_tertile [in practice you should calculate it carefully using
-% logs - in the three dimensions of maintenance, lure and false-alarm cast]
-% 
-% and you could then compare these posteriors for the three groups.
-% 
-% In practice, if a subject isn't well fit by a model (rho^s_j is low);
-% then that subject won't pull parameters that are only in that model away
-% from their population prior very much - which is just the property you
-% want. 
+% cycle over each model of interest (fit models)
+for j = 1:length(modelstofit)
 
-%% Plot distributions of mainc, lurec, and fac, to compare their distributions to one another.
+    rho_j = sum(rho(:,j))/100;
 
-modelcolors = [1 0 0; 1 0.5 0; 1 0 0.5; 0 0 1; 0 0.5 1; 0 0.7 0; 1 1 0];
+    % does this model in particular contain each of the costs we care
+    % about?
+    % get model group-level prior
+    model = coc_createModels(modelstofit{j});
+    idx_mainc = find(contains(model.paramnames,'mainc')); 
+    contains_mainc = ~isempty(idx_mainc);
+    if contains_mainc
+        %oneD = normpdf(xs,cbm.output.group_mean{j}(idx_mainc),cbm.math.Sdiag{j}(idx_mainc));
+        oneD = normpdf(xs,cbm.output.group_mean{j}(idx_mainc),cbm.output.group_hierarchical_errorbar{j}(idx_mainc)); 
+        p_theta_j_prime(1,:) = p_theta_j_prime(1,:) + rho_j*oneD;
+    end
 
-params_for_comparison = find(contains(all_params_all_models,{'mainc','lurec','fac'}));
-params_for_comparison(end-2:end) = []; % delete "delta" versions of these params
+    % 2nd dimension is lurec
+    idx_lurec = find(contains(model.paramnames,'lurec')); 
+    contains_lurec = ~isempty(idx_lurec);
+    if contains_lurec
+        twoD = normpdf(xs,cbm.output.group_mean{j}(idx_lurec),cbm.output.group_hierarchical_errorbar{j}(idx_lurec));        
+        p_theta_j_prime(2,:) = p_theta_j_prime(2,:) + rho_j*twoD;
+    end
 
-params_from_HBI(1) = find(contains(strsplit(modelstofit{best_models(1)},'_'),'mainc'));
-params_from_HBI(2) = find(contains(strsplit(modelstofit{best_models(2)},'_'),'lurec'));
-params_from_HBI(3) = find(contains(strsplit(modelstofit{best_models(3)},'_'),'fac'));
+    % 3rd dimension is fac
+    idx_fac = find(contains(model.paramnames,'fac')); 
+    contains_fac = ~isempty(idx_fac);
+    if contains_fac
+        threeD = normpdf(xs,cbm.output.group_mean{j}(idx_fac),cbm.output.group_hierarchical_errorbar{j}(idx_fac));        
+        p_theta_j_prime(3,:) = p_theta_j_prime(3,:) + rho_j*threeD;
+    end
 
-figure; hold on;
-plot(xs',P_theta_given_D{params_for_comparison(1)},'Color',modelcolors(1,:),'LineWidth',1.5,'DisplayName','Maintenance')
-plot(xs',P_theta_given_D{params_for_comparison(2)},'Color',modelcolors(2,:),'LineWidth',1.5,'DisplayName','Interference')
-plot(xs',P_theta_given_D{params_for_comparison(3)},'Color',modelcolors(3,:),'LineWidth',1.5,'DisplayName','False Alarm')
-legend('Location','Best')
-fig = gcf; ax = gca; 
-fig.Color = 'w'; ax.FontSize = 14;
-
-for p = 1:length(params_for_comparison)
-    group_level_means_sarah(p) = sum(xs.*P_theta_given_D{params_for_comparison(p)});
-    HBI_output = cbm.output.group_mean{best_models(p)};
-    group_level_means_payam(p) = HBI_output(params_from_HBI(p));
 end
 
-disp('Your means are: ')
-disp(group_level_means_sarah)
-disp('The means from the HBI package are: ')
-disp(group_level_means_payam)
+p_theta_j_prime = p_theta_j_prime./sum(p_theta_j_prime,2);
+% normalize so these priors sum to 1 
+% this provides an aggregrate prior from all models ??
+
+plotflag = false;
+if plotflag
+    figure
+    plot(p_theta_j_prime(1,:),'DisplayName','MainC'); hold on; plot(p_theta_j_prime(2,:),'DisplayName','LureC'); plot(p_theta_j_prime(3,:),'DisplayName','FA C'); legend('Location','Best')
+    title('Group-level priors')
+end
+
+%Cycle over each model
+joint = cell(nsubjs,1);
+
+% take subject s, with posterior model weightings rho^s_j for model j
+% [from Payam]
+for s = 1:nsubjs
+
+    joint{s} = zeros(length(xs),length(xs),length(xs));
+    % initialize to blank
+
+    for j = 1:length(modelstofit)
+        if rho(s,j) ~= 0 % if this model didn't load on this subject at all, skip all
+            % this computation
+            % not sure if rho is ever truly 0 but we'll see
+            fit_values = cbm.output.parameters{j};
+
+            % fit_values = log(fit_values);
+
+            % do I need to log transform these fit_values? are
+            % they exp transforms of the numbers used in
+            % fitting?
+            subj_stds = sqrt(cbm.math.qhquad.Ainvdiag{j});
+
+            contained_costs = false(1,length(top_costs)); 
+            contained_costs(1) = parameters(top_costs_indx(1),j);
+            contained_costs(2) = parameters(top_costs_indx(2),j);
+            contained_costs(3) = parameters(top_costs_indx(3),j);
+
+            % grab population-level priors for parameters not in model j 
+            pop_prior_j_prime = ones(length(top_costs),length(xs));
+            % make this 1? make this nan?
+
+            dists_j = pop_prior_j_prime;
+
+            for j_prime = 1:length(top_costs)
+                if ~contained_costs(j_prime)
+                    % select only costs NOT in this model
+                    pop_prior_j_prime(j_prime,:) =  pop_prior_j_prime(j_prime,:) .* p_theta_j_prime(j_prime,:);
+
+                else % get P(Theta^s_j|D^s)
+                     % Individual posterior probability distributions over parameter
+                    % values
+                    % As in, each subject has their own posterior and I'm saving it in
+                    % dists_j
+                    % subjmeans are in cbm.math.qhquad.theta{j}(p)
+                    cost_name = top_costs{j_prime};
+                    model = coc_createModels(modelstofit{j});
+                    idx_cost = find(contains(model.paramnames,cost_name)); 
+                    dists_j(j_prime,:) = normpdf(xs,fit_values(s,idx_cost),subj_stds(idx_cost,s)');
+                    dists_j(j_prime,:) = dists_j(j_prime,:)./sum(dists_j(j_prime,:));
+                end
+            end
+            % confirm with CBM paper soon that this is really the model's
+            % group-level posterior distribution
+
+            % the underlying priors are not the issue BUT
+            % the conversion to the 3D arrays is the issue
+            plotflag = false;
+            if plotflag & rand()<0.5
+                figure(1)
+                plot(pop_prior_j_prime(1,:)+rand(),'DisplayName','MainC','LineWidth',2); 
+                hold on; 
+                % jitter to see all 6 lines just to confirm
+                plot(pop_prior_j_prime(2,:)+rand(),'DisplayName','LureC','LineWidth',2); 
+                plot(pop_prior_j_prime(3,:)+rand(),'DisplayName','FA C','LineWidth',2);  legend('Location','Best')
+                plot(dists_j(1,:)+rand(),'DisplayName','Main C','LineWidth',2)
+                plot(dists_j(2,:)+rand(),'DisplayName','Lure C','LineWidth',2)
+                plot(dists_j(3,:)+rand(),'DisplayName','FA C','LineWidth',2)
+                hold off;
+            end
+
+            pop_prior_j_prime_3D = pop_prior_j_prime(1,:) .* pop_prior_j_prime(2,:)' .* reshape(pop_prior_j_prime(3,:),[1 1 length(xs)]);
+            dists_j_3D = dists_j(1,:) .* dists_j(2,:)' .* reshape(dists_j(3,:),[1 1 length(xs)]);
+
+            plotflag = false;
+            if plotflag
+                figure(1)
+                plot(squeeze(sum(sum(pop_prior_j_prime_3D,1),3)),'DisplayName','Lure C Prior','LineWidth',1.5)
+                hold on; plot(squeeze(sum(sum(pop_prior_j_prime_3D,2),3)),'DisplayName','Main C Prior','LineWidth',1.5)
+                plot(squeeze(sum(sum(pop_prior_j_prime_3D,1),2)),'DisplayName','False alarm C Prior','LineWidth',1.5)
+                plot(squeeze(sum(sum(dists_j_3D,1),3)),'DisplayName','Lure C','LineWidth',1.5)
+                plot(squeeze(sum(sum(dists_j_3D,2),3)),'DisplayName','Main C','LineWidth',1.5)
+                plot(squeeze(sum(sum(dists_j_3D,1),2)),'DisplayName','False alarm C','LineWidth',1.5)
+                legend('Location','Best')
+                hold off;
+            end
+
+
+            % We are interested in
+            % P(Theta | D^s) =
+            %   \sum_j P(Theta,j|D^s)
+            % = \sum_j [\rho^s_j P(Theta^s_j|D^s)*P(Theta_{j'})]
+
+            joint{s} = joint{s} + (rho(s,j) .* dists_j_3D .* pop_prior_j_prime_3D);
+            % Sum over all models j
+            % THIS MIGHT BE WRONG - MOVE RHO TO EXTERNAL PART OF CODE
+            % WHERE SUBJECTS GET PUT INTO NFC GROUPS?
+
+        end % of excluding s, j combinations with 0 as rho value
+
+    end % end of model loop
+
+    plotflag = false;
+    if plotflag
+        figure(6); plot(xs,squeeze(sum(sum(joint{s},1),3)),'DisplayName','Lure C','LineWidth',1.5)
+        hold on; plot(xs,squeeze(sum(sum(joint{s},2),3)),'DisplayName','Main C','LineWidth',1.5)
+        plot(xs,squeeze(sum(sum(joint{s},1),2)),'DisplayName','False alarm C','LineWidth',1.5)
+        legend('location','best')
+        pause(0.1)
+        title(['Posteriors at Subject #' num2str(s)])
+        hold off
+    end
+
+    non_zero_default = 0.000000000000000000001;
+    joint{s}(joint{s}==0) = non_zero_default;
+    big_posterior = big_posterior + log(joint{s});
+
+end % end of subject loop
+
+save('joint_cost_distributions.mat','joint','big_posterior','xs','-v7.3')
+
+
+
+
+
+
+% xs = exp(xs);
+% group_level_means_trans(1) = sum(xs'.*mainc_dist);
+% group_level_means_trans(2) = sum(xs.*lurec_dist);
+% group_level_means_trans(3) = sum(xs'.*fac_dist);
+% disp('The transformed means are: ')
+% disp(group_level_means_sarah)
 
 % These are different but they don't account for all models containing
 % those parameter values. So that needs to be amended, I think, in the

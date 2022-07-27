@@ -21,6 +21,10 @@ import_subj4_txt.m
 import_subj5_txt.m
 import_subj6_txt.m
 
+#files too big for git
+joint_cost_distributions.mat
+HBI/joint_cost_distributions.mat
+
 #passwords
 cost/php/db_config.php
 cost/php/db_config_trial.php

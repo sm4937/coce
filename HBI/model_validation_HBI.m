@@ -8,8 +8,10 @@ NFCsubjs = [21 36 22 74 79 73];
 % I grabbed two random subjects from each NFC group
 % Plot their individual fits by the model
 
+[~,best] = max(cbm.output.exceedance_prob);
+
 % %simulate data from fit parameters, best fitting model for each subject
-simdata = [];
+simdata = []; simdata_onemodel = simdata;
 for subj = 1:nsubjs
     onesubj = toanalyze(toanalyze.subj == subj,:);
     [score,num] = max(responsibility(subj,:)); %identify model which best fit this subject, in particular
@@ -18,6 +20,11 @@ for subj = 1:nsubjs
     % input to simulate_cost_model the model specs, then the transformed
     % parameters for that subject, then that subject's data
     simdata = [simdata; simulate_cost_model(subj_model,applyTrans_parameters(subj_model,lowparams{num}(subj,:)),onesubj)];
+    
+    one_best_model = coc_createModels(modelstofit{best});
+    simdata_onemodel = [simdata_onemodel; simulate_cost_model(one_best_model,applyTrans_parameters(one_best_model,lowparams{best}(subj,:)),onesubj)];
+    % simulate data from the model w highest exceedance probability, alone
+    % does accounting for other possible models include model validation?
 end
 
 % for subj = 1:nsubjs
@@ -28,11 +35,70 @@ end
 load('../simdata/toanalyze.mat')
 %scale things appropriately
 simdata(:,3) = (simdata(:,3)./25)+1;
+simdata_onemodel(:,3) = (simdata_onemodel(:,3)./25)+1;
 toanalyze.BDM = (toanalyze.BDM./25) + 1;
 ntasks = length(unique(simdata(:,2)));
 
+sim_task1 = []; sim_task2 = []; sim_task3 = [];
+onemodel_sim_task1 = []; onemodel_sim_task2 = []; onemodel_sim_task3 = [];
+rtask1 = []; rtask2 = []; rtask3 = [];
+for task = 1:(ntasks-1)
+    for subj = 1:nsubjs %Cycle over subjects
+        onesubj = simdata(simdata(:,1)==subj,:);
+        curve = NaN(1,11);
+        curve(1:sum(onesubj(:,4)==task+1)) = onesubj(onesubj(:,4)==task+1,3)';
+        % Pick out task iterations and their corresponding fair wage
+        % ratings
+        eval(['sim_task' num2str(task) ' = [sim_task' num2str(task) '; curve];'])
+        
+        onesubj = simdata_onemodel(simdata_onemodel(:,1)==subj,:);
+        curve = NaN(1,11);
+        curve(1:sum(onesubj(:,4)==task+1)) = onesubj(onesubj(:,4)==task+1,3)';
+        % Pick out task iterations and their corresponding fair wage
+        % ratings
+        eval(['onemodel_sim_task' num2str(task) ' = [onemodel_sim_task' num2str(task) '; curve];'])
+        
+        onereal = toanalyze(toanalyze.subj==subj,:);
+        curve = NaN(1,11);
+        curve(1:sum(onereal.display==task+1)) = onereal.BDM(onereal.display==task+1,:)';
+        eval(['rtask' num2str(task) ' = [rtask' num2str(task) '; curve];'])
+    end
+end
+
 figure
-subplot(2,1,1)
+subplot(2,2,1)
+% Plot real subject data for comparison
+errorbar([nanmean(toanalyze.BDM(toanalyze.display==2,:)) nanmean(toanalyze.BDM(toanalyze.display==4,:)) nanmean(toanalyze.BDM(toanalyze.display==3,:))],[nanstd(toanalyze.BDM(toanalyze.display==2,:)) nanstd(toanalyze.BDM(toanalyze.display==4,:)) nanstd(toanalyze.BDM(toanalyze.display==3,:))]/sqrt(nsubjs), ...
+    'k','LineWidth',1.5,'DisplayName','Real');
+hold on
+errorbar([nanmean(simdata_onemodel(simdata_onemodel(:,4)==2,3)) nanmean(simdata_onemodel(simdata_onemodel(:,4)==4,3)) nanmean(simdata_onemodel(simdata_onemodel(:,4)==3,3))],[nanstd(simdata_onemodel(simdata_onemodel(:,4)==2,3)) nanstd(simdata_onemodel(simdata_onemodel(:,4)==4,3)) nanstd(simdata_onemodel(simdata_onemodel(:,4)==3,3))]./sqrt(nsubjs), ...
+    'k--','LineWidth',1.5,'DisplayName','Simulated')
+xticks([1:3])
+xlim([0.5 3.5])
+ylim([1.9 3.3])
+xticklabels({'1-back','3-detect','2-back'})
+xlabel('Task')
+ylabel('Mean fair wage')
+legend('Location','Best')
+title('Real data vs. data sim with only best model')
+fig = gcf; fig.Color = 'w';
+ax = gca; ax.FontSize = 14;
+
+subplot(2,2,3)
+errorbar(nanmean(rtask1),nanstd(rtask1)/sqrt(nsubjs),'Color',taskcolors(2,:),'LineWidth',2)
+hold on
+errorbar(nanmean(rtask3),nanstd(rtask3)/sqrt(nsubjs),'Color',taskcolors(3,:),'LineWidth',2)
+errorbar(nanmean(rtask2),nanstd(rtask2)/sqrt(nsubjs),'Color',taskcolors(4,:),'LineWidth',2)
+errorbar(nanmean(onemodel_sim_task1),nanstd(onemodel_sim_task1)/sqrt(nsubjs),'--','Color',taskcolors(2,:)+0.1,'LineWidth',2)
+errorbar(nanmean(onemodel_sim_task3),nanstd(onemodel_sim_task3)/sqrt(nsubjs),'--','Color',taskcolors(3,:)+0.1,'LineWidth',2)
+errorbar(nanmean(onemodel_sim_task2),nanstd(onemodel_sim_task2)/sqrt(nsubjs),'--','Color',taskcolors(4,:)+0.1,'LineWidth',2)
+legend({'1-back','3-detect','2-back'})
+ax = gca; ax.FontSize = 14;
+ylim([1.9 3.3])
+xlabel('Iteration')
+ylabel('Fair wage')
+
+subplot(2,2,2)
 % Plot real subject data for comparison
 errorbar([nanmean(toanalyze.BDM(toanalyze.display==2,:)) nanmean(toanalyze.BDM(toanalyze.display==4,:)) nanmean(toanalyze.BDM(toanalyze.display==3,:))],[nanstd(toanalyze.BDM(toanalyze.display==2,:)) nanstd(toanalyze.BDM(toanalyze.display==4,:)) nanstd(toanalyze.BDM(toanalyze.display==3,:))]/sqrt(nsubjs), ...
     'k','LineWidth',1.5,'DisplayName','Real');
@@ -41,42 +107,25 @@ errorbar([nanmean(simdata(simdata(:,4)==2,3)) nanmean(simdata(simdata(:,4)==4,3)
     'k--','LineWidth',1.5,'DisplayName','Simulated')
 xticks([1:3])
 xlim([0.5 3.5])
-ylim([1 5])
+ylim([1.9 3.3])
 xticklabels({'1-back','3-detect','2-back'})
 xlabel('Task')
 ylabel('Mean fair wage')
 legend('Location','Best')
+title('Real data vs. data sim with all models')
 fig = gcf; fig.Color = 'w';
 ax = gca; ax.FontSize = 14;
 
 
-task1 = []; task2 = []; task3 = [];
-rtask1 = []; rtask2 = []; rtask3 = [];
-for task = 1:(ntasks-1)
-    for subj = 1:nsubjs %Cycle over subjects
-        onesubj = simdata(simdata(:,1)==subj,:);
-        onereal = toanalyze(toanalyze.subj==subj,:);
-        curve = NaN(1,11);
-        curve(1:sum(onesubj(:,4)==task+1)) = onesubj(onesubj(:,4)==task+1,3)';
-        % Pick out task iterations and their corresponding fair wage
-        % ratings
-        eval(['task' num2str(task) ' = [task' num2str(task) '; curve];'])
-        curve = NaN(1,11);
-        curve(1:sum(onereal.display==task+1)) = onereal.BDM(onereal.display==task+1,:)';
-        eval(['rtask' num2str(task) ' = [rtask' num2str(task) '; curve];'])
-    end
-end
-
-subplot(2,1,2)
+subplot(2,2,4)
 errorbar(nanmean(rtask1),nanstd(rtask1)/sqrt(nsubjs),'Color',taskcolors(2,:),'LineWidth',2)
 hold on
 errorbar(nanmean(rtask3),nanstd(rtask3)/sqrt(nsubjs),'Color',taskcolors(3,:),'LineWidth',2)
 errorbar(nanmean(rtask2),nanstd(rtask2)/sqrt(nsubjs),'Color',taskcolors(4,:),'LineWidth',2)
-errorbar(nanmean(task1),nanstd(task1)/sqrt(nsubjs),'--','Color',taskcolors(2,:)+0.1,'LineWidth',2)
-errorbar(nanmean(task3),nanstd(task3)/sqrt(nsubjs),'--','Color',taskcolors(3,:)+0.1,'LineWidth',2)
-errorbar(nanmean(task2),nanstd(task2)/sqrt(nsubjs),'--','Color',taskcolors(4,:)+0.1,'LineWidth',2)
+errorbar(nanmean(sim_task1),nanstd(sim_task1)/sqrt(nsubjs),'--','Color',taskcolors(2,:)+0.1,'LineWidth',2)
+errorbar(nanmean(sim_task3),nanstd(sim_task3)/sqrt(nsubjs),'--','Color',taskcolors(3,:)+0.1,'LineWidth',2)
+errorbar(nanmean(sim_task2),nanstd(sim_task2)/sqrt(nsubjs),'--','Color',taskcolors(4,:)+0.1,'LineWidth',2)
 legend({'1-back','3-detect','2-back'})
-title('Fair wage by rating iteration')
 ax = gca; ax.FontSize = 14;
 ylim([1.9 3.3])
 xlabel('Iteration')
@@ -90,32 +139,40 @@ ntrials = sum(simdata(:,1)==1); trialcolors = linspace(0.1,1,ntrials); trialcolo
 
 figure
 taskcount = false(1,3);
-for i = 1:length(subjs)
-    subj = subjs(i);
-    subplot(3,2,i)
+corr_mat = [];
+for i = 1:nsubjs
+    subj = i;
     onesim = simdata(simdata(:,1)==subj,:);
     simulated = onesim(:,3); 
+    onesim_onemodel = simdata_onemodel(simdata_onemodel(:,1)==subj,:);
+    simulated_onemodel = onesim_onemodel(:,3);
     onereal = toanalyze(toanalyze.subj==subj,:);
     real = onereal.BDM; 
     for trial = 1:sum(~isnan(real))
         task = onereal.display(trial);
         if ~isnan(task)
-            tasksymbol = tasksymbols{task-1};
-            if ~taskcount(task-1)
-                scatter(real(trial),simulated(trial),[],trialcolors(trial,:),tasksymbol,'Filled','DisplayName',tasklabels{task-1})
-                taskcount(task-1) = true; %have you already labeled this task?
-            else
-                scatter(real(trial),simulated(trial),[],trialcolors(trial,:),tasksymbol,'Filled')
+            if sum(NFCsubjs==subj)>0
+                subplot(3,2,find(NFCsubjs==subj))
+                tasksymbol = tasksymbols{task-1};
+                if ~taskcount(task-1)
+                    scatter(real(trial),simulated(trial),[],trialcolors(trial,:),tasksymbol,'Filled','DisplayName',tasklabels{task-1})
+                    taskcount(task-1) = true; %have you already labeled this task?
+                else
+                    scatter(real(trial),simulated(trial),[],trialcolors(trial,:),tasksymbol,'Filled')
+                end
+                hold on
+                line
             end
-            hold on
-            line
-            %re-formatting for Peter
-%             scatter(trial,real(trial),[],taskcolors(task,:),tasksymbol,'Filled')
-%             hold on
-%             scatter(trial,simulated(trial),[],taskcolors(task,:),'o','Filled')
+            % now that plot made
+            try
+                corr_mat = [corr_mat; real(trial) simulated(trial) simulated_onemodel(trial)];
+            catch
+                % do nothing
+                % if there are some simulated trials without ratings bc the
+                % task index wasn't saved, then move on
+            end
         end
     end
-    title(['Subj ' num2str(subj)])
     %legend('location','best')
     %legend({'Real','Simulated'})
     xlabel('real values'); ylabel('simulated');
@@ -123,3 +180,11 @@ for i = 1:length(subjs)
 end
 fig = gcf; fig.Color = 'w';
 
+% Run r-squared analysis to compare best model to best-model-per-subject
+% validation
+
+[r_onemodel,p_onemodel] = corr(corr_mat(:,1),corr_mat(:,3));
+[r_allmodels,p_allmodels] = corr(corr_mat(:,1),corr_mat(:,2));
+
+disp(['R-squared for one model (mainc): ' num2str(r_onemodel^2)])
+disp(['R-squared including all models: ' num2str(r_allmodels^2)])

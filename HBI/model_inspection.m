@@ -23,8 +23,9 @@ load('../simdata/toanalyze.mat')
 
 figure
 rows = ceil(nparams/3); 
+columns = ceil(nparams/2);
 for p = 1:nparams
-    subplot(rows,rows,p)
+    subplot(rows,columns,p)
     scatter(realparamlist(subset,p),fitparams(:,p),[],rand(size(fitparams,1),3),'Filled');
     hold on
     plot([0 0],[1 1],'--')

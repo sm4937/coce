@@ -239,6 +239,7 @@ fitflag = false;
 %add relevant paths
 addpath('cbm-master/codes/');
 addpath('./..'); %other COC code, like model loading
+addpath('model-functions/')
 load('./../simdata/toanalyze.mat');
 % grab task characteristics from real subjects
 paramcolors = [1 0 0; 1 0.5 0; 1 0 0.5; 0 0 1; 0 0.5 1; 0 0.7 0; 1 1 0];
@@ -311,20 +312,31 @@ fname_hbi = 'HBI_coc_48models_2022.mat';
 %cbm_lap, %filename for saving full running to
 if fitflag
     cbm_hbi(data,funcs,fnames,fname_hbi);
+    cbm_hbi_null(data,fname_hbi);
 end
 
-% Model fits get saved in a structure called cbm, load that up here and
+%% ANALYZE MODEL FITS!
+
+%Model fits get saved in a structure called cbm, load that up here and
 % grab variables of interest from it.
 fits = load(fname_hbi);
 cbm   = fits.cbm;
 freqs = cbm.output.model_frequency;
-
-% Use CBM toolbox to print parameter means etc.
-% 1st input is the file-address of the file saved by cbm_hbi
-% 2nd input: a cell input containing model names
-% 3rd input: another cell input containing parameter names of the winning model
-[~,best] = max(cbm.output.exceedance_prob);
+[~,best] = max(cbm.exceedance.pxp);
 best_model = coc_createModels(modelstofit{best});
+
+% Here I create my own structure, best_model, for saving other measures of
+% interest, like the name of every model that ran in this model fitting
+% regime. This gets called in other analysis scripts, like
+% paper_graphs_and_stats.m, which lives one directory up.
+best_model.lowparams = cbm.output.parameters{best};
+best_model.highparams = cbm.output.group_mean{best}; best_model.overallfit = cbm.output;
+best_model.overallfit.fitmodels = model_labels; best_model.name = model_labels{best};
+best_model.cbm = cbm;
+modelStruct.best_model = best_model; save('HBI_modelStruct.mat','modelStruct');
+
+% Format parameter names, etc. to be input in to CBM toolbox plot command
+% below
 for p = 1:length(best_model.paramnames)
     original_name = best_model.paramnames{p};
     param_names{p}= original_name; transform{p} = 'none';
@@ -344,27 +356,41 @@ for p = 1:length(best_model.paramnames)
     end 
 end
 
-% Here I create my own structure, best_model, for saving other measures of
-% interest, like the name of every model that ran in this model fitting
-% regime. This gets called in other analysis scripts, like
-% paper_graphs_and_stats.m, which lives one directory up.
-best_model.lowparams = cbm.output.parameters{best};
-best_model.highparams = cbm.output.group_mean{best}; best_model.overallfit = cbm.output;
-best_model.overallfit.fitmodels = model_labels; best_model.name = model_labels{best};
-modelStruct.best_model = best_model; save('HBI_modelStruct.mat','modelStruct');
-
+% Use CBM toolbox to print parameter means etc.
+% 1st input is the file-address of the file saved by cbm_hbi
+% 2nd input: a cell input containing model names
+% 3rd input: another cell input containing parameter names of the winning model
 cbm_hbi_plot(fname_hbi, model_labels, param_names(1:best_model.nparams), transform(1:best_model.nparams))
 % this function creates a model comparison plot (exceednace probability and model frequency) as well as 
 % a plot of transformed parameters of the most frequent model.
 
-% % run a t-test on miss costs versus 0
+% % run a t-test on maintenance costs (from best model) versus 0
 % % 2nd input: the index of the model of interest in the cbm file
-% k = 1; % model including miss costs
+k = 1; % model including maintenance costs
 % % 3rd input: the test will be done compared with this value (i.e. this value indicates the null hypothesis)
-% m = 0; % here the miss costs parameter should be tested against m=0
+m = 0; % here the maintenance costs parameter should be tested against m = 0
 % % 4th input: the index of the parameter of interest 
-% i = 6; % here the weight parameter is the 5th parameter of the hybrid model
-% [p,stats] = cbm_hbi_ttest(cbm,k,m,i);
+i = 3; % here the maintenance parameter is the 3rd parameter of the winning model
+[p,stats] = cbm_hbi_ttest(cbm,k,m,i);
+
+k = 2; % model including interference (lure) costs
+% other arguments to this function are the same
+[p,stats] = cbm_hbi_ttest(cbm,k,m,i);
+
+k = 4; % third-best model including interference (lure) costs
+% other arguments to this function are the same
+[p,stats] = cbm_hbi_ttest(cbm,k,m,i);
+
+% is the learning rate 0?
+% no
+k = 1; i = 2;
+m = 1./(1+exp(0));
+% run t-test on transformed 0 value - same as alpha is transformed ??
+[p,stats] = cbm_hbi_ttest(cbm,k,m,i)
+
+% count up total model frequency w response and miss costs
+idx = contains(modelstofit,'missc') | contains(modelstofit,'respc');
+disp(['missc and respc reprsented in ' num2str(sum(freqs(idx))) '% model frequency'])
 
 figure
 subplot(4,3,1)
@@ -406,6 +432,7 @@ xlabel('Cost parameter')
 % Call a couple functions to see the downstream effects of previous model
 % fitting. For example, is there a good match between simulated and real
 % subject behavior, using these best-fit models?
+close all
 
 % Plot comparisons between simulated data and real subject behavior
 model_validation_HBI()
@@ -414,4 +441,4 @@ model_validation_HBI()
 % well
 cbm.input.model_names = modelstofit;
 % model_inspection(best_models(end),cbm)
-model_inspection(19,cbm)
+model_inspection(1,cbm)

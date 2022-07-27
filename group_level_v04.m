@@ -1440,14 +1440,6 @@ xtickangle(45)
 fig = gcf; fig.Color = 'w';
 title(['Mean ' names{measure} ' by model class'])
 end
-[h,p] = ttest2(measures([assignments==models_at_play(1)]'&sum(~isnan(measures),2)==2,1),measures([assignments==models_at_play(2)]'&sum(~isnan(measures),2)==2,1))
-disp('NFC across models 1 and 2')
-[h,p] = ttest2(measures([assignments==models_at_play(1)]'&sum(~isnan(measures),2)==2,1),measures([assignments==models_at_play(1)]'&sum(~isnan(measures),2)==2,2))
-disp('SAPS across models 1 and 2')
-[h,p] = ttest2(measures([assignments==models_at_play(2)]'&sum(~isnan(measures),2)==2,1),measures([assignments==models_at_play(3)]'&sum(~isnan(measures),2)==2,1))
-disp('NFC across models 2 and 3')
-[h,p] = ttest2(measures([assignments==models_at_play(2)]'&sum(~isnan(measures),2)==2,1),measures([assignments==models_at_play(3)]'&sum(~isnan(measures),2)==2,2))
-disp('SAPS across models 2 and 3')
 
 % Assign subjects to their model, plot parameters that way
 all_params = best_model.overallfit.parameters; 
@@ -1496,7 +1488,7 @@ for measure = 1:2
             disp([names{measure} ' betas on ' paramnames{costs(c)} ', linear & quadratic: ' num2str(betas')])
             
             % plot effect of measure group on parameter values
-            subplot(3,2,count)
+            subplot(4,2,count)
             for group = 1:3
                 relevant = values(split==group,c);
                 bar(group,nanmean(relevant),'FaceColor',colors(group,:))
