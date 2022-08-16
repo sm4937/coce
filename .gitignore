@@ -1,5 +1,5 @@
 
-#bullshit from matlab and unnecessary file types
+#junk files from matlab and unnecessary file types
 make_data_table.asv
 group_level.asv
 *~
@@ -8,11 +8,13 @@ group_level.asv
 *.fig
 *.eps
 *.mat
+*.log
 
 #data folders and files
 pilotdata/*
 data/*
 simdata/*
+obsolete/*
 mturk_hit_bookkeeping.xlsx
 ~$mturk_hit_bookkeeping.xlsx
 free_response_log.txt
@@ -25,6 +27,7 @@ import_subj6_txt.m
 #files too big for git
 joint_cost_distributions.mat
 HBI/joint_cost_distributions.mat
+HBI/*.mat
 
 #passwords
 cost/php/db_config.php
