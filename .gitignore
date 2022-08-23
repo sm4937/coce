@@ -23,6 +23,7 @@ cost/old_index.html
 import_subj4_txt.m
 import_subj5_txt.m
 import_subj6_txt.m
+modeling/.DS_Store
 
 #files too big for git
 joint_cost_distributions.mat

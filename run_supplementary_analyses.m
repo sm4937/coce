@@ -1342,9 +1342,14 @@ for group = 1:max(split)
 end
 
 %% modeling results (parameters) versus behavioral results (NFC and SAPS)
-addpath('HBI/')
+% this is a little more extensive than what I have going on in
+% paper_graphs_and_stats.m
+
+% more params, more groups plotted (as in, people also best fit by 2nd and
+% 3rd winning models, not just people best fit by 1st winning model)
+
 %modelfits = load('data/modelfits_2_models_13-Jan-2021.mat'); %miss c, response c, lure c - most recoverable
-modelfits = load('HBI/HBI_modelStruct.mat');
+modelfits = load('modeling/HBI/HBI_modelStruct.mat');
 no_fits = load('simdata/toanalyze.mat','trim'); no_fits = no_fits.trim;
 % remove subjects who weren't fit to models
 % grab best model

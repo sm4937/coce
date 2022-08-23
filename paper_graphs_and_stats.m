@@ -54,7 +54,16 @@ disp(['Mean total TOT: ' num2str(nanmean(data.totalTOT)) ', median total TOT: ' 
 % REMINDER OF TASK ORDERS in VARIABLES %
 %tasks = [detection,n1,3detection,n2];
 
-run_supplementary_analyses()
+extra_flag = false;
+
+% turn on if you want to run a BUNCH of extra analyses
+% (don't recommend, if you have extra questions, you should open
+% run_supplementary_analyses and run it cell-by-cell according to what
+% you're interested in seeing)
+
+if extra_flag
+    run_supplementary_analyses()
+end
 
 %% Many ANOVAs, and post-hoc t-tests
 
@@ -637,7 +646,7 @@ end
 
 all_params = cbm.output.parameters;
 
-for measure = 1:2
+for measure = 1  %set measure = 1:2 to see SAPS score bins also, not just NFC
     figure
     count = 3;
     
@@ -793,7 +802,7 @@ disp('The means from the HBI package are: ')
 disp(group_level_means_payam)
 
 count = 0; figure
-for measure = 1 %set measure = 1:2 to see SAPS score bins also, not just NFC
+for measure = 1:2
     if measure == 1
         split = tertile_split(data.NFC);
         colors = NFCcolors;

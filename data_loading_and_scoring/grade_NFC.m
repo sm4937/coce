@@ -1,4 +1,4 @@
-function [total,normalized] = grade_scales(raw_data)
+function [total,normalized] = grade_NFC(raw_data)
 %gradeNFC Grade the need for cognition scale from raw text data
 %   Takes raw answers to need for cognition scale and grades according to 
 % The Efficient Assessment of need for cognition (Cacioppo, Petty, 1984)
