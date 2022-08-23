@@ -1,8 +1,49 @@
 %% A script to print stats and paper stuff, with more upfront formatting and
 % fewer exploratory analyses
-addpath(genpath('plotting/'))
 
+%% Process raw jspsych text file data
+clear all
+
+addpath(genpath('plotting/'))
+addpath('modeling/HBI/')
+addpath('modeling/')
+addpath(genpath('data_loading_and_scoring/'))
+
+files = {'29.04.2020.mat','07.05.2020.mat','12.05.2020.mat','13.05.2020.mat',...
+    '18.05.2020.mat','25.01.2021.mat','26.01.2021.mat','01.02.2021.mat', ...
+    '05.17.2021.mat','05.21.2021.mat','05.24.2021.mat','06.02.2021.mat', '06.08.2021.mat'};
+% version 4
+[data,excluded] = load_cost_data(files); %load data in
+n = height(data);
+
+tasks = [categorical(cellstr('detection'));categorical(cellstr('n1')); categorical(cellstr('ndetection')); categorical(cellstr('n2'))];
+tasklabels = {'1-detect','1-back','3-detect','2-back'};
+tasknumbers = [0,1,7,2];
+default_length = 32;
+
+inattentive = data.perf<60;
+
+% save important variables for later
+for subj = 1:n
+    for task = 1:length(tasks)
+        list = find(data.task_progression(subj,:)==tasks(task));
+        tasks_overall(subj,task) = nanmean(data.perf(subj,list));
+    end
+end
+tasks_rts = [nanmean(data.detectrts,2) nanmean(data.n1rts,2) nanmean(data.ndetectrts,2) nanmean(data.n2rts,2)];
+data.taskfreqs = [sum(data.task_progression==tasks(1),2) sum(data.task_progression==tasks(2),2) sum(data.task_progression==tasks(3),2) sum(data.task_progression==tasks(4),2)];
+meanBDM = nanmean(data.values(:,2:end),2);
+
+%display variables
+subjcolors = rand(n);subjcolors(:,4:end) = []; %delete unnecessary columns
+taskcolors = [0.75 0.75 0.75;0 0.75 0.75; 0.75 0.75 0; 0.75 0 0.75];
+%style variables
+NFCcolors = [.25 0 .25; .60 0 .60; .95 0 .95];
+SAPScolors = [0 .25 .25; 0 .5 .5; 0 .75 .75];
 modelcolors = [1 0 0; 1 0.5 0; 1 0 0.5; 0 0 1; 0 0.5 1; 0 0.7 0; 1 1 0];
+
+% list = data.subjnum;
+% save('../simdata/fullsubjnumbers.mat','list');
 
 % Initial print-outs of demographics, etc., for beginning of methods
 % section
@@ -12,6 +53,8 @@ disp(['Unspecified sex n: ' num2str(sum(isnan(data.sex))) '; unspecified age: ' 
 disp(['Mean total TOT: ' num2str(nanmean(data.totalTOT)) ', median total TOT: ' num2str(median(data.totalTOT))])
 % REMINDER OF TASK ORDERS in VARIABLES %
 %tasks = [detection,n1,3detection,n2];
+
+run_supplementary_analyses()
 
 %% Many ANOVAs, and post-hoc t-tests
 
@@ -479,12 +522,12 @@ matrix(sum(isnan(matrix),2)>0,:) = [];
 [r,p] = corr(matrix)
 
 %% modeling results (parameters) versus behavioral results (NFC and SAPS)
-addpath('HBI/')
-%modelfits = load('data/modelfits_2_models_13-Jan-2021.mat'); %miss c, response c, lure c - most recoverable
-modelfits = load('HBI/HBI_modelStruct.mat');
+
+modelfits = load('modeling/HBI/HBI_modelStruct.mat');
 no_fits = load('simdata/toanalyze.mat','trim'); no_fits = no_fits.trim;
 % remove subjects who weren't fit to models
 % grab best model
+
 best_model = modelfits.modelStruct.best_model;
 cbm = best_model.cbm;
 
@@ -592,6 +635,7 @@ end
 %% Look at parameter trends within subjects whose best model was the winning
 % model w exceedance probability = 1
 
+all_params = cbm.output.parameters;
 
 for measure = 1:2
     figure
@@ -677,7 +721,9 @@ end %of cycling over SAPS & NFC
 calcflag = false;
 
 if calcflag
+    cd('modeling/HBI/')
     [big_posterior,joint,xs] = get_param_posterior_dists(best_model);
+    cd('../../')
 else
     load('modeling/HBI/joint_cost_distributions.mat')
 end
@@ -747,7 +793,7 @@ disp('The means from the HBI package are: ')
 disp(group_level_means_payam)
 
 count = 0; figure
-for measure = 1:2
+for measure = 1 %set measure = 1:2 to see SAPS score bins also, not just NFC
     if measure == 1
         split = tertile_split(data.NFC);
         colors = NFCcolors;
@@ -839,111 +885,3 @@ for measure = 1:2
     
 end
 
-%% CODE GRAVEYARD - REWORKING THIS PLOT
-
-% Assign subjects to their model, plot parameters that way
-
-all_params = best_model.overallfit.parameters;
-
-figure
-count = 3;
-for measure = 1:2
-    if measure == 1
-        split = tertile_split(data.NFC); colors = NFCcolors;
-        % Also, run multiple linear regressions
-        X = [ones(n,1) data.NFC data.NFC.^2];
-    elseif measure == 2
-        split = tertile_split(data.SAPS); colors = SAPScolors;
-        X = [ones(n,1) data.SAPS data.SAPS.^2];
-    end
-    invalid = sum(isnan(X),2)>0; X(invalid,:) = [];
-    
-    % initialize plotting variables
-    plotted = []; paramlabellist = [];
-    
-    %At the top, plot each model frequency.
-    subplot(3,2,1)
-    for mm = 1:length(models_at_play)
-        bar(mm,freqs(models_at_play(mm)),'FaceColor',modelcolors(mm,:))
-        hold on
-    end
-    ylabel('Model frequencies')
-    
-    %     for mm = 1:length(models_at_play)
-    %         bar(mm,sum(assignments==models_at_play(mm)),'FaceColor',modelcolors(mm,:))
-    %         hold on
-    %     end
-    %     ylabel('# subjects best fit by model')
-    xticks(1:mm)
-    xticklabels(model_labels(models_at_play));xtickangle(45)
-    ax = gca; ax.FontSize = 14;
-    fig = gcf; fig.Color = 'w';
-    
-    for m = 1:length(models_at_play)-1
-        % the -1 leaves out the model w only 4 subjects & two cost
-        % parameters
-        modelnum = models_at_play(m);
-        nparams = size(all_params{modelnum},2);
-        name = best_model.overallfit.fitmodels{modelnum};
-        model = coc_createModels(name);
-        paramnames = strrep(model.paramnames,'c',' cost');
-        paramnames = strrep(paramnames,'u ','update '); strrep(paramnames,'main ','maintenance ');
-        paramnames = strrep(paramnames,'lure','interference');
-        costs = find(contains(paramnames,'cost'));
-        values = all_params{modelnum}(:,costs);
-        %values = all_params{modelnum}(assignments==modelnum,costs);
-        % this is going to cause an N problem...
-        modelgroup = assignments==modelnum;
-        disp([num2str(sum(modelgroup)) ' subjects best fit by ' name])
-        
-        for c = 1:size(costs,2)
-            count = count+1;
-            
-            if count < 7
-                % First plot magnitude of costs relative to each other,
-                % but make sure it only happens once, not once per loop
-                subplot(3,2,2)
-                bar(count-3,nanmean(values(modelgroup,c)),'FaceColor',modelcolors(m,:))
-                hold on
-                errorbar(count-3,nanmean(values(modelgroup,c)),nanstd(values(modelgroup,c))./sqrt(sum(modelgroup)),'k','LineWidth',1.5)
-                ylabel('Mean cost value')
-                paramlabellist = [paramlabellist paramnames(costs(c))];
-                xticks(1:length(paramlabellist))
-                xticklabels(paramlabellist); xtickangle(45)
-                ax = gca; ax.FontSize = 14;
-            end
-            
-            % run group-based & continuous stats
-            [h,pval1] = ttest2(values(split==1&modelgroup,c),values(split==2&modelgroup,c));
-            [h,pval2] = ttest2(values(split==3&modelgroup,c),values(split==2&modelgroup,c));
-            [h,pval3] = ttest2(values(split==1&modelgroup,c),values(split==3&modelgroup,c));
-            ps = [NaN pval1 pval3; pval1 NaN pval2; pval3 pval2 NaN];
-            
-            Y = nanmean(values,2); Y(invalid,:) = [];
-            [betas,BINV,~,~,stats] = regress(Y,X);
-            % get betas for quadratic term
-            predicted = X*betas;
-            distance = predicted-Y; MSE = distance'*distance; %squared distance
-            if stats(3)<0.05
-                disp([names{measure} ' significant betas on ' paramnames{costs(c)} ', linear & quadratic: ' num2str(betas')])
-                disp(['p value = ' num2str(stats(3))])
-            end
-            
-            % plot effect of measure group on parameter values
-            subplot(3,3,count) %starting at subplot 5
-            superbar([nanmean(values(split==1&modelgroup,c)) nanmean(values(split==2&modelgroup,c)) nanmean(values(split==3&modelgroup,c))], ...
-                'E',[nanstd(values(split==1&modelgroup,c)) nanstd(values(split==2&modelgroup,c)) nanstd(values(split==3&modelgroup,c))]./sqrt(n), ...
-                'P',ps,'BarFaceColor',colors,'PStarShowNS',false,'PStarBackgroundColor','None');
-            ylabel(paramnames{costs(c)})
-            title(model_labels{modelnum})
-            xticks([1:3])
-            xticklabels({['Low ' names{measure}],['Mid ' names{measure}],['High ' names{measure}]})
-            ax = gca; ax.FontSize = 14;
-            
-        end %of cycling over each cost
-        
-        plotted = [plotted paramnames(costs)];
-    end %of cycling over each model
-    
-    
-end %of cycling over SAPS & NFC

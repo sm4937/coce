@@ -8,7 +8,7 @@ plot_flag = false;
 long_format = [];
 for i = 1:length(files)
     file = files{i};
-    raw =  load(['../data/'  file]);
+    raw =  load(['data/'  file]);
     colnames = raw.Untitled.Properties.VariableNames;
     raw.Untitled.TOT = double(string(raw.Untitled.TOT));
     raw.Untitled.total_points = double(string(raw.Untitled.total_points));
@@ -82,8 +82,17 @@ if plot_flag
 end
 
 %any subjects with high amounts of BDM variability?
+% i.e. unusual BDM behavior?
+% short answer, no: the standard deviations of the BDMs we observe are
+% fairly uniform, there's a very normal progression upward, no outliers to
+% speak of
+
 n1 = data.task_progression == categorical({'n1'});
+% where are they doing the 1-back?
 n2 = data.task_progression == categorical({'n2'});
+% 2-back?
+
+%check out the stds of BDMs on these specific tasks
 for i = 1:height(data)
     dot = nanstd(data.values(i,n1(i,:)));
     dot2 = nanstd(data.values(i,n2(i,:)));

@@ -1,36 +1,46 @@
 function [data,failed_data] = make_data_table_v04(raw_data)
 
-%filename = ['\data\' filename];
+% when data comes in from the experiment, it's in a very long JSON file
+% which includes data on every single event in the experiment, including
+% stim presentation, feedback presentation, BDM ratings, etc.
+
+% data is loaded up using data_loading_and_scoring/load_cost_data.m, then
+% is fed into this function in the raw_data table. raw_data contains all
+% trials' information for ONE subject at a time. if the subject passes
+% exclusion criteria (basically, if they finished the experiment itself),
+% then their data are formatted into a table called "data." if not,
+
+% this function serves to make these raw events (raw_data), which have been
+% preprocessed out of JSON format into MATLAB table format, into a usable
+% data table with all relevant columns (RTs, BDM fair wage ratings (value),
+% computer offers in the auction (offer), whether a trial is an n-back or
+% detection match, subject identification number, which task was rated
+% and which task was completed).
+
+% as such, this function includes a lot of trial trimming, lots of datatype
+% conversion, etc.
 
 raw_data = sortrows(raw_data,'trial_index'); %re-sort scrambled data
+% sometimes it comes in out of order, but the trial_index restores it
+
 data = table;
+% initialize clean MATLAB table
+
 colnames = raw_data.Properties.VariableNames;
+% what do we have saved in raw_data?
+
 default_length = 32;
 subjnum = unique(raw_data.subjnum);
 NFC = NaN; SAPS = NaN;
 
-TOTidx = find(ismember(colnames,{'TOT'}));
-overallidx = find(ismember(colnames,{'overall'}));
-displayidx = find(ismember(colnames,{'task_displayed'}));
-timesteps = find(ismember(colnames,{'time_elapsed'}));
-rtidx = find(ismember(colnames,{'rt'}));
-detectidx = find(ismember(colnames,{'detect'}));
-nbackidx = find(ismember(colnames,{'nback'}));
 perfidx = find(ismember(colnames,{'perf'}));
-value = find(ismember(colnames,{'value'}));
-offer = find(ismember(colnames,{'offer'}));
-version_idx = ismember(colnames,{'exp_version'});
-taskidx = find(ismember(colnames,{'task'}));
-nidx = find(ismember(colnames,{'n'}));
+
 % classic accuracy column doesn't work here since a withheld response is
-% correct so let's do
+% correct so I re-score below:
 raw_data.new_correct = categorical(raw_data.key_press) == categorical(raw_data.correct_key); %compare these hits/false alarms/misses
 raw_data.new_correct(raw_data.correct_key==90) = true;
-% so this is the whole thing, which is unfortunate because it includes
-% feedback and instructions and BDM and stuff
-% can be trimmed as you go
-accidx = find(ismember(colnames,{'new_correct'})); 
 
+% so this is the entire experiment, including junk throw-away trials
 %% extract basic performance information
 
 %clean the detect and n-back columns up, it's messy because of the zero's in it become
@@ -45,7 +55,7 @@ valid = (nback==categorical({'1'})|nback==categorical({'NULL'}));
 raw_data.nback(~valid) = categorical({'0'});
 raw_data.nback = string(raw_data.nback);
 
-%separate out the people who failed from the people who didn't 
+%separate out the people who failed from the people who didn't
 tasknumlist = double(string(raw_data.tasknum));
 tasknumlist = unique(tasknumlist(~isnan(tasknumlist)&tasknumlist>-1));
 if sum(~isnan(tasknumlist))>0
@@ -68,37 +78,48 @@ else
     return
 end
 fullscreen = false;
+% we started out with some fullscreen versions, but because implementation
+% is not uniform across browsers, etc., we assume everyone's data come from
+% fullscreen 
+exp_version = unique(raw_data.exp_version);
 
 % pull out need for cognition scores
 [NFC,SAPS,SAPSs,SAPSd] = grade_scales(raw_data);
 % pull out difficulty ratings
 [task_ratings] = grade_difficulty_ratings(raw_data);
 
-rts = table2array(raw_data(:,rtidx));
-logrts = log(rts);
-
-overall_list = double(string(table2array(raw_data(:,overallidx)))); %overall accuracy
+%rts = table2array(raw_data(:,ismember(colnames,{'rt'})));
+rts = raw_data.rt;
+overall_list = double(string(raw_data.overall)); %overall accuracy
 overall = unique(overall_list(~isnan(overall_list)));
-total_length = str2num(char(table2array(raw_data(end,TOTidx))))/60000; %convert msec to minutes
+
+total_length = raw_data.TOT(end)/60000; %convert msec to minutes
+% this is how long people spent on the entire experiment, including
+% reading/filling out consent and data consent forms
 totalTOT = [raw_data.time_elapsed(end)-raw_data.time_elapsed(3)]/60000;
+% this is how many minutes subjects spent on the experiment POST-consent
+% forms. given that workers often accept AMT HITs, open them up, and then
+% sit with then open for a while actually starting the experiment, I think
+% this is a more accurate measure of t
 
-task_list = table2array(raw_data(:,taskidx));
-exp_version = table2array(raw_data(1,version_idx));
+task_list = raw_data.task;
+tasks = [categorical(cellstr('detection'));categorical(cellstr('combine'));categorical(cellstr('n-switch'));categorical(cellstr('n-back')); categorical(cellstr('ndetection'))];
+BDM_label = categorical(cellstr('BDM')); % find BDM trials in the sequence
 
-not_practice = double(string(raw_data.tasknum))>-1; % find practice trials and by extension, post-practice trials
+not_practice = double(string(raw_data.tasknum))>-1;
+% find practice trials and by extension, post-practice trials
 real_task_idx = find(not_practice); real_task_idx = real_task_idx(1);
 not_practice = false(height(raw_data),1); not_practice(real_task_idx:end) = true;
 practice = ~not_practice; %a fun double negative
+
 questionnaires = find(task_list==categorical({'NFC'}));
-main_task = not_practice; 
+main_task = not_practice;
 if ~isempty(questionnaires)
     main_task(questionnaires(1):end) = false; %exclude questionnaire trials
 else
     disp(['Subject ' num2str(raw_data.subjnum(1)) ' questionnaire data missing.'])
 end
 
-tasks = [categorical(cellstr('detection'));categorical(cellstr('combine'));categorical(cellstr('n-switch'));categorical(cellstr('n-back')); categorical(cellstr('ndetection'))];
-BDM_label = categorical(cellstr('BDM')); % find BDM trials in the sequence
 BDMs = find(task_list == BDM_label);
 if length(BDMs)>default_length %more than 32 BDMs saved = there's a duplicate trial saved
     match = find(diff(raw_data.tasknum(BDMs))==0);
@@ -128,12 +149,12 @@ for block = 1:default_length
         first_trials(block) = NaN;
         last_trials(block) = NaN;
         TOT(block) = NaN;
-    end 
+    end
 end
 last_trials(isnan(first_trials)) = [];
 first_trials(isnan(first_trials)) = [];
 
-perf_list = table2array(raw_data(:,perfidx));
+perf_list = raw_data.perf;
 perf_by_block = perf_list(task_list==categorical({'debrief'})&main_task);
 perf_by_block = str2num(char(perf_by_block));
 if length(perf_by_block)<default_length
@@ -144,14 +165,14 @@ elseif length(perf_by_block)>default_length
     perf_by_block(1) = []; %practice block snuck in, seen this once when length(perf) = 33
 end
 if isempty(overall)
-   overall = nanmean(perf_by_block);
+    overall = nanmean(perf_by_block);
 end
 
 %subject fair wages
-value_list = double(string(table2array(raw_data(:,value))));
+value_list = double(string(table2array(raw_data(:,ismember(colnames,{'value'})))));
 value_by_block = value_list(BDMs+1);
 % BDM offers (random numbers)
-offer_list = double(string(table2array(raw_data(:,offer))));
+offer_list = double(string(table2array(raw_data(:,ismember(colnames,{'offer'})))));
 offer_by_block = offer_list(BDMs+1);
 values = NaN(1,default_length);
 values(1:length(value_by_block)) = value_by_block; %points requested by block
@@ -160,13 +181,13 @@ offers(1:length(offer_by_block)) = offer_by_block; %determines actual points on 
 
 %% get practice accuracy for an idea of 'baseline executive function'
 
-max_practices = 14; 
+max_practices = 14;
 acc = raw_data.practice_accuracy(~isnan(raw_data.practice_accuracy));
 numpractices = max(double(string(raw_data.number_practice_hard)));
 duplicates = [1; diff(acc(~isnan(acc)))]==0; %this isn't very precise but it's okay
-%accuracy = acc(raw_data.task==categorical({'debrief'})); 
+%accuracy = acc(raw_data.task==categorical({'debrief'}));
 accuracy = acc(~isnan(acc)); accuracy(duplicates) = [];
-practice_acc = NaN(1,max_practices); 
+practice_acc = NaN(1,max_practices);
 if numpractices > length(tasks) %only if they have to repeat the 4th task
     practice_acc(:,1:length(accuracy)) = accuracy;
 else
@@ -249,10 +270,10 @@ for block = 1:length(first_trials)
         for i = 1:nmatches(block)
             idx = idxes(i);
             try
-            within = relevant(idx-n:idx,:);
-            other = nansum(within.stimnum(1:n-1)~=within.stimnum(n)); %count stimuli that are not the same
-            % for 3detect this should always be 0
-            distractors(block) = distractors(block) + other;
+                within = relevant(idx-n:idx,:);
+                other = nansum(within.stimnum(1:n-1)~=within.stimnum(n)); %count stimuli that are not the same
+                % for 3detect this should always be 0
+                distractors(block) = distractors(block) + other;
             catch
                 distractors(block) = distractors(block) + 0; % do nothing
             end
@@ -288,7 +309,7 @@ nbackmatches = matchcount; %count number of matches, n
 % tasks = [categorical({'n1'}),categorical({'n2'})];
 % n1effect = []; n2effect = []; % keep track of numbers pulled out here for stats later
 % for task = 1:2 %cycle through 1- and 2-back
-%     idx = find(displayed == task); 
+%     idx = find(displayed == task);
 %     completed = find(task_progression==tasks(task));
 %     for trial = 1:length(idx)
 %         now = idx(trial);
@@ -299,7 +320,7 @@ nbackmatches = matchcount; %count number of matches, n
 %         end
 %     end
 % end
-% 
+%
 % range = 2:4;
 % n1matcheffect = NaN(1,length(range)); n2matcheffect = NaN(1,length(range));
 % for i = 1:length(range)
@@ -326,7 +347,7 @@ missed = NaN(1,default_length); lateresponse = missed; changedresponse = missed;
 for block = 1:length(first_trials) % go by first-trial and last-trial indices
     first = first_trials(block); last = last_trials(block);
     ITIs = task_list(first:last) == categorical({'ITI'});
-    fb = task_list(first:last) == categorical({'feedback'}); %it's 
+    fb = task_list(first:last) == categorical({'feedback'}); %it's
     task = ~ITIs & ~fb;
     rts = raw_data.rt(first:last);
     missed(block) = sum(isnan(rts(task)));
@@ -357,6 +378,11 @@ end
 detect_time_breakdown{1} = bookkeeping;
 
 %% Individual relationships of BDMs with other values
+% This measure, which is explored in run_supplementary_analyses, is meant
+% to understand whether subjects were rating all tasks in the same way, or
+% perhaps whether subjects are rating the 1-back and 3-detect the same way
+% while the 2-back task is more of a "popout" costly task.
+
 y = values(2:end);
 x = offers(1:end-1);
 %[r,p] = corr(x,y);
@@ -365,7 +391,7 @@ tasknumbers = [0 1 2 7];
 BDMautocorrs = NaN(1,length(tasknumbers)-1);
 BDMacrosscorrs = NaN(3,2);
 for task = 1:(length(tasknumbers)-1)
-    onscreen = find(displayed==tasknumbers(task+1)); lag = onscreen(2:end); 
+    onscreen = find(displayed==tasknumbers(task+1)); lag = onscreen(2:end);
     others = [1 2 7];
     others(others==task) = [];
     for second = 1:(length(tasknumbers)-2)
@@ -373,7 +399,7 @@ for task = 1:(length(tasknumbers)-1)
         columns{1} = othertask; columns{2} = onscreen;
         [~,longer] = max([length(othertask),length(onscreen)]);
         d = abs(length(othertask)-length(onscreen)); d = d-1;
-        columns{longer}(end-d:end) = []; 
+        columns{longer}(end-d:end) = [];
         [r,p] = corr(values(columns{1})',values(columns{2})');
         BDMacrosscorrs(task,second) = r; %original task each row, second task is column (so 3x2)
     end
@@ -384,7 +410,11 @@ end
 taskBDMcorrs{1} = BDMacrosscorrs;
 taskBDMcorrs{2} = BDMautocorrs;
 
-%% save it all
+%% save it all in a compressed MATLAB table, called data
+% this is a much cleaner data format
+% some things have been already calculated here, too, like meanRTs, mean
+% accuracy on each type of task, etc.
+
 data.subjnum = subjnum;
 data.version = exp_version;
 data.fullscreen = fullscreen;
@@ -425,11 +455,12 @@ data.missedtrials = missed;
 data.lateresponse = lateresponse;
 data.changedresponse = changedresponse;
 data.task_displayed = displayed;
-data.NFC = NFC; 
+data.NFC = NFC;
 data.SAPS = SAPS;
 data.SAPSs = SAPSs;
 data.SAPSd = SAPSd;
 data.taskratings = task_ratings;
 data.detect_time_breakdown = detect_time_breakdown;
 data.taskBDMcorrs = taskBDMcorrs;
-%end
+
+end % of function

@@ -1,6 +1,11 @@
-% Plot simulated data from HBI model fits
-% Using all models, not just the "winning" mainc model
+%% Plot simulated data from HBI model fits
+% Using all models, not just the "winning" mainc model (model freq 70%)
 % Takes a subplot label as the only argument
+
+% % Load up real subject's data
+load('simdata/toanalyze.mat')
+%scale things appropriately
+toanalyze.BDM = (toanalyze.BDM./25) + 1;
 
 taskcolors = [0.75 0.75 0.75;0 0.75 0.75; 0.75 0.75 0; 0.75 0 0.75];
 tasklabels = {'1-detect','1-back','3-detect','2-back'};
@@ -25,12 +30,7 @@ for subj = 1:n
     simdata = [simdata; simulate_cost_model(subj_model,applyTrans_parameters(subj_model,lowparams{num}(subj,:)),onesubj)];
 end
 
-
-% % Load up real subject's data
-load('/Users/sarah/Documents/MATLAB/coce/simdata/toanalyze.mat')
-%scale things appropriately
 simdata(:,3) = (simdata(:,3)./25)+1;
-toanalyze.BDM = (toanalyze.BDM./25) + 1;
 ntasks = length(unique(simdata(:,2)));
 
 sim_task1 = []; sim_task2 = []; sim_task3 = [];
