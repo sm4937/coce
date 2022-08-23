@@ -1,4 +1,4 @@
-function [costs] = setNewCosts(costs,delta,trial)
+function [costs] = set_new_costs(costs,delta,trial)
 %setNewCosts Use delta to set new operation costs
 % Takes costs in, returns new costs
 % update parameter values by delta, decrement, increment

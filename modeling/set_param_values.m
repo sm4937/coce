@@ -1,14 +1,22 @@
-function [uc,epsilon,init,missc,mainc,matchc,noisec,respc,lurec,errorc,fac,alpha,delta] = setParamValues(params,model)
+function [uc,epsilon,init,missc,mainc,matchc,noisec,respc,lurec,errorc,fac,alpha,delta] = set_param_values(params,model)
 %   Scale, set parameter values for cost learning models
 global scalingvector canbeneg
 
 scalingvector = ones(1,length(params)); canbeneg = false(1,length(params));
 ncosts = sum(contains(model.paramnames,'c'));
 cost_scaling = 50./ncosts; %works well at 20 also
+% i chose this cost scaling scalar because it best reproduced the true
+% scales of the fair wage ratings & how they evolved over time (determined
+% through simulation, which happens in simulate_cost_model)
 
 epsilon = 10; init = 0; alpha = 0; delta = 0;
 uc = 0; missc = 0; mainc = 0; matchc = 0; noisec = 0; 
 respc = 0; lurec = 0; errorc = 0; fac = 0;
+% initialize everything at 0, epsilon at 10 (because epsilon = 0 doesn't
+% work because it's a standard deviation parameter), and below, according
+% to model specification (contained in the "model" variable) set parameters
+% to the values we'll use for simulation/fitting
+
 if model.alpha
     idx = find(contains(model.paramnames,'alpha'));
     canbeneg(idx) = false;
