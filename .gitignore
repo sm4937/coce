@@ -7,14 +7,18 @@ group_level.asv
 *.jpg
 *.fig
 *.eps
-*.mat
 *.log
+.DS_Store
+modeling/.DS_Store
 
 #data folders and files
 pilotdata/*
 data/*
 simdata/*
 obsolete/*
+modeling/HBI/model-details/*.mat
+modeling/HBI/*.log
+modeling/HBI/*.mat
 mturk_hit_bookkeeping.xlsx
 ~$mturk_hit_bookkeeping.xlsx
 free_response_log.txt
@@ -23,12 +27,12 @@ cost/old_index.html
 import_subj4_txt.m
 import_subj5_txt.m
 import_subj6_txt.m
-modeling/.DS_Store
+
 
 #files too big for git
 joint_cost_distributions.mat
-HBI/joint_cost_distributions.mat
-HBI/*.mat
+modeling/HBI/joint_cost_distributions.mat
+modeling/HBI/*.mat
 
 #passwords
 cost/php/db_config.php

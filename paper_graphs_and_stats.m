@@ -9,9 +9,15 @@ addpath('modeling/HBI/')
 addpath('modeling/')
 addpath(genpath('data_loading_and_scoring/'))
 
-files = {'29.04.2020.mat','07.05.2020.mat','12.05.2020.mat','13.05.2020.mat',...
-    '18.05.2020.mat','25.01.2021.mat','26.01.2021.mat','01.02.2021.mat', ...
-    '05.17.2021.mat','05.21.2021.mat','05.24.2021.mat','06.02.2021.mat', '06.08.2021.mat'};
+if isdir('data')
+    % ALL experimental data, all 100 subjects live in 'data'
+    load('data/filenames.mat')
+    prefix = 'data/';
+    % grab all subjects from those files, then
+elseif isdir('example_data')
+    files{1} = 'example_data/example_subjs.mat';
+    prefix = 'example_data/';
+end
 % version 4
 [data,excluded] = load_cost_data(files); %load data in
 n = height(data);
@@ -42,8 +48,8 @@ NFCcolors = [.25 0 .25; .60 0 .60; .95 0 .95];
 SAPScolors = [0 .25 .25; 0 .5 .5; 0 .75 .75];
 modelcolors = [1 0 0; 1 0.5 0; 1 0 0.5; 0 0 1; 0 0.5 1; 0 0.7 0; 1 1 0];
 
-% list = data.subjnum;
-% save('../simdata/fullsubjnumbers.mat','list');
+list = data.subjnum;
+save([prefix 'fullsubjnumbers.mat'],'list');
 
 % Initial print-outs of demographics, etc., for beginning of methods
 % section

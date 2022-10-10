@@ -65,7 +65,7 @@ for m = 1:length(modelstosim)
         end
         
         %plot simulated dataset to see whether it contains sensical values
-        model_validation_HBI()
+        %model_validation_HBI()
         
         fnames{m} = [modelstosim{m} '.mat'];
         diff = length(list_existing_functions{end})-length(['fit_' modelstosim{m} '.m']);
@@ -241,7 +241,7 @@ clear all
 % Clean slate
 realsubjectsflag = true; HBI_flag = true;
 
-fitflag = false;
+fitflag = true;
 % Run the whole model fitting, or just display previous fits?
 
 %add relevant paths

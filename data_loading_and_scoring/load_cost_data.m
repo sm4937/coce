@@ -5,10 +5,16 @@ function [data,excluded] = load_cost_data(files)
 
 plot_flag = false;
 
+if contains(files,'example_data')
+    prefix = '';
+else
+    prefix = 'data/';
+end
+
 long_format = [];
 for i = 1:length(files)
     file = files{i};
-    raw =  load(['data/'  file]);
+    raw =  load([prefix file]);
     colnames = raw.Untitled.Properties.VariableNames;
     raw.Untitled.TOT = double(string(raw.Untitled.TOT));
     raw.Untitled.total_points = double(string(raw.Untitled.total_points));
@@ -36,6 +42,9 @@ for i = 1:length(files)
 end
 subjs = unique(long_format.subjnum(~isnan(long_format.subjnum)));
 workers = unique(long_format.worker_ID(~isnan(long_format.subjnum)));
+% the real worker IDs have been scrubbed from example_subjs.mat
+% and replaced with random numbers (preserving that different workers are
+% distinct from each other)
 disp([num2str(length(workers)) ' unique workers who started in this batch'])
 
 % process individual subjects, exclude subjects who are kicked out early,
