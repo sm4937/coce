@@ -9,7 +9,8 @@ addpath('modeling/HBI/')
 addpath('modeling/')
 addpath(genpath('data_loading_and_scoring/'))
 
-if isdir('data')
+%if isdir('data')
+if isdir('datahsuhidahds')
     % ALL experimental data, all 100 subjects live in 'data'
     load('data/filenames.mat')
     prefix = 'data/';
@@ -272,6 +273,8 @@ errorbar(nanmean(n2subjlearning),nanstd(n2subjlearning)/sqrt(n),'Color',taskcolo
 n2points = sum(~isnan(n2subjlearning(:,1:11)));
 errorbar(nanmean(n3subjlearning),nanstd(n3subjlearning)/sqrt(n),'Color',taskcolors(4,:),'LineWidth',1.25,'DisplayName',tasklabels{4}) %task 3 is actually ndetect
 n3points = sum(~isnan(n3subjlearning(:,1:11)));
+n1points(n1points==0) = NaN; % in example data, there's a small bug in creating the size of the dots
+n2points(n2points==0) = NaN; % so I'm patching 0's with NaN's
 
 % Plot overlay which depicts # of data points in each bar
 scatter(1:11,nanmean(n0subjlearning(:,1:11)),n0points*scaling,taskcolors(1,:),'Filled')
@@ -534,12 +537,12 @@ matrix = [tasks_overall(:) [ones(n,1); repmat(2,n,1); repmat(3,n,1); repmat(4,n,
 %Does this difference account for NFC effect on fair wage?
 matrix = [nanmean(n1subjvalue,2) nanmean(n2subjvalue,2) nanmean(n3subjvalue,2) data.NFC];
 matrix(sum(isnan(matrix),2)>0,:) = [];
-[r,p] = corr(matrix)
+[r,p] = corr(matrix);
 
 %% modeling results (parameters) versus behavioral results (NFC and SAPS)
 
 modelfits = load('modeling/HBI/HBI_modelStruct.mat');
-no_fits = load('simdata/toanalyze.mat','trim'); no_fits = no_fits.trim;
+no_fits = load([prefix 'toanalyze.mat'],'trim'); no_fits = no_fits.trim;
 % remove subjects who weren't fit to models
 % grab best model
 

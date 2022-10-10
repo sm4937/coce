@@ -241,7 +241,7 @@ clear all
 % Clean slate
 realsubjectsflag = true; HBI_flag = true;
 
-fitflag = true;
+fitflag = false;
 % Run the whole model fitting, or just display previous fits?
 
 %add relevant paths
