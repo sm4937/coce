@@ -10,7 +10,7 @@ addpath('modeling/')
 addpath(genpath('data_loading_and_scoring/'))
 
 %if isdir('data')
-if isdir('datahsuhidahds')
+if isdir('data')
     % ALL experimental data, all 100 subjects live in 'data'
     load('data/filenames.mat')
     prefix = 'data/';
@@ -533,6 +533,18 @@ disp('t-test low vs high NFC in practice rounds 1-4')
 %Does this difference persist into the actual experiment?
 matrix = [tasks_overall(:) [ones(n,1); repmat(2,n,1); repmat(3,n,1); repmat(4,n,1)] repmat(split,4,1)];
 [~,~,stats] = anovan(matrix(:,1),{matrix(:,2),matrix(:,3)},'model','interaction','varnames',{'task','NFC'},'display','off');
+
+
+% What are the differences between groups, exactly?
+%Examine individual NFC group differences post-ANOVA main effect
+lowNFCvalues = tasks_overall(split==1,:);midNFCvalues = tasks_overall(split==2,:);highNFCvalues = tasks_overall(split==3,:);
+low = nanmean(lowNFCvalues,2); mid = nanmean(midNFCvalues,2); high = nanmean(highNFCvalues,2);
+[h,p] = ttest2(low,mid);
+disp(['Mid versus low NFC fair wage ratings: p = ' num2str(p)])
+[h,p] = ttest2(high,low);
+disp(['High versus low NFC fair wage ratings: p = ' num2str(p)])
+[h,p] = ttest2(mid,high);
+disp(['Mid versus high NFC fair wage ratings: p = ' num2str(p)])
 
 %Does this difference account for NFC effect on fair wage?
 matrix = [nanmean(n1subjvalue,2) nanmean(n2subjvalue,2) nanmean(n3subjvalue,2) data.NFC];

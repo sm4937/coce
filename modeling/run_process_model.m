@@ -16,27 +16,29 @@
 % paper_graphs_and_stats.m or run_supplementary_analyses.m.
 
 clear all
-preloadflag = true;
+
+if isdir('../data')
+    % ALL experimental data, all 100 subjects live in 'data'
+    load('../data/filenames.mat')
+    load('../data/fullsubjnumbers.mat')
+    data_directory = '../data/';
+    % grab all subjects from those files, then
+elseif isdir('../example_data')
+    files{1} = 'example_subjs.mat';
+    load('../example_data/fullsubjnumbers.mat')
+    data_directory = '../example_data/';
+end
+% specify behavioral files collected on version 4 of WFW behavioral
+% task
+
+%grab usable subjects, pre-saved in paper_graphs_and_stats.m
+% (subject numbers are in "list", which are randomly generated at the beginning of
+% the MTurk task & about 7 digits long)
+
+preloadflag = false;
 % do you want to run all these analyses? they take some time
 
 if preloadflag
-    if isdir('../data?')
-        % ALL experimental data, all 100 subjects live in 'data'
-        load('../data/filenames.mat')
-        load('../data/fullsubjnumbers.mat')
-        data_directory = '../data/';
-        % grab all subjects from those files, then
-    elseif isdir('../example_data')
-        files{1} = 'example_subjs.mat';
-        load('../example_data/fullsubjnumbers.mat')
-        data_directory = '../example_data/';
-    end
-    % specify behavioral files collected on version 4 of WFW behavioral
-    % task
-    
-    %grab usable subjects, pre-saved in paper_graphs_and_stats.m
-    % (subject numbers are in "list", which are randomly generated at the beginning of
-    % the MTurk task & about 7 digits long)
     
     tosim = [];
     % initialize task data saving variable, tosim
@@ -269,8 +271,8 @@ fig = gcf; fig.Color = 'w';
 title('Completed 2-backs across subjects')
 
 measures(:,1) = toanalyze.nmisses; measures(:,2) = toanalyze.nlures;
-measures(:,3) = toanalyze.nFAs;
-names = {'misses','lures','FAs'};
+measures(:,3) = toanalyze.nFAs; measures(:,4) = toanalyze.maintained;
+names = {'misses','lures','FAs','maintenance'};
 for col = 1:size(measures,2)
     figure; subplot(2,2,2)
     measure = measures(:,col);
@@ -312,6 +314,26 @@ for col = 1:size(measures,2)
     
 end
 
+[r,p] = corr(measures,'type','Spearman'); % not normally distributed
+% are these cost components correlated?
+% across all subjects, yes, which is unsurprising overall. maintenance,
+% lures, & errors all go up with 2-back.
+
+for n = 1:nsubjs
+    % are they related within-subject?
+    onesubj = toanalyze(toanalyze.subj==n,:);
+
+    [r,p] = corr(onesubj.maintained,onesubj.nlures,'type','Spearman');
+    proportions(n,1) = p<0.05;
+    [r,p] = corr(onesubj.maintained,onesubj.nFAs,'type','Spearman');
+    proportions(n,2) = p<0.05;
+    [r,p] = corr(onesubj.nlures,onesubj.nFAs,'type','Spearman');
+    proportions(n,3) = p<0.05;
+    % get percentage of subjects w/ significant correlation of all these
+    % components    
+end
+
+percentages = sum(proportions)/nsubjs;
 
 %% Run simple simulations for task characteristics, individual characteristics, simple models
 
