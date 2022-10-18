@@ -345,7 +345,157 @@ iternum = repmat([1 2 3 4 5 6 7 8 9 10],n*3,1);
 
 % END FIGURE 2
 
-%% BEGIN FIGURE 3
+%% modeling results (parameters) 
+% % BEGIN FIGURE 3 % % 
+
+modelfits = load('modeling/HBI/HBI_modelStruct.mat');
+no_fits = load([prefix 'toanalyze.mat'],'trim'); no_fits = no_fits.trim;
+% remove subjects who weren't fit to models
+% grab best model
+
+best_model = modelfits.modelStruct.best_model;
+cbm = best_model.cbm;
+
+freqs = cbm.output.model_frequency;
+models_at_play = find(freqs>0.01);
+[~,assignments] = max(cbm.output.responsibility,[],2);
+
+disp([num2str(sum(assignments>4)) ' subjects best explained by a model with more than 1 cost'])
+
+full_labels = modelfits.modelStruct.best_model.overallfit.fitmodels;
+model_labels = cell(length(full_labels),1);
+for ll = 1:length(full_labels)
+    % trim model labels down to just the cost labels
+    temp_label = strsplit(full_labels{ll},'epsilon-initi-alpha-');
+    if length(temp_label) == 1
+        temp_label = strsplit(full_labels{ll},'epsilon-initi-');
+        % indicate that it's a delta cost model
+    end
+    just_costs = temp_label{2};
+    trim = strsplit(just_costs,'c');
+    new_name = ['c_{' trim{1} '}'];
+    
+    if length(trim)>2
+        for ii = 2:(length(trim)-1)
+            new_name = [new_name ' & ' strrep(trim{ii},'-','c_{')];
+            new_name = [new_name '}'];
+        end
+    end
+    
+    if strmatch(new_name,'c_lure')
+        % calling this the "interference cost" in the actual paper
+        new_name = 'c_interference';
+    end
+    
+    model_labels{ll} = new_name;
+end
+
+
+nparams = best_model.nparams;
+params = applyTrans_parameters(best_model,best_model.lowparams); paramnames = best_model.paramnames;
+
+%% Look at parameter trends within subjects whose best model was the winning
+% model w exceedance probability = 1
+% FIGURE 3 CONTINUED
+
+all_params = cbm.output.parameters;
+
+figure
+%At the top, plot each model frequency.
+subplot(1,3,1)
+%     for mm = 1:length(models_at_play)
+%         bar(mm,freqs(models_at_play(mm)),'FaceColor',modelcolors(mm,:))
+%         hold on
+%     end
+%     ylabel('Model frequencies')
+for mm = 1:length(models_at_play)
+    bar(mm,sum(assignments==models_at_play(mm)),'FaceColor',modelcolors(mm,:))
+    hold on
+end
+ylabel('# subjects best fit by model')
+xticks(1:mm)
+xticklabels(model_labels(models_at_play));xtickangle(45)
+ax = gca; ax.FontSize = 14;
+fig = gcf; fig.Color = 'w';
+
+calcflag = false;
+
+if calcflag
+    cd('modeling/HBI/')
+    [big_posterior,joint,xs] = get_param_posterior_dists(best_model);
+    cd('../../')
+else
+    load('modeling/HBI/joint_cost_distributions.mat')
+end
+
+% feed model fits in, also specify whether you want to recalculate the
+% dists (takes some time, lots of numbers to compute)
+
+% Now I have a joint distribution over 3 cost parameters of interest
+
+% so then, if you have subjects s _1...s_k in your low tertile group (say),
+% you can work out the approximate posterior distribution
+%
+% P(Theta ; low_tertile) =
+%    \prod_{i=1}^k \sum_j [\rho^{s_i}_j P(Theta^{s_i}_j|D^{s_i})*P(Theta_{j'})]
+%
+% in the low_tertile [in practice you should calculate it carefully using
+% logs - in the three dimensions of maintenance, lure and false-alarm costs
+
+% Plot distributions of mainc, lurec, and fac,
+%to compare their distributions to one another.
+
+modelstofit = best_model.overallfit.fitmodels;
+
+dim1 = logsumexp(big_posterior,1);
+dim2 = logsumexp(dim1,2);
+dim3 = logsumexp(dim2,3);
+big_posterior = big_posterior - dim3;
+% normalize to make sure it's a real posterior
+big_posterior = exp(big_posterior);
+
+mainc_dist = sum(sum(big_posterior,1),3);
+lurec_dist = squeeze(sum(sum(big_posterior,2),3));
+fac_dist = squeeze(sum(sum(big_posterior,2),1));
+
+subplot(1,3,2); hold on;
+plot(xs',fac_dist,'Color',modelcolors(3,:),'LineWidth',1.5,'DisplayName','False Alarm')
+plot(xs',mainc_dist,'Color',modelcolors(1,:),'LineWidth',1.5,'DisplayName','Maintenance')
+plot(xs',lurec_dist,'Color',modelcolors(2,:),'LineWidth',1.5,'DisplayName','Interference')
+legend('Location','Best')
+ylabel('Posterior probability')
+xlabel('Parameter value')
+xlim([0 1.15])
+fig = gcf; ax = gca;
+fig.Color = 'w'; ax.FontSize = 14;
+
+subplot(1,3,3);
+% model validation plot
+make_model_validation_subplot()
+
+group_level_means_sarah(1) = sum(xs.*mainc_dist);
+group_level_means_sarah(2) = sum(xs'.*lurec_dist);
+group_level_means_sarah(3) = sum(xs'.*fac_dist);
+
+model = coc_createModels(modelstofit{1});
+idx_cost = find(contains(model.paramnames,'mainc'));
+group_level_means_payam(1) = best_model.cbm.output.group_mean{1}(idx_cost);
+
+model = coc_createModels(modelstofit{2});
+idx_cost = find(contains(model.paramnames,'lurec'));
+group_level_means_payam(2) = best_model.cbm.output.group_mean{2}(idx_cost);
+
+model = coc_createModels(modelstofit{4});
+idx_cost = contains(model.paramnames,'fac');
+group_level_means_payam(3) = best_model.cbm.output.group_mean{4}(idx_cost);
+
+disp('Your means are: ')
+disp(group_level_means_sarah)
+disp('The means from the HBI package are: ')
+disp(group_level_means_payam)
+
+
+%% BEGIN SUPPLEMENTARY FIGURE 1
 % Individual differences measures, as measured by questionnaires.
 % Their spread (histograms) and relationship to each other (scatter plots).
 % Primarily examining Need for Cognition (NFC) and Short Almost Perfect
@@ -449,7 +599,8 @@ end
 
 
 %% % GROUP ANALYSIS OF BDMS by NFC AND SAPS GROUPS % %
-% FIGURE #3 CONTINUED!
+% SUPPLEMENTARY ANALYSES CONTINUED!
+% THESE ARE NOT INCLUDED IN SUPPLEMENTARY FIGURES IN THE MANUSCRIPT
 
 measures = [data.NFC data.SAPS];
 labels = {'NFC','SAPS'};
@@ -551,142 +702,14 @@ matrix = [nanmean(n1subjvalue,2) nanmean(n2subjvalue,2) nanmean(n3subjvalue,2) d
 matrix(sum(isnan(matrix),2)>0,:) = [];
 [r,p] = corr(matrix);
 
-%% modeling results (parameters) versus behavioral results (NFC and SAPS)
+%% Another way of looking at the stuff above (differences between NFC & SAPS groups)
+% within subjects
 
-modelfits = load('modeling/HBI/HBI_modelStruct.mat');
-no_fits = load([prefix 'toanalyze.mat'],'trim'); no_fits = no_fits.trim;
-% remove subjects who weren't fit to models
-% grab best model
-
-best_model = modelfits.modelStruct.best_model;
-cbm = best_model.cbm;
-
-freqs = cbm.output.model_frequency;
-models_at_play = find(freqs>0.01);
-[~,assignments] = max(cbm.output.responsibility,[],2);
-
-disp([num2str(sum(assignments>4)) ' subjects best explained by a model with more than 1 cost'])
-
-full_labels = modelfits.modelStruct.best_model.overallfit.fitmodels;
-model_labels = cell(length(full_labels),1);
-for ll = 1:length(full_labels)
-    % trim model labels down to just the cost labels
-    temp_label = strsplit(full_labels{ll},'epsilon-initi-alpha-');
-    if length(temp_label) == 1
-        temp_label = strsplit(full_labels{ll},'epsilon-initi-');
-        % indicate that it's a delta cost model
-    end
-    just_costs = temp_label{2};
-    trim = strsplit(just_costs,'c');
-    new_name = ['c_{' trim{1} '}'];
-    
-    if length(trim)>2
-        for ii = 2:(length(trim)-1)
-            new_name = [new_name ' & ' strrep(trim{ii},'-','c_{')];
-            new_name = [new_name '}'];
-        end
-    end
-    
-    if strmatch(new_name,'c_lure')
-        % calling this the "interference cost" in the actual paper
-        new_name = 'c_interference';
-    end
-    
-    model_labels{ll} = new_name;
-end
-
-
-nparams = best_model.nparams;
-params = applyTrans_parameters(best_model,best_model.lowparams); paramnames = best_model.paramnames;
-measures = [data.NFC data.SAPS]; measures(no_fits,:) = [];
-%remove subject NFC and SAPS who don't have model results
-
-names = {'NFC','SAPS'};
-for measure = 1:size(measures,2)
-    split = tertile_split(measures(:,measure));
-    column = measures(:,measure);
-    eval(['colors =' names{measure} 'colors;']);
-    figure
-    for p = 1:nparams
-        subplot(3,3,p)
-        scatter(column,params(:,p),[],colors(2,:),'Filled')
-        [r,pval] = corr(column(~isnan(column)),params(~isnan(column),p));
-        if pval < 0.05
-            lsline
-        end
-        xlabel(names{measure})
-        ylabel(paramnames(p))
-        disp([names{measure} ' vs ' paramnames(p) ' r = ' num2str(r) ', p = ' num2str(pval)])
-    end
-    fig = gcf; fig.Color = 'w';
-    
-    
-    figure
-    for p = 1:nparams
-        
-        % run group-level t-tests
-        [h,pval1] = ttest2(params(split==1,p),params(split==2,p));
-        [h,pval2] = ttest2(params(split==3,p),params(split==2,p));
-        [h,pval3] = ttest2(params(split==1,p),params(split==3,p));
-        ps = [NaN pval1 pval3; pval1 NaN pval2; pval3 pval2 NaN];
-        
-        subplot(3,3,p)
-        superbar([nanmean(params(split==1,p)) nanmean(params(split==2,p)) nanmean(params(split==3,p))], ...
-            'E',[nanstd(params(split==1,p)) nanstd(params(split==2,p)) nanstd(params(split==3,p))]./sqrt(n), ...
-            'P',ps,'BarFaceColor',colors,'PStarShowNS',false);
-        title(paramnames(p))
-        xticks([1:3])
-        xticklabels({['Low ' names{measure}],['Mid ' names{measure}],['High ' names{measure}]})
-        
-    end
-    fig = gcf; fig.Color = 'w';
-    
-    figure
-    bar([nanmean(column(assignments==models_at_play(1))); nanmean(column(assignments==models_at_play(2)))],'FaceColor','w')
-    hold on
-    errorbar([nanmean(column(assignments==models_at_play(1))); nanmean(column(assignments==models_at_play(2)))],[nanstd(column(assignments==models_at_play(1))); nanstd(column(assignments==models_at_play(2)))]./sqrt(n),'*k')
-    scatter(ones(sum(assignments==models_at_play(1)),1),column(assignments==models_at_play(1)),[],colors(2,:),'Filled')
-    scatter(2*ones(sum(assignments==models_at_play(2)),1),column(assignments==models_at_play(2)),[],colors(2,:),'Filled')
-    ylabel(names{measure})
-    xticklabels(model_labels(models_at_play))
-    xtickangle(45)
-    fig = gcf; fig.Color = 'w';
-    title(['Mean ' names{measure} ' by model class'])
-end
-
-% [h,p] = ttest2(measures([assignments==models_at_play(1)]&sum(~isnan(measures),2)==2,2),measures([assignments==models_at_play(1)]&sum(~isnan(measures),2)==2,2))
-% disp('SAPS across models 1 and 2')
-% [h,p] = ttest2(measures([assignments==models_at_play(2)]&sum(~isnan(measures),2)==2,2),measures([assignments==models_at_play(3)]&sum(~isnan(measures),2)==2,2))
-% disp('SAPS across models 2 and 3')
-%
-% [h,p] = ttest2(measures([assignments==models_at_play(1)|assignments==models_at_play(2)]&sum(~isnan(measures),2)==2,2),measures([assignments==models_at_play(3)|assignments==models_at_play(4)]&sum(~isnan(measures),2)==2,2))
-% disp('SAPS across models 1/2 and 3/4')
-
-%% Look at parameter trends within subjects whose best model was the winning
-% model w exceedance probability = 1
-
-all_params = cbm.output.parameters;
+% now distinguishing between which subjects were best fit by each model
 
 for measure = 1  %set measure = 1:2 to see SAPS score bins also, not just NFC
     figure
-    count = 3;
-    
-    %At the top, plot each model frequency.
-    subplot(3,3,1)
-    %     for mm = 1:length(models_at_play)
-    %         bar(mm,freqs(models_at_play(mm)),'FaceColor',modelcolors(mm,:))
-    %         hold on
-    %     end
-    %     ylabel('Model frequencies')
-    for mm = 1:length(models_at_play)
-        bar(mm,sum(assignments==models_at_play(mm)),'FaceColor',modelcolors(mm,:))
-        hold on
-    end
-    ylabel('# subjects best fit by model')
-    xticks(1:mm)
-    xticklabels(model_labels(models_at_play));xtickangle(45)
-    ax = gca; ax.FontSize = 14;
-    fig = gcf; fig.Color = 'w';
+    count = 0;
     
     if measure == 1
         split = tertile_split(data.NFC); colors = NFCcolors;
@@ -728,7 +751,7 @@ for measure = 1  %set measure = 1:2 to see SAPS score bins also, not just NFC
         
         count = count + 1;
         % plot effect of measure group on parameter values
-        subplot(3,3,count) %starting at subplot 5
+        subplot(2,3,count)
         superbar([nanmean(values(split==1&modelgroup,p)) nanmean(values(split==2&modelgroup,p)) nanmean(values(split==3&modelgroup,p))], ...
             'E',[nanstd(values(split==1&modelgroup,p)) nanstd(values(split==2&modelgroup,p)) nanstd(values(split==3&modelgroup,p))]./sqrt(n), ...
             'P',ps,'BarFaceColor',colors,'PStarShowNS',false,'PStarBackgroundColor','None');
@@ -744,83 +767,8 @@ for measure = 1  %set measure = 1:2 to see SAPS score bins also, not just NFC
     
 end %of cycling over SAPS & NFC
 
-
 %% Get posterior distributions over parameters, using the outputs of HBI
-% Supplementary figure 4
-
-calcflag = false;
-
-if calcflag
-    cd('modeling/HBI/')
-    [big_posterior,joint,xs] = get_param_posterior_dists(best_model);
-    cd('../../')
-else
-    load('modeling/HBI/joint_cost_distributions.mat')
-end
-
-% feed model fits in, also specify whether you want to recalculate the
-% dists (takes some time, lots of numbers to compute)
-
-% Now I have a joint distribution over 3 cost parameters of interest
-
-% so then, if you have subjects s _1...s_k in your low tertile group (say),
-% you can work out the approximate posterior distribution
-%
-% P(Theta ; low_tertile) =
-%    \prod_{i=1}^k \sum_j [\rho^{s_i}_j P(Theta^{s_i}_j|D^{s_i})*P(Theta_{j'})]
-%
-% in the low_tertile [in practice you should calculate it carefully using
-% logs - in the three dimensions of maintenance, lure and false-alarm costs
-
-% Plot distributions of mainc, lurec, and fac,
-%to compare their distributions to one another.
-
-modelstofit = best_model.overallfit.fitmodels;
-
-dim1 = logsumexp(big_posterior,1);
-dim2 = logsumexp(dim1,2);
-dim3 = logsumexp(dim2,3);
-big_posterior = big_posterior - dim3;
-% normalize to make sure it's a real posterior
-big_posterior = exp(big_posterior);
-
-mainc_dist = sum(sum(big_posterior,1),3);
-lurec_dist = squeeze(sum(sum(big_posterior,2),3));
-fac_dist = squeeze(sum(sum(big_posterior,2),1));
-
-subplot(3,3,2); hold on;
-plot(xs',mainc_dist,'Color',modelcolors(1,:),'LineWidth',1.5,'DisplayName','Maintenance')
-plot(xs',lurec_dist,'Color',modelcolors(2,:),'LineWidth',1.5,'DisplayName','Interference')
-plot(xs',fac_dist,'Color',modelcolors(3,:),'LineWidth',1.5,'DisplayName','False Alarm')
-legend('Location','Best')
-xlim([0 1.15])
-fig = gcf; ax = gca;
-fig.Color = 'w'; ax.FontSize = 14;
-
-subplot(3,3,3);
-% model validation plot
-make_model_validation_subplot()
-
-group_level_means_sarah(1) = sum(xs.*mainc_dist);
-group_level_means_sarah(2) = sum(xs'.*lurec_dist);
-group_level_means_sarah(3) = sum(xs'.*fac_dist);
-
-model = coc_createModels(modelstofit{1});
-idx_cost = find(contains(model.paramnames,'mainc'));
-group_level_means_payam(1) = best_model.cbm.output.group_mean{1}(idx_cost);
-
-model = coc_createModels(modelstofit{2});
-idx_cost = find(contains(model.paramnames,'lurec'));
-group_level_means_payam(2) = best_model.cbm.output.group_mean{2}(idx_cost);
-
-model = coc_createModels(modelstofit{4});
-idx_cost = contains(model.paramnames,'fac');
-group_level_means_payam(3) = best_model.cbm.output.group_mean{4}(idx_cost);
-
-disp('Your means are: ')
-disp(group_level_means_sarah)
-disp('The means from the HBI package are: ')
-disp(group_level_means_payam)
+% Another way of looking at group differences across self-report measures
 
 count = 0; figure
 for measure = 1:2
