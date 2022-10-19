@@ -35,7 +35,7 @@ end
 % (subject numbers are in "list", which are randomly generated at the beginning of
 % the MTurk task & about 7 digits long)
 
-preloadflag = false;
+preloadflag = fakse;
 % do you want to run all these analyses? they take some time
 
 if preloadflag
@@ -255,6 +255,12 @@ toanalyze.nlures = components(:,11); toanalyze.nerrors = components(:,12);
 toanalyze.nFAs = components(:,13);
 save([data_directory 'toanalyze.mat'],'toanalyze','trim')
 
+% % ONCE THIS HAS BEEN RUN, YOU ARE SET TO RUN MODELING, either with the
+% hierarchical bayesian inference package (HBI/run_model_fitting.m) or
+% using type II maximum likelihood fitting via expectation maximization
+% (typeII_ML_fitting/fitmodels_costlearning.m) old code, use at your own risk)
+
+
 %% Check out individual differences in measures
 subjnums = unique(toanalyze.subj);
 nsubjs = length(subjnums);
@@ -335,59 +341,6 @@ end
 
 percentages = sum(proportions)/nsubjs;
 
-%% Run simple simulations for task characteristics, individual characteristics, simple models
-
-%% Simulate slopes based on NFC
-
-alpha = 0.50; %baseline slope
-NFC = 1; %fake, as if NFC were between 0 and 1
-B = -10:10;
-S = alpha*(1./(1+exp(-B.*NFC)));
-figure
-scatter(B,S)
-ylabel('Slope')
-title(['Formula alpha*sigmoid(-B*NFC), NFC: ' num2str(NFC)])
-xlabel('Beta Value')
-xticks(B)
-xlim([B(1) B(end)])
-xticklabels(B)
-ylim([-1 1])
-
-NFCs = data.NFC;
-maxNFC = 5;
-NFCs = NFCs./5;
-
-Beta = 3;
-alpha = 3;
-slopes = alpha*(1-(1./(1+exp(-Beta.*NFCs))));
-%slopes = alpha + (Beta.*NFCs);
-nswitches = 6:15;
-Bs = rand(n,1)*3;
-y = slopes.*nswitches + Bs;
-
-figure
-subplot(2,1,2)
-toplot = 5:10;
-for subj = toplot
-    scatter(nswitches,y(subj,:),'o','Filled')
-    hold on
-end
-xlabel('N Switches')
-ylabel('BDM value')
-title('Simulated effect of nswitches according to NFC')
-labels = [repmat('NFC: ',length(toplot),1) num2str(NFCs(toplot))];
-legend({labels})
-ax = gca;
-ax.FontSize = 12;
-
-subplot(2,1,1)
-scatter(slopes,NFCs)
-xlabel('Slope')
-ylabel('NFC score normalized')
-title('Slope of subcomponent effect by NFC score')
-ax = gca; fig = gcf;
-fig.Color = 'w'; ax.FontSize = 12;
-
 %% understand effect of delay between task iterations on BDM values - is there anything there ?
 
 BDMs = [0:4:100];
@@ -396,7 +349,7 @@ nblocks = 32;
 sim_list = [];
 for p = 1:length(BDMs) %cycle through fixed values of BDMs - mirror consistency of our subjects
     value = BDMs(p);
-    tasks = ones(1,nblocks/2); tasks = [tasks 2.*ones(1,nblocks/2)];
+    tasks = [ones(1,ceil(nblocks/3)) 2.*ones(1,ceil(nblocks/3)) 3.*ones(1,floor(nblocks/3))];
     tasks = tasks(randperm(nblocks));
     for block = 1:32
         offer = BDMs(ceil(rand*length(BDMs)));
@@ -407,17 +360,21 @@ for p = 1:length(BDMs) %cycle through fixed values of BDMs - mirror consistency 
     sim_list = [sim_list; tasks value];
 end
 
+%so, given 1 fixed fair wage for all tasks, how does completion of the
+%default task (0) change? how does completion of the other tasks change?
+%does it look like our subjects have fixed BDM values?
 figure
 for subj = 1:length(BDMs)
     value = BDMs(subj);
     row = sim_list(:,end)==value;
     subplot(5,6,subj)
     histogram(sim_list(row,1:end-1))
-    xticklabels({'0','1','2'})
+    xticklabels({'0','1','2','3'})
     xlabel('Task')
-    ylabel('Freq.')
+    ylabel('Freq of completion given fixed BDM value for every task')
     title(['value = ' num2str(value)])
 end
+fig = gcf; fig.Color = 'w';
 
 delay1 = []; delay2 = [];
 for task = 1:2
