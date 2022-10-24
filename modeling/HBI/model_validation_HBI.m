@@ -32,7 +32,7 @@ end
 % end
 
 % % Load up real subject's data
-load('../simdata/toanalyze.mat')
+load([prefix 'toanalyze.mat'])
 %scale things appropriately
 simdata(:,3) = (simdata(:,3)./25)+1;
 simdata_onemodel(:,3) = (simdata_onemodel(:,3)./25)+1;

@@ -115,7 +115,7 @@ for m = 1:length(modelstofit)
     model_labels{m} = strrep(modelstofit{m},'_','-');
     if fitflag; cbm_lap(data, func, priors{m}, fnames{m}); end
 end
-fname_hbi = 'HBI_coc_62models_2022.mat'; 
+fname_hbi = 'HBI_coc_48models_2022.mat'; 
 
 % % RUN HBI %%
 
