@@ -173,240 +173,96 @@ noise = 0; %turn this to a value that is NOT 0 to see how cost components change
 % models (like WM storage noise)
 % this could be an expansion of our framework
 
-if preloadflag
-    
-    for subj = 1:length(unique(tosim.subj)) % loop over subjects captured in tosim
-        oneperson = tosim(tosim.subj==subj,:);
-        completed(subj,:) = ceil([sum(oneperson.task==0) sum(oneperson.task==1) sum(oneperson.task==3) sum(oneperson.task==2)]./15);
-        for block = 0:max(oneperson.block)
-            blockdata = oneperson(oneperson.block==block,:);
-            nupdates = 0; nlures = 0; %initialize cost variables
-            maintained = NaN(1,2); %keep track of storage over time, to get a sense of maintained info over time
-            task = blockdata.task(2)+1;
-            n = blockdata.n(2); matches = blockdata.nmatches(2);
-            if isnan(n) %again, with this duplicate trial for subj 98, causing problems
-                n = blockdata.n(3); matches = blockdata.nmatches(3);
-            end
-            storage = NaN(1,n); %empty storage for n-back
-            for trial = 2:height(blockdata)
-                stim = blockdata.stimnum(trial);
-                if n == 0 %do detection, pretty simple
-                    maintained(trial,:) = 0;
-                else %n-backs and n-detects
-                    if task==3 %only in 2-back can there be WM lures inside buffer
-                        if storage(2)==stim
-                            nlures = nlures + 1; %not a real 2-back, but a lure trial
-                        end
+for subj = 1:length(unique(tosim.subj)) % loop over subjects captured in tosim
+    oneperson = tosim(tosim.subj==subj,:);
+    completed(subj,:) = ceil([sum(oneperson.task==0) sum(oneperson.task==1) sum(oneperson.task==3) sum(oneperson.task==2)]./15);
+    for block = 0:max(oneperson.block)
+        blockdata = oneperson(oneperson.block==block,:);
+        nupdates = 0; nlures = 0; %initialize cost variables
+        maintained = NaN(1,2); %keep track of storage over time, to get a sense of maintained info over time
+        task = blockdata.task(2)+1;
+        n = blockdata.n(2); matches = blockdata.nmatches(2);
+        if isnan(n) %again, with this duplicate trial for subj 98, causing problems
+            n = blockdata.n(3); matches = blockdata.nmatches(3);
+        end
+        storage = NaN(1,n); %empty storage for n-back
+        for trial = 2:height(blockdata)
+            stim = blockdata.stimnum(trial);
+            if n == 0 %do detection, pretty simple
+                maintained(trial,:) = 0;
+            else %n-backs and n-detects
+                if task==3 %only in 2-back can there be WM lures inside buffer
+                    if storage(2)==stim
+                        nlures = nlures + 1; %not a real 2-back, but a lure trial
                     end
-                    if sum(stim == storage)==n %full storage remaining the same
-                        % do nothing, no cost, no update
-                    else %update storage with some noise
-                        storage(1) = [];
-                        die = rand(); %get a random number
-                        if die < noise %noise param wins
-                            storage(end+1) = NaN;
-                        else %noise param doesn't win
-                            storage(end+1) = stim; %clear out old info, add in new info, shift stuff over
-                        end
-                        nupdates = nupdates + 1; %cost of update/gating in/out
-                    end
-                    maintained(trial,:) = storage;
                 end
+                if sum(stim == storage)==n %full storage remaining the same
+                    % do nothing, no cost, no update
+                else %update storage with some noise
+                    storage(1) = [];
+                    die = rand(); %get a random number
+                    if die < noise %noise param wins
+                        storage(end+1) = NaN;
+                    else %noise param doesn't win
+                        storage(end+1) = stim; %clear out old info, add in new info, shift stuff over
+                    end
+                    nupdates = nupdates + 1; %cost of update/gating in/out
+                end
+                maintained(trial,:) = storage;
             end
-            % grab noisiness for whole block instead of trial
-            noisiness = sum((blockdata.detect|blockdata.nback)==true&blockdata.correct==false)/max([sum(blockdata.detect|blockdata.nback) 1]);
-            nmatches = sum((blockdata.detect|blockdata.nback)==true&blockdata.correct==true);
-            nmisses = sum((blockdata.detect|blockdata.nback)==true&blockdata.correct==false);
-            % count times they were supposed to respond & didn't
-            nFAs = sum((blockdata.detect|blockdata.nback)==false & ~isnan(blockdata.keypress));
-            nerrors = nmisses + nFAs;
-            % count times they responded & weren't supposed to (false alarm)
-            nresponses = sum(~isnan(blockdata.keypress(2:end)));
-            maintained(1,:) = []; maintained = nanmean(sum(maintained>0,2));
-            % this is a weird measure, it's maintainence adjusted for errors,
-            % this should be confounded with errors
-            % let's just set it to N and see if that's different in any way
-            maintained = n;
-            
-            components = [components; subj nmatches maintained nupdates nmisses blockdata.display(1)+1 task blockdata.BDM(1) noisiness nresponses nlures nerrors nFAs];
-        end %end of block by block loop
-        
-        %     if sum(completed(subj,2:end)>2)<3 %3 iterations or more for each rated task?
-        %         disp(['excluding subj ' num2str(subj)])
-        %         components(components(:,1)==subj,:) = [];
-        %         trim = [trim;subj];
-        %     end
-        % before our model fitting was fully hierarchical, I included code here to
-        % exclude subjects with low amounts of task performance on one or more
-        % tasks ( this is the if sum(completed...) block above ). now that the
-        % model fitting is fully hierarchical, I have removed this bit of code,
-        % because the nature of the model fitting allows for subjects with low
-        % amounts of task data to still be accurately fit by the models.
-        
-    end %of loop over subjects
-    %completed
-    
-    % save it all in toanalyze.mat
-    toanalyze = table;
-    toanalyze.subj = components(:,1); toanalyze.nmatches = components(:,2);
-    toanalyze.maintained = components(:,3); toanalyze.nupdates = components(:,4);
-    toanalyze.nmisses = components(:,5); toanalyze.display = components(:,6);
-    toanalyze.task = components(:,7); toanalyze.BDM = components(:,8);
-    toanalyze.noisiness = components(:,9); toanalyze.nresponses = components(:,10);
-    toanalyze.nlures = components(:,11); toanalyze.nerrors = components(:,12);
-    toanalyze.nFAs = components(:,13);
-    save([data_directory 'toanalyze.mat'],'toanalyze','trim')
-    
-    % how many times did the 2-back actually get completed?
-    % this ALL subject measure is relevant because model-fitting is
-    % hierarchical
-    % if all people completely avoided the 2-back, then we'd have a model
-    % recovery problem. but it looks like there's a good spread in the numbers
-    % here.
-    figure
-    histogram(completed(:,end))
-    fig = gcf; fig.Color = 'w';
-    title('Completed 2-backs across subjects')
-    
-else
-    
-    load([data_directory 'toanalyze.mat'],'toanalyze','trim')
-    
-end
-
-% % ONCE THIS HAS BEEN RUN, YOU ARE SET TO RUN MODELING, either with the
-% hierarchical bayesian inference package (HBI/run_model_fitting.m) or
-% using type II maximum likelihood fitting via expectation maximization
-% (typeII_ML_fitting/fitmodels_costlearning.m) old code, use at your own risk)
-
-
-%% Check out individual differences in measures
-subjnums = unique(toanalyze.subj);
-nsubjs = length(subjnums);
-
-measures(:,1) = toanalyze.nmisses; measures(:,2) = toanalyze.nlures;
-measures(:,3) = toanalyze.nFAs; measures(:,4) = toanalyze.maintained;
-names = {'misses','lures','FAs','maintenance'};
-for col = 1:size(measures,2)
-    figure; subplot(2,2,2)
-    measure = measures(:,col);
-    for misses = 0:4
-        for s = 1:nsubjs
-            subj = subjnums(s);
-            nmisses(s) = max(measure(toanalyze.subj==subj));
-            BDMs = toanalyze.BDM(toanalyze.subj==subj,:);
-            nmissesall(:,s) = [measure(toanalyze.subj==subj); nan(32-sum(toanalyze.subj==subj),1)];
-            misseffect(misses+1,:,s) = NaN(1,32); %initialize empty
-            idx = find(nmissesall(:,s)==misses)+1; idx(idx>length(BDMs)) = []; %trim out edges
-            misseffect(misses+1,idx,s) = BDMs(idx); %catalog BDM effects from misses
         end
-        scatter(1:nsubjs,sum(nmissesall==misses),'Filled')
-        hold on
-    end
-    legend({'0','1','2','3','4'})
-    title(['All ' names{col} ' per Subject'])
-    ylabel('Frequency'); xlabel('Subject')
-    subplot(2,2,3)
-    histogram(nmisses)
-    title(['Max number of ' names{col} ' for each subject'])
-    subplot(2,2,1)
-    histogram(measure)
-    title(['All ' names{col} ' values all subjects'])
-    fig = gcf; fig.Color = 'w';
-    
-    subplot(2,2,4)
-    for misses = 0:4
-        scatter(ones(nsubjs,1)*misses,nanmean(misseffect(misses+1,:,:),2),'Filled')
-        hold on
-    end
-    for subj = 1:nsubjs
-        plot(0:4,nanmean(misseffect(:,:,subj),2),'k--')
-        hold on
-    end
-    fig = gcf; fig.Color = 'w';
-    title(['Mean BDM following each # of ' names{col}])
-    
-end
+        % grab noisiness for whole block instead of trial
+        noisiness = sum((blockdata.detect|blockdata.nback)==true&blockdata.correct==false)/max([sum(blockdata.detect|blockdata.nback) 1]);
+        nmatches = sum((blockdata.detect|blockdata.nback)==true&blockdata.correct==true);
+        nmisses = sum((blockdata.detect|blockdata.nback)==true&blockdata.correct==false);
+        % count times they were supposed to respond & didn't
+        nFAs = sum((blockdata.detect|blockdata.nback)==false & ~isnan(blockdata.keypress));
+        nerrors = nmisses + nFAs;
+        % count times they responded & weren't supposed to (false alarm)
+        nresponses = sum(~isnan(blockdata.keypress(2:end)));
+        maintained(1,:) = []; maintained = nanmean(sum(maintained>0,2));
+        % this is a weird measure, it's maintainence adjusted for errors,
+        % this should be confounded with errors
+        % let's just set it to N and see if that's different in any way
+        maintained = n;
 
-[r,p] = corr(measures,'type','Spearman'); % not normally distributed
-% are these cost components correlated?
-% across all subjects, yes, which is unsurprising overall. maintenance,
-% lures, & errors all go up with 2-back.
+        components = [components; subj nmatches maintained nupdates nmisses blockdata.display(1)+1 task blockdata.BDM(1) noisiness nresponses nlures nerrors nFAs];
+    end %end of block by block loop
 
-for n = 1:nsubjs
-    % are they related within-subject?
-    onesubj = toanalyze(toanalyze.subj==n,:);
-    
-    [r,p] = corr(onesubj.maintained,onesubj.nlures,'type','Spearman');
-    proportions(n,1) = p<0.05;
-    [r,p] = corr(onesubj.maintained,onesubj.nFAs,'type','Spearman');
-    proportions(n,2) = p<0.05;
-    [r,p] = corr(onesubj.nlures,onesubj.nFAs,'type','Spearman');
-    proportions(n,3) = p<0.05;
-    % get percentage of subjects w/ significant correlation of all these
-    % components
-end
+    %     if sum(completed(subj,2:end)>2)<3 %3 iterations or more for each rated task?
+    %         disp(['excluding subj ' num2str(subj)])
+    %         components(components(:,1)==subj,:) = [];
+    %         trim = [trim;subj];
+    %     end
+    % before our model fitting was fully hierarchical, I included code here to
+    % exclude subjects with low amounts of task performance on one or more
+    % tasks ( this is the if sum(completed...) block above ). now that the
+    % model fitting is fully hierarchical, I have removed this bit of code,
+    % because the nature of the model fitting allows for subjects with low
+    % amounts of task data to still be accurately fit by the models.
 
-percentages = sum(proportions)/nsubjs;
+end %of loop over subjects
+%completed
 
-%% understand effect of delay between task iterations on BDM values - is there anything there ?
+% save it all in toanalyze.mat
+toanalyze = table;
+toanalyze.subj = components(:,1); toanalyze.nmatches = components(:,2);
+toanalyze.maintained = components(:,3); toanalyze.nupdates = components(:,4);
+toanalyze.nmisses = components(:,5); toanalyze.display = components(:,6);
+toanalyze.task = components(:,7); toanalyze.BDM = components(:,8);
+toanalyze.noisiness = components(:,9); toanalyze.nresponses = components(:,10);
+toanalyze.nlures = components(:,11); toanalyze.nerrors = components(:,12);
+toanalyze.nFAs = components(:,13);
+save([data_directory 'toanalyze.mat'],'toanalyze','trim')
 
-BDMs = [0:4:100];
-BDMs = 1+(BDMs./25);
-nblocks = 32;
-sim_list = [];
-for p = 1:length(BDMs) %cycle through fixed values of BDMs - mirror consistency of our subjects
-    value = BDMs(p);
-    tasks = [ones(1,ceil(nblocks/3)) 2.*ones(1,ceil(nblocks/3)) 3.*ones(1,floor(nblocks/3))];
-    tasks = tasks(randperm(nblocks));
-    for block = 1:32
-        offer = BDMs(ceil(rand*length(BDMs)));
-        if value>offer
-            tasks(block) = 0;
-        end
-    end
-    sim_list = [sim_list; tasks value];
-end
-
-%so, given 1 fixed fair wage for all tasks, how does completion of the
-%default task (0) change? how does completion of the other tasks change?
-%does it look like our subjects have fixed BDM values?
+% how many times did the 2-back actually get completed?
+% this ALL subject measure is relevant because model-fitting is
+% hierarchical
+% if all people completely avoided the 2-back, then we'd have a model
+% recovery problem. but it looks like there's a good spread in the numbers
+% here.
 figure
-for subj = 1:length(BDMs)
-    value = BDMs(subj);
-    row = sim_list(:,end)==value;
-    subplot(5,6,subj)
-    histogram(sim_list(row,1:end-1))
-    xticklabels({'0','1','2','3'})
-    xlabel('Task')
-    ylabel('Freq of completion given fixed BDM value for every task')
-    title(['value = ' num2str(value)])
-end
+histogram(completed(:,end))
 fig = gcf; fig.Color = 'w';
-
-delay1 = []; delay2 = [];
-for task = 1:2
-    for subj = 1:size(sim_list,1)
-        idx = find(sim_list(subj,1:end-1)==task);
-        value = sim_list(subj,end);
-        for block = 2:length(idx)
-            now = idx(block);
-            last = idx(block-1);
-            eval(['delay' num2str(task) ' = [delay' num2str(task) '; now-last value];'])
-        end
-    end
-end
-
-figure
-scatter(delay1(:,1),delay1(:,2),'b','Filled')
-hold on
-scatter(delay2(:,1),delay2(:,2),'r','Filled')
-title('Delay btwn tasks by fixed BDM value (sim.)')
-ylabel('Fixed BDM')
-xlabel('Delay between task iterations')
-legend({'1-back','2-back'})
-fig = gcf; fig.Color = 'w';
-
-
-
+title('Completed 2-backs across subjects')
 

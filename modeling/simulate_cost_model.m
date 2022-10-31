@@ -53,7 +53,7 @@ for subj = 1:nsubjs  %simulate the model for one subject at a time
     % z-score all components to get them being normally distributed
     % much better for comparison across cost magnitudes, model recovery,
     % etc.
-    nupdates = zeros(length(onesubj.nupdates),1); nupdates(onesubj.nupdates>0,:) = zscore(onesubj.nupdates(onesubj.nupdates>0,:)); % need to edit nupdates because it has so many zeros from irrelevant task 1
+    nupdates = zscore(onesubj.nupdates);
     nmisses = zscore(onesubj.nmisses); nmaintained = zscore(onesubj.maintained); nmatches = zscore(onesubj.nmatches);
     noisiness = zscore(onesubj.noisiness); responses = zscore(onesubj.nresponses); nlures = zscore(onesubj.nlures);
     nerrors = zscore(onesubj.nerrors); nFAs = onesubj.nFAs;

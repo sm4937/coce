@@ -35,7 +35,7 @@ else %fitting real subject data
     stimuli = onesim.task;
     realratings = (onesim.BDM); %scale down? just added this 11/08/2020 - see how this works
     display = onesim.display;
-    nupdates = zeros(length(onesim.nupdates),1); nupdates(onesim.nupdates>0,:) = zscore(onesim.nupdates(onesim.nupdates>0,:)); % need to edit nupdates because it has so many zeros from irrelevant task 1
+    nupdates = zscore(onesim.nupdates); 
     nmisses = zscore(onesim.nmisses);
     mains = zscore(onesim.maintained); 
     nmatches = zscore(onesim.nmatches);

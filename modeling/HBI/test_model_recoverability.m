@@ -46,7 +46,7 @@ function_folder = dir('model-functions'); list_existing_functions = cellstr(stri
 
 % Run a test to ensure that individual parameters are being fit reasonably
 % WHICH PARAMS DO YOU WANT YOUR MODEL TO CONTAIN?
-paramsofinterest = {'mainc','lurec','missc','fac','respc','initi'};
+paramsofinterest = {'uc','mainc','lurec','missc','fac','respc','initi'};
 
 % NOTE: ALPHA AND DELTA CANNOT COEXIST IN ONE MODEL! If you want delta
 % models, add 'delta' to your list of params. It will automatically remove
@@ -56,12 +56,17 @@ paramsofinterest = {'mainc','lurec','missc','fac','respc','initi'};
 % GET ALL POSSIBLE PARAM COMBOS
 modelstosim = get_all_param_combos(paramsofinterest); 
 modelstosim(~contains(modelstosim,'c')) = [];
+
+% here I'm just trying to figure out which models can handle having uc
+% included 
+modelstosim = modelstosim(contains(modelstosim,'_uc'));
+
 modelstofit = modelstosim;
 
 subjnums = unique(toanalyze.subj);
 nsubjs = length(subjnums); 
 
-nsubjstofit = 10;
+nsubjstofit = 30;
 % can reduce model fitting space this way, make fitting faster, by reducing
 % number of subjects to fit
 
@@ -78,7 +83,7 @@ end
 %examine the gen/rec results without re-running fitting from scratch.
 forcefit = true;
 
-for m = 1:length(modelstosim)
+for m = 5:length(modelstosim)
     
     model_name = modelstosim{m};
     modeltosim = coc_createModels(model_name); modeltofit = modeltosim;
@@ -121,16 +126,16 @@ for m = 1:length(modelstosim)
         cbm   = fname.cbm;
         % look at fitted parameters
         fitparams = applyTrans_parameters(modeltofit,cbm.output.parameters);
-        save(['model-details/' modelstofit{m}],'fitparams','realparamlist','subset','data','subsetdata')
+        save(['model-details/' modelstosim{m}],'fitparams','realparamlist','subset','data','subsetdata')
     else
-        load(['model-details/' modelstofit{m}])
+        load(['model-details/' modelstosim{m}])
     end
     figure(1)
     for p = 1:modeltofit.nparams
         subplot(5,3,p)
         scatter(realparamlist(subset,p),fitparams(:,p),[],rand(length(subset),3),'Filled');
         hold on
-        plot([0 0],[1 1],'--')
+        plot([0 1],[0 1],'--')
         xlabel(['Real ' modeltofit.paramnames{p}])
         ylabel('Fit values')
         xlim([0 1]); ylim([0 1]);
@@ -169,7 +174,7 @@ for m = 1:length(modelstosim)
             subplot(5,3,p)
             scatter(realparamlist(subset,p),fitparams(:,p),[],rand(length(subset),3),'Filled')
             hold on
-            plot([0 0],[1 1],'--')
+            plot([0 1],[0 1],'--')
             xlabel(['Real ' modeltofit.paramnames{p}])
             ylabel('Fit values')
             xlim([0 1]); ylim([0 1]);
@@ -195,27 +200,20 @@ end
 %% Now, add in some hierarchical model assignments, re-simulate, test that
 % portion of the HBI
 
-clear data params fitparams onesubj
-for m = 1:length(modelstofit)
-    file = load(['model-details/' modelstofit{m}]);
-    recoverability(m) = file.reliable=='y';
-end
-true_models = find(~recoverability); %which models weren't recovered well?
-% ns = floor(nsubjs/length(true_models)); % is their recovery improved by 
-% true_models = repmat(true_models,1,ns); true_models = [true_models repmat(true_models(1),1,nsubjs-length(true_models))];
+true_models = [1; 2; 4; 1; 1; 1; 2; 2; 4; 2];
 
-% realparamlist = nan(nsubjs,8); 
-% for subj = 1:nsubjs
-%     subjnum = subjnums(subj); %grab real subj number
-%     modeltosim = coc_createModels(modelstosim{true_models(subj)});
-%     params = rand(1,modeltosim.nparams);
-%     onesubj = toanalyze(toanalyze.subj==subjnum,:);
-%     data{subj} = simulate_cost_model(modeltosim,params,onesubj);
-%     realparamlist(subj,1:length(params)) = params;
-% end
+realparamlist = nan(nsubjstofit,8); 
+for subj = 1:nsubjstofit
+    subjnum = repeated_subset(subj); %grab real subj number
+    modeltosim = coc_createModels(modelstosim{true_models(subj)});
+    params = rand(1,modeltosim.nparams);
+    onesubj = toanalyze(toanalyze.subj==subjnum,:);
+    data{subj} = simulate_cost_model(modeltosim,params,onesubj);
+    realparamlist(subj,1:length(params)) = params;
+end
 
 v = 6.25;
-for m = 1:length(true_models)
+for m = 1:length(unique(true_models))
     model_name = modelstofit{true_models(m)};
     modeltofit = coc_createModels(model_name);
     fnames{1} = [model_name '.mat']; 
