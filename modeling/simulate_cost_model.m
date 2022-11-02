@@ -54,9 +54,14 @@ for subj = 1:nsubjs  %simulate the model for one subject at a time
     % much better for comparison across cost magnitudes, model recovery,
     % etc.
     nupdates = zscore(onesubj.nupdates);
-    nmisses = zscore(onesubj.nmisses); nmaintained = zscore(onesubj.maintained); nmatches = zscore(onesubj.nmatches);
-    noisiness = zscore(onesubj.noisiness); responses = zscore(onesubj.nresponses); nlures = zscore(onesubj.nlures);
-    nerrors = zscore(onesubj.nerrors); nFAs = onesubj.nFAs;
+    nmisses = zscore(onesubj.nmisses); 
+    nmaintained = zscore(onesubj.maintained);
+    nmatches = zscore(onesubj.nmatches);
+    noisiness = zscore(onesubj.noisiness); 
+    responses = zscore(onesubj.nresponses);
+    nlures = zscore(onesubj.nlures);
+    nerrors = zscore(onesubj.nerrors); 
+    nFAs = zscore(onesubj.nFAs);
     
     ntrials = sum(~isnan(onesubj.BDM)&~isnan(onesubj.display)); %height(onesubj);
     for trial = 1:ntrials

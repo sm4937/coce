@@ -24,7 +24,7 @@ if model.alpha
 end
 if model.deltai || model.delta
     idx = find(contains(model.paramnames,'delta'));
-    scalingvector(idx) = 1; %1; %0.05; 
+    scalingvector(idx) = 0.05; %0.1; %0.05; 
     canbeneg(idx) = true;
     delta = params(idx).*scalingvector(idx);
     % delta should now be a vector, not a single number

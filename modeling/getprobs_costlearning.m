@@ -33,7 +33,7 @@ else %fitting real subject data
     % normally distributed
     subj = unique(onesim.subj);
     stimuli = onesim.task;
-    realratings = (onesim.BDM); %scale down? just added this 11/08/2020 - see how this works
+    realratings = onesim.BDM;
     display = onesim.display;
     nupdates = zscore(onesim.nupdates); 
     nmisses = zscore(onesim.nmisses);
@@ -68,6 +68,11 @@ costs = [uc missc mainc matchc noisec respc lurec errorc fac];
 % themselves, as opposed to the alpha learning rule, which is implemented
 % through the incremental updating of unchanging cost values)
 
+components = [nupdates nmisses mains nmatches noisiness responses nlures nerrors nFAs];
+%costs = [uc missc mainc matchc noisec respc lurec errorc fac];
+% these HAVE to be in the right order (i.e. matched up) to draw any
+% inferences from the cost parameter values, so be careful changing these!!
+
 %simulate the model for one subject at a time
 ratings = [1 init].*(ones(1,max(display)));
 % initialize ratings using the different init parameters for each task
@@ -86,11 +91,6 @@ end
 % pre-update the costs according to the delta update rule specified in
 % set_new_costs.m, but only if it's a delta-type model. if not, the costs
 % are stable.
-
-components = [nupdates nmisses mains nmatches noisiness responses nlures nerrors nFAs];
-%costs = [uc missc mainc matchc noisec respc lurec errorc fac];
-% these HAVE to be in the right order (i.e. matched up) to draw any
-% inferences from the cost parameter values, so be careful changing these!!
 
 cost = sum(costs.*components(1:ntrials,:),2); %add all the costs together
 for trial = 1:ntrials

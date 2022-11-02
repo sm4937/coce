@@ -46,9 +46,9 @@ function_folder = dir('model-functions'); list_existing_functions = cellstr(stri
 
 % Run a test to ensure that individual parameters are being fit reasonably
 % WHICH PARAMS DO YOU WANT YOUR MODEL TO CONTAIN?
-paramsofinterest = {'uc','mainc','lurec','missc','fac','respc','initi'};
+paramsofinterest = {'uc','mainc','lurec','missc','fac','respc','initi','delta'};
 
-% NOTE: ALPHA AND DELTA CANNOT COEXIST IN ONE MODEL! If you want delta
+% NOTE: ALPHA AND DELTA DO NOT COEXIST IN ONE MODEL! If you want delta
 % models, add 'delta' to your list of params. It will automatically remove
 % alpha from the list of parameters. Epsilon is always included and need
 % not be specified.
@@ -59,7 +59,7 @@ modelstosim(~contains(modelstosim,'c')) = [];
 
 % here I'm just trying to figure out which models can handle having uc
 % included 
-modelstosim = modelstosim(contains(modelstosim,'_uc'));
+% modelstosim = modelstosim(contains(modelstosim,'_uc'));
 
 modelstofit = modelstosim;
 
@@ -83,7 +83,7 @@ end
 %examine the gen/rec results without re-running fitting from scratch.
 forcefit = true;
 
-for m = 5:length(modelstosim)
+for m = 32:length(modelstosim)
     
     model_name = modelstosim{m};
     modeltosim = coc_createModels(model_name); modeltofit = modeltosim;

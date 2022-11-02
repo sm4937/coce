@@ -6,26 +6,27 @@ ntrials = 32;
 
 excdelta = zeros(1,size(costs,2));
 excdelta(costs~=0) = 1;
-try
+% executable delta vector, which is 1's where the costs are 0 (no change in
+% costs away from 0)
+% and the true delta value elsewhere
+if length(delta)>1
     excdelta(costs~=0) = excdelta(costs~=0).*delta(1:sum(costs~=0));
-catch
-    error = true
+    % several deltas, one per cost
+else
+    excdelta(costs~=0) = excdelta(costs~=0).*delta;
+    % one delta, many costs
 end
 % the executable delta vector of the proper size
 
-
-% Exponential multiplicative cost changing scheme
-costs(costs~=0) = costs(costs~=0).*exp(-excdelta(costs~=0).*((trial-1)/ntrials));
-
 % Linear, additive cost changing scheme
-%costs = costs.*(1+(excdelta.*((trial-1)/ntrials)));
+costs = costs.*(1+(excdelta.*((trial-1)/ntrials)));
 %costs(costs~=0) = costs(costs~=0).*(1-exp(-excdelta(costs~=0)*(trial-1)));
 %costs = costs.*(1+excdelta)
 
-% ^ last delta scheme
-%costs = costs.*(1+excdelta);
-%costs = costs+(excdelta.*(trial-1)/trial);
-%costs = costs+excdelta;
+
+% Exponential multiplicative cost changing scheme
+% costs(costs~=0) = costs(costs~=0).*exp(-excdelta(costs~=0).*((trial-1)/ntrials));
+% Not very recoverable in terms of the value of delta
 
 end
 
