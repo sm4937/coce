@@ -8,7 +8,7 @@ NFCsubjs = [21 36 22 74 79 73];
 % I grabbed two random subjects from each NFC group
 % Plot their individual fits by the model
 
-[~,best] = max(cbm.output.exceedance_prob);
+[~,best] = max(cbm.output.protected_exceedance_prob);
 
 % %simulate data from fit parameters, best fitting model for each subject
 simdata = []; simdata_onemodel = simdata;
@@ -17,14 +17,17 @@ for subj = 1:nsubjs
     [score,num] = max(responsibility(subj,:)); %identify model which best fit this subject, in particular
     %then simulate their data with that model
     subj_model = coc_createModels(modelstofit{num});
+    all_subj_models{subj} = subj_model;
     % input to simulate_cost_model the model specs, then the transformed
     % parameters for that subject, then that subject's data
     simdata = [simdata; simulate_cost_model(subj_model,applyTrans_parameters(subj_model,lowparams{num}(subj,:)),onesubj)];
+    all_models_subj_params{subj} = applyTrans_parameters(subj_model,lowparams{num}(subj,:));
     
     one_best_model = coc_createModels(modelstofit{best});
     simdata_onemodel = [simdata_onemodel; simulate_cost_model(one_best_model,applyTrans_parameters(one_best_model,lowparams{best}(subj,:)),onesubj)];
     % simulate data from the model w highest exceedance probability, alone
     % does accounting for other possible models include model validation?
+    one_model_subj_params{subj} = applyTrans_parameters(one_best_model,lowparams{best}(subj,:));
 end
 
 % for subj = 1:nsubjs
@@ -139,20 +142,27 @@ ntrials = sum(simdata(:,1)==1); trialcolors = linspace(0.1,1,ntrials); trialcolo
 
 figure
 taskcount = false(1,3);
-corr_mat = [];
+NFCsubjs = [21 22 79 36 74 73];
+% one column for low, one for mid, one for high
 for i = 1:nsubjs
     subj = i;
+    
     onesim = simdata(simdata(:,1)==subj,:);
     simulated = onesim(:,3); 
-    onesim_onemodel = simdata_onemodel(simdata_onemodel(:,1)==subj,:);
-    simulated_onemodel = onesim_onemodel(:,3);
+  
     onereal = toanalyze(toanalyze.subj==subj,:);
     real = onereal.BDM; 
-    for trial = 1:sum(~isnan(real))
-        task = onereal.display(trial);
-        if ~isnan(task)
-            if sum(NFCsubjs==subj)>0
-                subplot(3,2,find(NFCsubjs==subj))
+    
+    line_coords = min([max(real) max(simulated)]);
+        
+    if sum(NFCsubjs==subj)>0
+        
+        mean_r_squared_subj =  get_mean_r_squared(100,subj,all_subj_models, all_models_subj_params, toanalyze);
+        
+        for trial = 1:sum(~isnan(real))
+            task = onereal.display(trial);
+            if ~isnan(task)
+                subplot(2,3,find(NFCsubjs==subj))
                 tasksymbol = tasksymbols{task-1};
                 if ~taskcount(task-1)
                     scatter(real(trial),simulated(trial),[],trialcolors(trial,:),tasksymbol,'Filled','DisplayName',tasklabels{task-1})
@@ -161,17 +171,12 @@ for i = 1:nsubjs
                     scatter(real(trial),simulated(trial),[],trialcolors(trial,:),tasksymbol,'Filled')
                 end
                 hold on
-                line
-            end
-            % now that plot made
-            try
-                corr_mat = [corr_mat; real(trial) simulated(trial) simulated_onemodel(trial)];
-            catch
-                % do nothing
-                % if there are some simulated trials without ratings bc the
-                % task index wasn't saved, then move on
+                plot([0 line_coords], [0 line_coords],'k','LineWidth',2)
             end
         end
+        
+        title(['r^{2} = ' num2str(mean_r_squared_subj)])
+        
     end
     %legend('location','best')
     %legend({'Real','Simulated'})
@@ -182,9 +187,9 @@ fig = gcf; fig.Color = 'w';
 
 % Run r-squared analysis to compare best model to best-model-per-subject
 % validation
+% mean r-squared - more accurate due to stochasticity in model
+% simulations:
+nboot = 1000;
+mean_r_squared_onemodel = get_mean_r_squared(nboot,1:nsubjs,repmat({one_best_model},nsubjs,1), one_model_subj_params, toanalyze);
+mean_r_squared_allmodels =  get_mean_r_squared(nboot,1:nsubjs,all_subj_models, all_models_subj_params, toanalyze);
 
-[r_onemodel,p_onemodel] = corr(corr_mat(:,1),corr_mat(:,3));
-[r_allmodels,p_allmodels] = corr(corr_mat(:,1),corr_mat(:,2));
-
-disp(['R-squared for one model (mainc): ' num2str(r_onemodel^2)])
-disp(['R-squared including all models: ' num2str(r_allmodels^2)])

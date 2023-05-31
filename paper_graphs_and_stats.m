@@ -43,11 +43,13 @@ meanBDM = nanmean(data.values(:,2:end),2);
 
 %display variables
 subjcolors = rand(n);subjcolors(:,4:end) = []; %delete unnecessary columns
-taskcolors = [0.75 0.75 0.75;0 0.75 0.75; 0.75 0.75 0; 0.75 0 0.75];
-%style variables
-NFCcolors = [.25 0 .25; .60 0 .60; .95 0 .95];
-SAPScolors = [0 .25 .25; 0 .5 .5; 0 .75 .75];
-modelcolors = [1 0 0; 1 0.5 0; 1 0 0.5; 0 0 1; 0 0.5 1; 0 0.7 0; 1 1 0];
+taskcolors = ptc6(6); %[0.75 0.75 0.75;0 0.75 0.75; 0.75 0.75 0; 0.75 0 0.75];
+taskcolors(4,:) = taskcolors(1,:);
+taskcolors(1,:) = taskcolors(6,:);
+NFCcolors = [.15 0 .15; .60 0 .60; 1 0 1];
+SAPScolors = [0 .2 .2; 0 .6 .6; 0 0.9 0.9];
+modelcolors = parula(16);
+modelcolors = modelcolors(7:end,:);
 
 list = data.subjnum;
 save([prefix 'fullsubjnumbers.mat'],'list');
@@ -180,9 +182,9 @@ meanAcc = tasks_overall(:,2:4);
 tocorr = [meanBDM meanAcc];
 tocorr = tocorr(sum(isnan(tocorr),2)<1,:);
 
-[r,p] = corr(tocorr(:,1),tocorr(:,4)) %1-back
-[r,p] = corr(tocorr(:,2),tocorr(:,5)) %3-detect
-[r,p] = corr(tocorr(:,3),tocorr(:,6)) %2-back
+[r,p] = corr(tocorr(:,1),tocorr(:,4)); %1-back
+[r,p] = corr(tocorr(:,2),tocorr(:,5)); %3-detect
+[r,p] = corr(tocorr(:,3),tocorr(:,6)); %2-back
 
 % % BDM RT STUFF % %
 % are people getting more decisive on how many BDM points they want?
@@ -264,25 +266,28 @@ ax = gca; ax.FontSize = 14;
 % % ACCURACY BY TASK ITERATION % %
 scaling = 1;
 subplot(2,2,3)
-errorbar(nanmean(n0subjlearning(:,1:11)),nanstd(n0subjlearning(:,1:11))/sqrt(n),'Color',taskcolors(1,:),'LineWidth',1.25,'DisplayName',tasklabels{1})
+errorbar(nanmean(n0subjlearning(:,1:11)),nanstd(n0subjlearning(:,1:11))/sqrt(n),'Color',taskcolors(1,:),'LineWidth',2.5,'DisplayName',tasklabels{1})
 hold on
 n0points = sum(~isnan(n0subjlearning(:,1:11)));
-errorbar(nanmean(n1subjlearning),nanstd(n1subjlearning)/sqrt(n),'Color',taskcolors(2,:),'LineWidth',1.25,'DisplayName',tasklabels{2})
+errorbar(nanmean(n1subjlearning),nanstd(n1subjlearning)/sqrt(n),'Color',taskcolors(2,:),'LineWidth',2.5,'DisplayName',tasklabels{2})
 n1points = sum(~isnan(n1subjlearning(:,1:10)));
-errorbar(nanmean(n2subjlearning),nanstd(n2subjlearning)/sqrt(n),'Color',taskcolors(3,:),'LineWidth',1.25,'DisplayName',tasklabels{3})
-n2points = sum(~isnan(n2subjlearning(:,1:11)));
-errorbar(nanmean(n3subjlearning),nanstd(n3subjlearning)/sqrt(n),'Color',taskcolors(4,:),'LineWidth',1.25,'DisplayName',tasklabels{4}) %task 3 is actually ndetect
-n3points = sum(~isnan(n3subjlearning(:,1:11)));
+errorbar(nanmean(n2subjlearning),nanstd(n2subjlearning)/sqrt(n),'Color',taskcolors(3,:),'LineWidth',2.5,'DisplayName',tasklabels{3})
+n2points = sum(~isnan(n2subjlearning(:,1:10)));
+errorbar(nanmean(n3subjlearning),nanstd(n3subjlearning)/sqrt(n),'Color',taskcolors(4,:),'LineWidth',2.5,'DisplayName',tasklabels{4}) %task 3 is actually ndetect
+n3points = sum(~isnan(n3subjlearning(:,1:10)));
 n1points(n1points==0) = NaN; % in example data, there's a small bug in creating the size of the dots
 n2points(n2points==0) = NaN; % so I'm patching 0's with NaN's
 
 % Plot overlay which depicts # of data points in each bar
+scatter(2,nanmean(n0subjlearning(:,2)),n0points(2)*scaling,taskcolors(1,:),'Filled','DisplayName',num2str(n0points(2)))
+scatter(8,nanmean(n2subjlearning(:,8)),n2points(8)*scaling,taskcolors(3,:),'Filled','DisplayName',num2str(n2points(8)))
+scatter(10,nanmean(n3subjlearning(:,10)),n3points(10)*scaling,taskcolors(4,:),'Filled','DisplayName',num2str(n3points(10)))
+legend('boxoff')
 scatter(1:11,nanmean(n0subjlearning(:,1:11)),n0points*scaling,taskcolors(1,:),'Filled')
 scatter(1:10,nanmean(n1subjlearning(:,1:10)),n1points*scaling,taskcolors(2,:),'Filled')
-scatter(1:11,nanmean(n2subjlearning(:,1:11)),n2points*scaling,taskcolors(3,:),'Filled')
-scatter(1:11,nanmean(n3subjlearning(:,1:11)),n3points*scaling,taskcolors(4,:),'Filled')
-legend(tasklabels)
-legend('boxoff')
+scatter(1:10,nanmean(n2subjlearning(:,1:10)),n2points*scaling,taskcolors(3,:),'Filled')
+scatter(1:10,nanmean(n3subjlearning(:,1:10)),n3points*scaling,taskcolors(4,:),'Filled')
+%legend(tasklabels)
 xlim([0.5 11.5])
 fig = gcf; ax = gca;
 fig.Color = 'w'; ax.FontSize = 14;
@@ -298,10 +303,10 @@ iternum = repmat([1 2 3 4 5 6 7 8 9 10],n*3,1);
 
 % % FAIR WAGE BY TASK ITERATION % %
 subplot(2,2,4)
-errorbar(nanmean(n1subjvalue),nanstd(n1subjvalue)./sqrt(n),'Color',taskcolors(2,:),'LineWidth',1.25,'DisplayName',tasklabels{2})
+errorbar(nanmean(n1subjvalue),nanstd(n1subjvalue)./sqrt(n),'Color',taskcolors(2,:),'LineWidth',2.5,'DisplayName',tasklabels{2})
 hold on
-errorbar(nanmean(n2subjvalue),nanstd(n2subjvalue)./sqrt(n),'Color',taskcolors(3,:),'LineWidth',1.25,'DisplayName',tasklabels{3})
-errorbar(nanmean(n3subjvalue),nanstd(n3subjvalue)./sqrt(n),'Color',taskcolors(4,:),'LineWidth',1.25,'DisplayName',tasklabels{4})
+errorbar(nanmean(n2subjvalue),nanstd(n2subjvalue)./sqrt(n),'Color',taskcolors(3,:),'LineWidth',2.5,'DisplayName',tasklabels{3})
+errorbar(nanmean(n3subjvalue),nanstd(n3subjvalue)./sqrt(n),'Color',taskcolors(4,:),'LineWidth',2.5,'DisplayName',tasklabels{4})
 ylabel('Fair wage')
 legend('boxoff')
 xlabel('Iteration #')
@@ -348,28 +353,32 @@ iternum = repmat([1 2 3 4 5 6 7 8 9 10],n*3,1);
 %% modeling results (parameters) 
 % % BEGIN FIGURE 3 % % 
 
-modelfits = load('modeling/HBI/HBI_modelStruct.mat');
-no_fits = load([prefix 'toanalyze.mat'],'trim'); no_fits = no_fits.trim;
-% remove subjects who weren't fit to models
-% grab best model
-
-best_model = modelfits.modelStruct.best_model;
+% LOAD MODELING RESULTS FROM HBI FOLDER
+load('modeling/HBI/HBI_modelStruct_2023.mat');
 cbm = best_model.cbm;
 
 freqs = cbm.output.model_frequency;
-models_at_play = find(freqs>0.01);
 [~,assignments] = max(cbm.output.responsibility,[],2);
+models_at_play = unique(assignments);
 
-disp([num2str(sum(assignments>4)) ' subjects best explained by a model with more than 1 cost'])
+disp([num2str(sum(assignments>6)) ' subjects best explained by a model with more than 1 cost'])
 
-full_labels = modelfits.modelStruct.best_model.overallfit.fitmodels;
+full_labels = best_model.overallfit.fitmodels;
 model_labels = cell(length(full_labels),1);
 for ll = 1:length(full_labels)
     % trim model labels down to just the cost labels
+    class_label = '-\alpha';
     temp_label = strsplit(full_labels{ll},'epsilon-initi-alpha-');
     if length(temp_label) == 1
-        temp_label = strsplit(full_labels{ll},'epsilon-initi-');
+        temp_label = strsplit(full_labels{ll},'epsilon-init-');
         % indicate that it's a delta cost model
+        temp_label = strsplit(temp_label{2},'-');
+        if sum(contains(temp_label,'delta'))>0
+            class_label = ['-\' temp_label{contains(temp_label,'delta')}];
+            if contains(class_label,'deltai')
+                class_label = '-\delta_{i}';
+            end
+        end
     end
     just_costs = temp_label{2};
     trim = strsplit(just_costs,'c');
@@ -382,17 +391,23 @@ for ll = 1:length(full_labels)
         end
     end
     
-    if strmatch(new_name,'c_lure')
-        % calling this the "interference cost" in the actual paper
-        new_name = 'c_interference';
+    if contains(new_name,'c_{lure}')
+        % calling this the "interference cost" in the manuscript
+        new_name = strrep(new_name,'c_{lure}','c_{interference}');
     end
-    
+    if contains(new_name,'c_{u}')
+        new_name = strrep(new_name,'c_{u}','c_{update}');
+    end
+    % makes plots a lot clearer to keep consistent naming in manuscript &
+    % code
+    new_name = [new_name class_label];
     model_labels{ll} = new_name;
 end
 
 
 nparams = best_model.nparams;
 params = applyTrans_parameters(best_model,best_model.lowparams); paramnames = best_model.paramnames;
+
 
 %% Look at parameter trends within subjects whose best model was the winning
 % model w exceedance probability = 1
@@ -418,14 +433,14 @@ xticklabels(model_labels(models_at_play));xtickangle(45)
 ax = gca; ax.FontSize = 14;
 fig = gcf; fig.Color = 'w';
 
-calcflag = false;
+calcflag = true;
 
 if calcflag
     cd('modeling/HBI/')
     [big_posterior,joint,xs] = get_param_posterior_dists(best_model);
     cd('../../')
 else
-    load('modeling/HBI/joint_cost_distributions.mat')
+    load('modeling/HBI/joint_cost_distributions_2023.mat')
 end
 
 % feed model fits in, also specify whether you want to recalculate the
@@ -454,18 +469,18 @@ big_posterior = big_posterior - dim3;
 % normalize to make sure it's a real posterior
 big_posterior = exp(big_posterior);
 
-mainc_dist = sum(sum(big_posterior,1),3);
+uc_dist = sum(sum(big_posterior,1),3);
 lurec_dist = squeeze(sum(sum(big_posterior,2),3));
 fac_dist = squeeze(sum(sum(big_posterior,2),1));
 
 subplot(1,3,2); hold on;
-plot(xs',fac_dist,'Color',modelcolors(3,:),'LineWidth',1.5,'DisplayName','False Alarm')
-plot(xs',mainc_dist,'Color',modelcolors(1,:),'LineWidth',1.5,'DisplayName','Maintenance')
-plot(xs',lurec_dist,'Color',modelcolors(2,:),'LineWidth',1.5,'DisplayName','Interference')
+plot(xs',fac_dist,'Color',modelcolors(3,:),'LineWidth',2.5,'DisplayName','False Alarm')
+plot(xs',uc_dist,'Color',modelcolors(1,:),'LineWidth',2.5,'DisplayName','Update')
+plot(xs',lurec_dist,'Color',modelcolors(2,:),'LineWidth',2.5,'DisplayName','Interference')
 legend('Location','Best')
 ylabel('Posterior probability')
 xlabel('Parameter value')
-xlim([0 1.15])
+xlim([0 1.5])
 fig = gcf; ax = gca;
 fig.Color = 'w'; ax.FontSize = 14;
 
@@ -473,26 +488,153 @@ subplot(1,3,3);
 % model validation plot
 make_model_validation_subplot()
 
-group_level_means_sarah(1) = sum(xs.*mainc_dist);
+group_level_means_sarah(1) = sum(xs.*uc_dist);
 group_level_means_sarah(2) = sum(xs'.*lurec_dist);
 group_level_means_sarah(3) = sum(xs'.*fac_dist);
 
-model = coc_createModels(modelstofit{1});
-idx_cost = find(contains(model.paramnames,'mainc'));
-group_level_means_payam(1) = best_model.cbm.output.group_mean{1}(idx_cost);
+model = coc_createModels(modelstofit{models_at_play(1)});
+idx_cost = find(contains(model.paramnames,'uc'));
+group_level_means_payam(1) = best_model.cbm.output.group_mean{models_at_play(1)}(idx_cost);
 
-model = coc_createModels(modelstofit{2});
+model = coc_createModels(modelstofit{models_at_play(2)});
 idx_cost = find(contains(model.paramnames,'lurec'));
-group_level_means_payam(2) = best_model.cbm.output.group_mean{2}(idx_cost);
+group_level_means_payam(2) = best_model.cbm.output.group_mean{models_at_play(2)}(idx_cost);
 
-model = coc_createModels(modelstofit{4});
-idx_cost = contains(model.paramnames,'fac');
-group_level_means_payam(3) = best_model.cbm.output.group_mean{4}(idx_cost);
+model = coc_createModels(modelstofit{models_at_play(5)});
+idx_cost = contains(model.paramnames,'mainc');
+group_level_means_payam(3) = best_model.cbm.output.group_mean{models_at_play(5)}(idx_cost);
 
 disp('Your means are: ')
 disp(group_level_means_sarah)
 disp('The means from the HBI package are: ')
 disp(group_level_means_payam)
+
+load([prefix 'toanalyze.mat'])
+[monetary_costs,costs_per_unit] = get_costs_in_dollars(group_level_means_sarah,{'updates','lures','fas'},toanalyze);
+mean_monetary_costs = nanmean(monetary_costs,1);
+
+% and what about the costs NOT in the winning models? what model frequency
+% are they represented in?
+losing_costs = {'respc','missc'};
+losing_cost_freq = sum(cbm.output.model_frequency(contains(best_model.overallfit.fitmodels,losing_costs)));
+disp(['Response cost, miss cost represented in ' num2str(losing_cost_freq.*100) '% of subject data.'])
+
+%% Relate model-agnostic and model-based findings
+
+% Are interference costs related to the difference between 2-back and
+% 3-detect fair wages?
+
+% where lure cost parameter in output?
+model = coc_createModels(best_model.overallfit.fitmodels{3});
+column = find(contains(model.paramnames,'lurec'));
+
+% interference costs from second-best model (number 3)
+lure_costs = cbm.output.parameters{3}(:,column);
+
+% mean wage difference for each subject, 2-back minus 3-detect
+BDM_difference = nanmean(n3subjvalue,2) - nanmean(n2subjvalue,2);
+
+figure
+subplot(2,1,1)
+scatter(BDM_difference,lure_costs,'filled')
+[r,p] = corr(BDM_difference,lure_costs);
+if p < 0.05
+    lsline
+end
+ylabel('Interference cost parameter')
+xlabel('Difference in mean 2-back and 3-detect BDM')
+title('All subjects')
+clean_fig();
+
+%same analysis, within subjects best fit by lure cost model
+subplot(2,1,2)
+scatter(BDM_difference(assignments==3),lure_costs(assignments==3),'filled')
+[r,p] = corr(BDM_difference(assignments==3),lure_costs(assignments==3));
+% almost significant (p = 0.05), but low N really shooting us in foot here
+if p < 0.05
+    lsline
+end
+ylabel('Interference cost parameter')
+xlabel('Difference in mean 2-back and 3-detect BDM')
+title('Subjects best fit by lure cost model')
+clean_fig();
+
+
+% is error cost related to perfectionism?
+
+%1) Standard correlation of error cost parameter magnitude and
+%perfectionism scores (SAPS)
+
+% where lure cost parameter in output?
+model = coc_createModels(best_model.overallfit.fitmodels{5});
+column = find(contains(model.paramnames,'fac'));
+
+% interference costs from second-best model (number 3)
+fa_costs = cbm.output.parameters{5}(:,column);
+
+[r,p] = corr(fa_costs(~isnan(data.SAPS)),data.SAPS(~isnan(data.SAPS)));
+
+%2) Tertile split, then examine SAPS tertiles' FA costs
+% doesn't really make sense because... FA costs only explain 8 subjects'
+% data, so not the best way to look at stuff, but I'm curious.
+count = 0;
+split = tertile_split(data.SAPS);
+low = fa_costs(split==1); mid = fa_costs(split==2); high = fa_costs(split==3);
+
+[h,pval1] = ttest2(low,mid);
+[h,pval2] = ttest2(high,mid);
+[h,pval3] = ttest2(low,high);
+ps = [NaN pval1 pval3; pval1 NaN pval2; pval3 pval2 NaN];
+
+X = [ones(length(data.SAPS),1) data.SAPS]; invalid = isnan(data.SAPS);
+X(invalid,:) = [];
+Y = fa_costs; Y(invalid,:) = [];
+[betas,BINV,~,~,stats] = regress(Y,X);
+% get betas for quadratic term
+predicted = X*betas;
+distance = predicted-Y; MSE = distance'*distance; %squared distance
+if stats(3)<0.05
+    disp(['SAPS significant betas on FA costs, linear & quadratic: ' num2str(betas')])
+    disp(['p value = ' num2str(stats(3))])
+end
+
+figure;
+% plot effect of SAPS group on FA cost values
+superbar([nanmean(low) nanmean(mid) nanmean(high)], ...
+    'E',[nanstd(low) nanstd(mid) nanstd(high)]./sqrt(n), ...
+    'P',ps,'BarFaceColor',SAPScolors,'PStarShowNS',false,'PStarBackgroundColor','None');
+ylabel('False alarm costs')
+%title(model_labels{modelnum})
+xticks([1:3])
+xtickangle(30)
+xticklabels({['Low'],['Mid'],['High']})
+xlabel(['SAPS group'])
+clean_fig();
+
+% 3) are subjects in FA cost model more perfectionist than other subjects?
+FA_subjects = assignments==5 | assignments==16; others = assignments~=5;
+figure;
+bar([nanmean(data.SAPS(FA_subjects)) nanmean(data.SAPS(others))],'FaceColor',SAPScolors(2,:))
+hold on
+errorbar([nanmean(data.SAPS(FA_subjects)) nanmean(data.SAPS(others))],...
+    [nanstd(data.SAPS(FA_subjects)) nanstd(data.SAPS(others))]./[sqrt(sum(FA_subjects)) sqrt(sum(others))],...
+    'k*')
+xticklabels({'Subjs w/ FA costs','Subjs w/o'})
+clean_fig();
+
+
+% % Another model-agnostic to model-dependent finding:
+% are subjects with more than 1 cost more effort-approaching than others?
+% no, but subject numbers are way off here, anyway
+more_than_one_cost = assignments>6;
+figure
+bar([nanmean(data.NFC(more_than_one_cost)) nanmean(data.NFC(~more_than_one_cost))], ...
+    'FaceColor',NFCcolors(2,:))
+hold on
+errorbar([nanmean(data.NFC(more_than_one_cost)) nanmean(data.NFC(~more_than_one_cost))], ...
+    [nanstd(data.NFC(more_than_one_cost))./sqrt(sum(more_than_one_cost)) nanstd(data.NFC(~more_than_one_cost))./sqrt(sum(~more_than_one_cost))], ...
+    '*k','LineWidth',2)
+[h,p] = ttest2(data.NFC(more_than_one_cost),data.NFC(~more_than_one_cost));
 
 
 %% BEGIN SUPPLEMENTARY FIGURE 1
@@ -536,77 +678,53 @@ xlim([1 5]); ylim([1 7])
 ax = gca; ax.FontSize = 14;
 
 % More stats %
-% % LINEAR RELATIONSHIPS OF NFC/SAPS and ACCURACY/MEAN RTs/DIFF
+% % LINEAR **AND QUADRATIC** RELATIONSHIPS OF NFC/SAPS and ACCURACY/MEAN RTs/DIFF
 % RATINGS/BDMs
-names = {'NFC','SAPS'};
-measures = [data.NFC data.SAPS];
-trim = [measures tasks_overall tasks_rts data.taskratings];
+% first, clean up measures to include only subjects with data for all
+% tasks, and with NFC and SAPS scores (1 subject has none)
+trim = [data.NFC data.SAPS tasks_overall tasks_rts data.taskratings];
 trim(sum(isnan(trim),2)>0,:) = [];
 BDMs = data.values(sum(isnan(trim),2)==0,:); taskBDMs = [];
-task_by_round{1} = n1(sum(isnan(trim),2)==0,:); task_by_round{2} = ndetect(sum(isnan(trim),2)==0,:); task_by_round{3} = n2(sum(isnan(trim),2)==0,:);
-for subj = 1:size(BDMs,1)
-    taskBDMs = [taskBDMs; nanmean(BDMs(subj,task_by_round{1}(subj,:))) nanmean(BDMs(subj,task_by_round{2}(subj,:))) nanmean(BDMs(subj,task_by_round{3}(subj,:)))];
-end
 
-for m = 1:2
-    % ACCURACY CORRs
-    [r,p] = corr(trim(:,m),nanmean(trim(:,3:6),2));
-    disp(['Relationship of ' names{m} ' and overall acc: r = ' num2str(r) '; p = ' num2str(p)])
-    [r,p] = corr(trim(:,m),trim(:,3));
-    disp(['Relationship of ' names{m} ' and 1-detect acc: r = ' num2str(r) '; p = ' num2str(p)])
-    [r,p] = corr(trim(:,m),trim(:,4));
-    disp(['Relationship of ' names{m} ' and 1-back acc: r = ' num2str(r) '; p = ' num2str(p)])
-    [r,p] = corr(trim(:,m),trim(:,5));
-    disp(['Relationship of ' names{m} ' and 3-detect acc: r = ' num2str(r) '; p = ' num2str(p)])
-    [r,p] = corr(trim(:,m),trim(:,6));
-    disp(['Relationship of ' names{m} ' and 2-back acc: r = ' num2str(r) '; p = ' num2str(p)])
-    disp('. . .')
-    % RT CORRs
-    [r,p] = corr(trim(:,m),nanmean(trim(:,7:10),2));
-    disp(['Relationship of ' names{m} ' and overall RT: r = ' num2str(r) '; p = ' num2str(p)])
-    [r,p] = corr(trim(:,m),trim(:,7));
-    disp(['Relationship of ' names{m} ' and 1-detect RT: r = ' num2str(r) '; p = ' num2str(p)])
-    [r,p] = corr(trim(:,m),trim(:,8));
-    disp(['Relationship of ' names{m} ' and 1-back RT: r = ' num2str(r) '; p = ' num2str(p)])
-    [r,p] = corr(trim(:,m),trim(:,9));
-    disp(['Relationship of ' names{m} ' and 3-detect RT: r = ' num2str(r) '; p = ' num2str(p)])
-    [r,p] = corr(trim(:,m),trim(:,10));
-    disp(['Relationship of ' names{m} ' and 2-back RT: r = ' num2str(r) '; p = ' num2str(p)])
-    disp('. . .')
-    % DIFF RATINGS
-    [r,p] = corr(trim(:,m),nanmean(trim(:,11:14),2));
-    disp(['Relationship of ' names{m} ' and overall rating: r = ' num2str(r) '; p = ' num2str(p)])
-    [r,p] = corr(trim(:,m),trim(:,11));
-    disp(['Relationship of ' names{m} ' and 1-detect rating: r = ' num2str(r) '; p = ' num2str(p)])
-    [r,p] = corr(trim(:,m),trim(:,12));
-    disp(['Relationship of ' names{m} ' and 1-back rating: r = ' num2str(r) '; p = ' num2str(p)])
-    [r,p] = corr(trim(:,m),trim(:,13));
-    disp(['Relationship of ' names{m} ' and 3-detect rating: r = ' num2str(r) '; p = ' num2str(p)])
-    [r,p] = corr(trim(:,m),trim(:,14));
-    disp(['Relationship of ' names{m} ' and 2-back rating: r = ' num2str(r) '; p = ' num2str(p)])
-    disp('. . .')
-    % MEAN BDMs
-    [r,p] = corr(trim(:,m),nanmean(BDMs,2));
-    disp(['Relationship of ' names{m} ' and mean BDM rating: r = ' num2str(r) '; p = ' num2str(p)])
-    [r,p] = corr(trim(:,m),taskBDMs(:,1));
-    disp(['Relationship of ' names{m} ' and 1-back BDM rating: r = ' num2str(r) '; p = ' num2str(p)])
-    [r,p] = corr(trim(:,m),taskBDMs(:,2));
-    disp(['Relationship of ' names{m} ' and 3-detect BDM rating: r = ' num2str(r) '; p = ' num2str(p)])
-    [r,p] = corr(trim(:,m),taskBDMs(:,3));
-    disp(['Relationship of ' names{m} ' and 2-back BDM rating: r = ' num2str(r) '; p = ' num2str(p)])
-    disp('. . .')
-end
+% % regress behavioral measures by SAPS and NFC, and quadratic terms on them,
+% too % %
+X = [ones(length(trim),1) trim(:,1) trim(:,2) trim(:,1).^2 trim(:,2).^2];
+X_labels = {'NFC','SAPS','accuracy 1-detect','accuracy 1-back','accuracy 3-detect',...
+    'accuracy 2-back','RT 1-detect','RT 1-back','RT 3-detect', 'RT 2-back',...
+    'difficulty rating 1-detect','difficulty rating 1-back','difficulty rating 3-detect',...
+    'difficulty rating 2-back'};
 
+for yii = 3:size(trim,2)
+    Y = trim(:,yii);
+    % order goes: 1-detect, 1-back, 3-detect, 2-back,
+    % in accuracy (4x), rts (4x), difficulty ratings (4x)
+    disp(' ')
+    disp(' ')
+    disp(X_labels{yii})
+    run_regression_models(X,Y,{'intercept','NFC', 'SAPS', 'NFC^2', 'SAPS^2'},false)
+    % cataloging these results here for the sake of bookkeeping:
+    % no relationship accuracy 1-detect, any NFC or SAPS measures
+    % positive linear relationship accuracy 1-back & SAPS, negative
+    % quadratic relationship
+end
 
 %% % GROUP ANALYSIS OF BDMS by NFC AND SAPS GROUPS % %
 % SUPPLEMENTARY ANALYSES CONTINUED!
 % THESE ARE NOT INCLUDED IN SUPPLEMENTARY FIGURES IN THE MANUSCRIPT
 
+% % regress mean BDM values by SAPS and NFC, and quadratic terms on them,
+% too % %
+Y = nanmean(data.values,2);
+X = [ones(n,1) data.NFC data.SAPS data.NFC.^2 data.SAPS.^2];
+run_regression_models(X,Y,{'intercept','NFC', 'SAPS', 'NFC^2', 'SAPS^2'},false)
+% The only real term here is the intercept
+
 measures = [data.NFC data.SAPS];
-labels = {'NFC','SAPS'};
+names = {'NFC','SAPS'};
 for measure = 1:2
+    
     split = tertile_split(measures(:,measure));
-    disp([labels{measure} ' group Ns: ' num2str([sum(split==1) sum(split==2) sum(split==3)])])
+    disp([names{measure} ' group Ns: ' num2str([sum(split==1) sum(split==2) sum(split==3)])])
     if measure == 1
         colors = NFCcolors;
     else
@@ -616,43 +734,24 @@ for measure = 1:2
     lowNFCvalues = data.values(split==1,:);
     midNFCvalues = data.values(split==2,:);
     highNFCvalues = data.values(split==3,:);
-    errorbar([nanmean(lowNFCvalues(n1(split==1,:))) nanmean(lowNFCvalues(ndetect(split==1,:))) nanmean(lowNFCvalues(n2(split==1,:)))],[nanstd(lowNFCvalues(n1(split==1,:))) nanstd(lowNFCvalues(ndetect(split==1,:))) nanstd(lowNFCvalues(n2(split==1,:)))]/sqrt(sum(split==1)),'Color',colors(1,:),'Linewidth',1.5)
+    errorbar([nanmean(lowNFCvalues(n1(split==1,:))) nanmean(lowNFCvalues(ndetect(split==1,:))) nanmean(lowNFCvalues(n2(split==1,:)))],[nanstd(lowNFCvalues(n1(split==1,:))) nanstd(lowNFCvalues(ndetect(split==1,:))) nanstd(lowNFCvalues(n2(split==1,:)))]/sqrt(sum(split==1)),'Color',colors(1,:),'Linewidth',2.5)
     hold on
-    errorbar([nanmean(midNFCvalues(n1(split==2,:))) nanmean(midNFCvalues(ndetect(split==2,:))) nanmean(midNFCvalues(n2(split==2,:)))],[nanstd(midNFCvalues(n1(split==2,:))) nanstd(midNFCvalues(ndetect(split==2,:))) nanstd(midNFCvalues(n2(split==2,:)))]/sqrt(sum(split==2)),'Color',colors(2,:),'Linewidth',1.5)
-    errorbar([nanmean(highNFCvalues(n1(split==3,:))) nanmean(highNFCvalues(ndetect(split==3,:))) nanmean(highNFCvalues(n2(split==3,:)))],[nanstd(highNFCvalues(n1(split==3,:))) nanstd(highNFCvalues(ndetect(split==3,:))) nanstd(highNFCvalues(n2(split==3,:)))]/sqrt(sum(split==3)),'Color',colors(3,:),'Linewidth',1.5)
-    legend(['Low ' labels{measure}],['Mid ' labels{measure}],['High ' labels{measure}],'Location','Best')
-    title(['Mean Fair Wage by ' labels{measure} ' group'])
+    errorbar([nanmean(midNFCvalues(n1(split==2,:))) nanmean(midNFCvalues(ndetect(split==2,:))) nanmean(midNFCvalues(n2(split==2,:)))],[nanstd(midNFCvalues(n1(split==2,:))) nanstd(midNFCvalues(ndetect(split==2,:))) nanstd(midNFCvalues(n2(split==2,:)))]/sqrt(sum(split==2)),'Color',colors(2,:),'Linewidth',2.5)
+    errorbar([nanmean(highNFCvalues(n1(split==3,:))) nanmean(highNFCvalues(ndetect(split==3,:))) nanmean(highNFCvalues(n2(split==3,:)))],[nanstd(highNFCvalues(n1(split==3,:))) nanstd(highNFCvalues(ndetect(split==3,:))) nanstd(highNFCvalues(n2(split==3,:)))]/sqrt(sum(split==3)),'Color',colors(3,:),'Linewidth',2.5)
+    legend(['Low ' names{measure}],['Mid ' names{measure}],['High ' names{measure}],'Location','Best')
+    title(['Mean Fair Wage by ' names{measure} ' group'])
     ylabel('Wage')
     xlabel('Task')
     xticklabels(tasklabels(2:end))
     xticks([1:3])
     xlim([0.5 3.5])
     ax = gca; ax.FontSize = 14;
-    
-    tasklist = [repmat(1,n,1); repmat(2,n,1); repmat(3,n,1)];
-    ratings = [nanmean(n1subjvalue,2); nanmean(n3subjvalue,2); nanmean(n2subjvalue,2)];
-    matrix = [ratings repmat(split,3,1) tasklist];
-    [~,~,stats] = anovan(matrix(:,1),{matrix(:,2),matrix(:,3)},'model','interaction','varnames',{labels{measure},'task'});
-    
+       
 end
-
-% % regress mean BDM values by SAPS and NFC, and quadratic terms on them,
-% too % %
-Y = nanmean(data.values,2);
-X = [ones(n,1) data.NFC data.SAPS data.NFC.^2 data.SAPS.^2];
-invalid = sum(isnan(X),2)>0; Y(invalid,:) = []; X(invalid,:) = [];
-
-[betas,BINT,~,~,stats] = regress(Y,X);
-% get betas for quadratic term
-predicted = X*betas;
-distance = predicted-Y;
-MSE = distance'*distance; %squared distance
-%disp(['betas on intercept, NFC, SAPS, NFC^2, and SAPS^2: ' num2str(betas') ', p = ' num2str(stats(3)), ', MSE = ' num2str(MSE)])
-% The only real term here is the intercept
 
 %Examine individual NFC group differences post-ANOVA main effect
 split = tertile_split(data.NFC);
-lowNFCvalues = data.values(split==1,:);midNFCvalues = data.values(split==2,:);highNFCvalues = data.values(split==3,:);
+lowNFCvalues = data.values(split==1,:); midNFCvalues = data.values(split==2,:); highNFCvalues = data.values(split==3,:);
 low = nanmean(lowNFCvalues,2); mid = nanmean(midNFCvalues,2); high = nanmean(highNFCvalues,2);
 [h,p] = ttest2(low,mid);
 disp(['Mid versus low NFC fair wage ratings: p = ' num2str(p)])
@@ -707,7 +806,7 @@ matrix(sum(isnan(matrix),2)>0,:) = [];
 
 % now distinguishing between which subjects were best fit by each model
 
-for measure = 1  %set measure = 1:2 to see SAPS score bins also, not just NFC
+for measure = 1:2  %set measure = 1:2 to see SAPS score bins also, not just NFC
     figure
     count = 0;
     
@@ -724,7 +823,7 @@ for measure = 1  %set measure = 1:2 to see SAPS score bins also, not just NFC
     modelnum = 1;
     nparams = size(all_params{modelnum},2);
     paramnames = best_model.paramnames;
-    paramnames{3} = 'maintenance cost';
+    %paramnames{3} = 'maintenance cost';
     [~,assignments] = max(best_model.cbm.output.responsibility,[],2);
     modelgroup = assignments==modelnum;
     values = all_params{modelnum};
@@ -739,7 +838,7 @@ for measure = 1  %set measure = 1:2 to see SAPS score bins also, not just NFC
         [h,pval3] = ttest2(values(split==1&modelgroup,p),values(split==3&modelgroup,p));
         ps = [NaN pval1 pval3; pval1 NaN pval2; pval3 pval2 NaN];
         
-        Y = nanmean(values,2); Y(invalid,:) = [];
+        Y = values(:,p); Y(invalid,:) = [];
         [betas,BINV,~,~,stats] = regress(Y,X);
         % get betas for quadratic term
         predicted = X*betas;
@@ -758,7 +857,9 @@ for measure = 1  %set measure = 1:2 to see SAPS score bins also, not just NFC
         ylabel(paramnames{p})
         %title(model_labels{modelnum})
         xticks([1:3])
-        xticklabels({['Low ' names{measure}],['Mid ' names{measure}],['High ' names{measure}]})
+        xtickangle(30)
+        xticklabels({['Low'],['Mid'],['High']})
+        xlabel([names{measure} ' group'])
         ax = gca; ax.FontSize = 14;
         
     end %of cycling over each cost
@@ -834,9 +935,9 @@ for measure = 1:2
     plot(xs,marginal_mainc(2,:),'Color',colors(2,:),'LineWidth',1.5,'DisplayName',['Mid ' measure_label])
     plot(xs,marginal_mainc(3,:),'Color',colors(3,:),'LineWidth',1.5,'DisplayName',['High ' measure_label])
     legend('Location','Best')
-    xlim([0 1.15])
+    xlim([0 1.5])
     ax = gca; ax.FontSize = 14;
-    title('Maintenance cost')
+    title('Update cost')
     
     count = count+1;
     subplot(2,3,count)
@@ -845,7 +946,7 @@ for measure = 1:2
     plot(xs,marginal_lurec(2,:),'Color',colors(2,:),'LineWidth',1.5,'DisplayName',['Mid ' measure_label])
     plot(xs,marginal_lurec(3,:),'Color',colors(3,:),'LineWidth',1.5,'DisplayName',['High ' measure_label])
     legend('Location','Best')
-    xlim([0 1.15])
+    xlim([0 1.5])
     ax = gca; ax.FontSize = 14;
     title('Interference cost')
     
@@ -857,9 +958,101 @@ for measure = 1:2
     plot(xs,marginal_fac(3,:),'Color',colors(3,:),'LineWidth',1.5,'DisplayName',['High ' measure_label])
     legend('Location','Best')
     title('False alarm cost')
-    xlim([0 1.15])
+    xlim([0 1.5])
     ax = gca; ax.FontSize = 14;
     fig = gcf; fig.Color = 'w';
     
 end
 
+%% SUPPLEMENTARY FIGURE 4
+% Also, one fairly complicated analysis to uncover whether more task
+% iterations leads to a difference in BDM fair wage requests,
+% which had to be run according to how many task iterations the subjects
+% had each done (because that varies a lot across subjects)
+
+% Plot first rating versus total iterations
+tempcolors = taskcolors.*1.33;
+
+tasknumbers = [0 1 7 2];
+% 1-back is 1
+% 2-back is 2
+% 3-detect is 7
+% meaning task 1 = 1-back,
+% task 2 = 3-detect
+% task 3 = 2-back 
+
+figure;
+for task = 1:3
+    
+    first_vs_last_values = [];
+    first_vs_last_accuracies = [];
+    % initialize this - it's task-specific
+    
+    subplot(3,1,task)
+    rating_idx = data.task_displayed==tasknumbers(task+1);
+    eval(['ratings = n' num2str(task) 'subjvalue;'])
+    hold on
+    eval(['completions = sum(~isnan(n' num2str(task) 'subjlearning),2);'])
+    ratings = [completions ratings]; 
+    n_rounds = unique(completions);
+    for i = 1:length(n_rounds)
+        tomean = ratings(ratings(:,1)==n_rounds(i),2:end);
+        toplot = nanmean(tomean,1);
+        tempcolors(task+1,tempcolors(task+1,:)~=0) = tempcolors(task+1,tempcolors(task+1,:)~=0)-0.08;
+        errorbar(toplot,nanstd(tomean,[],1)./sqrt(size(tomean,1)),'Color',tempcolors(task+1,:),'LineWidth',1.5)
+        hold on
+        
+        %make matrix of mean BDM by task iteration
+        idx = ratings(:,1)==n_rounds(i);
+        % grab round-by-round accuracy for subjects in this category of task
+        % completions (Some have 0 per task, some have 11, and EVERYTHING
+        % in between)
+        if task == 1 
+            %1-back
+            accuracies = data.n1acc(idx,:);
+        elseif task == 2
+            % 3-detect
+            accuracies = data.ndetectacc(idx,:);
+        elseif task == 3
+            accuracies = data.n2acc(idx,:);
+        end
+        values = data.values(idx,:);
+        values(data.task_displayed(idx,:)~=tasknumbers(task+1)) = NaN;
+        % IMPORTANT! THESE ARE ACTUALLY INDEXED BY TASK ITERATION NUMBER!
+        % NO LONGER RELATED TO SUBJECT NUMBER!
+           
+        completion_idxes = ~isnan(accuracies);
+        if n_rounds(i)>1
+            for subj = 1:size(accuracies,1)
+                % cycle over subjects to get numerical indexes
+                temp = find(completion_idxes(subj,:));
+                firsts = [temp(1:floor(n_rounds(i)/2))];
+                lasts = [temp(end-(floor(n_rounds(i)/2)-1):end)];
+                % how to adjust for task iterations?
+                if length(firsts)+length(lasts)<=2
+                    first_vs_last_values = [first_vs_last_values; nanmean(values(subj,[firsts lasts]),1)];
+                    first_vs_last_accuracies = [first_vs_last_accuracies; nanmean(accuracies(subj,[firsts lasts]),1)];
+                    % average BDM VALUES and ACCURACIES from FIRST TASK
+                    % ITERATIONS
+                    % also AFTER LAST TASK ITERATIONS
+                    % (first half ratings versus last half ratings)
+                    % where TASK ITERATION is what divides the HALVES
+                else
+                    first_vs_last_values = [first_vs_last_values; nanmean(values(subj,firsts)) nanmean(values(subj,lasts))];
+                    first_vs_last_accuracies = [first_vs_last_accuracies; nanmean(accuracies(subj,firsts)) nanmean(accuracies(subj,lasts))];
+                end
+            end
+        end
+        
+    end
+    xlabel('rating iteration')
+    ylabel('mean fair wage')
+    title(tasklabels{task+1})
+    xlim([0.5 10.5])
+    clean_fig();
+    
+    [h,p] = ttest(first_vs_last_values(:,1),first_vs_last_values(:,2));
+    [h,p] = ttest(first_vs_last_accuracies(:,1), first_vs_last_accuracies(:,2));
+    
+    
+end % of task loop

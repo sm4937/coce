@@ -20,13 +20,10 @@ end
 
 % Linear, additive cost changing scheme
 costs = costs.*(1+(excdelta.*((trial-1)/ntrials)));
-%costs(costs~=0) = costs(costs~=0).*(1-exp(-excdelta(costs~=0)*(trial-1)));
-%costs = costs.*(1+excdelta)
+% costs on the right side is always costs_0
+% (first costs, since they're modulated by trial, trial number does the
+% adding up)
 
-
-% Exponential multiplicative cost changing scheme
-% costs(costs~=0) = costs(costs~=0).*exp(-excdelta(costs~=0).*((trial-1)/ntrials));
-% Not very recoverable in terms of the value of delta
 
 end
 

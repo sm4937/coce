@@ -248,7 +248,6 @@ bars = [];
 for row = 1:length(data.taskBDMcorrs)
     bars = [bars; data.taskBDMcorrs{row,2}(1) data.taskBDMcorrs{row,2}(3) data.taskBDMcorrs{row,1}(1,2)];
 end
-
 subplot(1,2,2)
 bar([nanmean(bars(:,1)) nanmean(bars(:,2)) nanmean(bars(:,3))])
 hold on
@@ -1353,8 +1352,8 @@ modelfits = load('modeling/HBI/HBI_modelStruct.mat');
 no_fits = load('simdata/toanalyze.mat','trim'); no_fits = no_fits.trim;
 % remove subjects who weren't fit to models
 % grab best model
-best_model = modelfits.modelStruct.best_model;
-responsibility = modelfits.modelStruct.best_model.overallfit.responsibility;
+best_model = modelfits.best_model;
+responsibility = modelfits.best_model.overallfit.responsibility;
 models_at_play = find(sum(responsibility>=0.01,1)>0);
 assignments(responsibility(:,models_at_play(1))>responsibility(:,models_at_play(2))) = models_at_play(1);
 assignments(responsibility(:,models_at_play(2))>responsibility(:,models_at_play(1))) = models_at_play(2); %split into best model groups

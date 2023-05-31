@@ -19,6 +19,9 @@ obsolete/*
 modeling/HBI/model-details/*.mat
 modeling/HBI/*.log
 modeling/HBI/*.mat
+modeling/HBI/HPC_functions/*
+modeling/HBI/quick_delta_tests_strictfitting/*
+modeling/HBI/quick_delta_tests_notstrictfitting/*
 mturk_hit_bookkeeping.xlsx
 ~$mturk_hit_bookkeeping.xlsx
 free_response_log.txt

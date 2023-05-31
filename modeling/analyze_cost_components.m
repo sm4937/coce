@@ -44,7 +44,8 @@ nsubjs = length(subjnums);
 
 measures(:,1) = toanalyze.nmisses; measures(:,2) = toanalyze.nlures;
 measures(:,3) = toanalyze.nFAs; measures(:,4) = toanalyze.maintained;
-names = {'misses','lures','FAs','maintenance'};
+measures(:,5) = toanalyze.nupdates; measures(:,6) = toanalyze.nresponses;
+names = {'misses','lures','FAs','maintenance','updates','responses'};
 for col = 1:size(measures,2)
     figure; subplot(2,2,2)
     measure = measures(:,col);
@@ -96,16 +97,57 @@ for n = 1:nsubjs
     onesubj = toanalyze(toanalyze.subj==n,:);
     
     [r,p] = corr(onesubj.maintained,onesubj.nlures,'type','Spearman');
-    proportions(n,1) = p<0.05;
+    proportions(n,1) = p < 0.05;
     [r,p] = corr(onesubj.maintained,onesubj.nFAs,'type','Spearman');
-    proportions(n,2) = p<0.05;
+    proportions(n,2) = p < 0.05;
     [r,p] = corr(onesubj.nlures,onesubj.nFAs,'type','Spearman');
-    proportions(n,3) = p<0.05;
+    proportions(n,3) = p < 0.05;
+    [r,p] = corr(onesubj.maintained,onesubj.nupdates,'type','Spearman');
+    proportions(n,4) = p < 0.05;
+    [r,p] = corr(onesubj.nFAs,onesubj.nupdates,'type','Spearman');
+    proportions(n,5) = p < 0.05;
+    [r,p] = corr(onesubj.nlures,onesubj.nupdates,'type','Spearman');
+    proportions(n,6) = p < 0.05;
     % get percentage of subjects w/ significant correlation of all these
     % components
 end
 
 percentages = sum(proportions)/nsubjs;
+
+%% When are false alarm errors being made?
+% During 2-back only? During other tasks too?
+
+figure
+subplot(2,2,1)
+histogram(toanalyze.nFAs(toanalyze.task==1,:),'DisplayName','1-detect')
+title('1-detect false alarms')
+ylabel('Frequency')
+clean_fig()
+
+subplot(2,2,2)
+histogram(toanalyze.nFAs(toanalyze.task==2,:),'DisplayName','1-back')
+title('1-back false alarms')
+clean_fig()
+ 
+subplot(2,2,3)
+histogram(toanalyze.nFAs(toanalyze.task==3,:),'DisplayName','2-back')
+title('2-back false alarms')
+ylabel('Frequency')
+xlabel('# false alarms per round')
+clean_fig()
+
+subplot(2,2,4)
+histogram(toanalyze.nFAs(toanalyze.task==4,:),'DisplayName','3-detect')
+title('3-detect false alarms')
+xlabel('# false alarms per round')
+clean_fig()
+
+totalFAs = sum(toanalyze.nFAs);
+vector = [sum(toanalyze.nFAs(toanalyze.task==1,:)) sum(toanalyze.nFAs(toanalyze.task==2,:)) ...
+    sum(toanalyze.nFAs(toanalyze.task==3,:)) sum(toanalyze.nFAs(toanalyze.task==4,:))];
+percentage = vector./totalFAs;
+% percentage of total FAs in 1-detect, 1-back, 2-back, and 3-detect ^^
+
 
 %% understand effect of delay between task iterations on BDM values - is there anything there ?
 

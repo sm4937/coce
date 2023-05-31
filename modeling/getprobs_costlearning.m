@@ -28,7 +28,7 @@ if ~realsubjectsflag
     nlures = onesim(:,11);
     nerrors = onesim(:,12);
     nFAs = onesim(:,13);
-else %fitting real subject data
+elseif realsubjectsflag %fitting real subject data
     % the cost components (maintenance etc.) need to be z-scored to be
     % normally distributed
     subj = unique(onesim.subj);
@@ -85,7 +85,7 @@ ratings_list = NaN(ntrials,1); %init for each subject
 costs = repmat(costs,ntrials,1);
 if (modeltofit.delta || modeltofit.deltai)
     for trial = 2:ntrials
-        costs(trial,:) = set_new_costs(costs(trial-1,:),delta,trial);
+        costs(trial,:) = set_new_costs(costs(1,:),delta,trial);
     end
 end
 % pre-update the costs according to the delta update rule specified in

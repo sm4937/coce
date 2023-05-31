@@ -37,6 +37,8 @@ for subj = 1:nsubjs  %simulate the model for one subject at a time
     costs = [uc missc mainc matchc noisec respc lurec errorc fac];
     % put all costs in one vector for ease of transformation in
     % set_new_costs (the cost-changing models)
+    costs_0 = costs; 
+    % grab first set of costs for figuring into the delta models
     
     ratings = [1 init].*(ones(1,max(toanalyze.display)));
     % initialize ratings for this subject based on the init free
@@ -104,7 +106,7 @@ for subj = 1:nsubjs  %simulate the model for one subject at a time
         % if it's a cost-changing (delta) model, update the costs according
         % to delta below
         if (modeltosim.delta || modeltosim.deltai) & trial > 1
-            costs = set_new_costs(costs,delta,trial);
+            costs = set_new_costs(costs_0,delta,trial);
             %figure(10);scatter(trial*ones(1,sum(costs~=0)),costs(costs~=0));hold on
         end
         

@@ -1,0 +1,6566 @@
+
+                                                                              < M A T L A B (R) >
+                                                                    Copyright 1984-2020 The MathWorks, Inc.
+                                                                    R2020b (9.9.0.1467703) 64-bit (glnxa64)
+                                                                                August 26, 2020
+
+ 
+To get started, type doc.
+For product information, visit www.mathworks.com.
+ 
+Model #1
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           24-Apr-2023 20:52:10
+======================================================================
+Number of samples: 100
+Number of parameters: 6
+
+Number of initializations: 42
+----------------------------------------------------------------------
+Subject: 01
+Subject: 02
+Subject: 03
+Subject: 04
+Subject: 05
+Subject: 06
+Subject: 07
+Subject: 08
+Subject: 09
+
+                                                                              < M A T L A B (R) >
+                                                                    Copyright 1984-2020 The MathWorks, Inc.
+                                                                    R2020b (9.9.0.1467703) 64-bit (glnxa64)
+                                                                                August 26, 2020
+
+ 
+To get started, type doc.
+For product information, visit www.mathworks.com.
+ 
+Model #26
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           24-Apr-2023 20:55:10
+======================================================================
+Number of samples: 100
+Number of parameters: 8
+
+Number of initializations: 56
+----------------------------------------------------------------------
+Subject: 01
+Subject: 10
+Subject: 11
+Subject: 02
+Subject: 12
+Subject: 13
+Subject: 03
+Subject: 14
+Subject: 15
+Subject: 04
+Subject: 16
+Subject: 05
+Subject: 17
+Subject: 18
+Subject: 06
+Subject: 19
+Subject: 20
+Subject: 07
+Subject: 21
+Subject: 22
+Subject: 08
+Subject: 23
+Subject: 24
+Subject: 09
+Subject: 25
+Subject: 26
+Subject: 10
+Subject: 27
+Subject: 28
+Subject: 11
+Subject: 29
+Subject: 30
+Subject: 12
+Subject: 31
+Subject: 32
+Subject: 13
+Subject: 33
+Subject: 34
+Subject: 14
+Subject: 35
+Subject: 36
+Subject: 15
+Subject: 37
+Subject: 38
+Subject: 16
+Subject: 39
+Subject: 40
+Subject: 17
+Subject: 41
+Subject: 42
+Subject: 18
+Subject: 43
+Subject: 44
+Subject: 19
+Subject: 45
+Subject: 46
+Subject: 20
+Subject: 47
+Subject: 48
+Subject: 21
+Subject: 49
+Subject: 50
+Subject: 22
+Subject: 51
+Subject: 52
+Subject: 23
+Subject: 53
+Subject: 54
+Subject: 24
+Subject: 55
+Subject: 56
+Subject: 57
+Subject: 25
+Subject: 58
+Subject: 59
+Subject: 26
+Subject: 60
+Subject: 27
+Subject: 61
+Subject: 62
+Subject: 63
+Subject: 28
+Subject: 64
+Subject: 65
+Subject: 29
+Subject: 66
+Subject: 30
+Subject: 67
+Subject: 68
+Subject: 69
+Subject: 31
+Subject: 70
+Subject: 32
+Subject: 71
+Subject: 72
+Subject: 33
+Subject: 73
+Subject: 74
+Subject: 34
+Subject: 75
+Subject: 76
+Subject: 35
+Subject: 77
+Subject: 78
+Subject: 36
+Subject: 79
+Subject: 80
+Subject: 37
+Subject: 81
+Subject: 38
+Subject: 82
+Subject: 83
+Subject: 39
+Subject: 84
+Subject: 85
+Subject: 40
+Subject: 86
+Subject: 87
+Subject: 41
+Subject: 88
+Subject: 89
+Subject: 42
+Subject: 90
+Subject: 91
+Subject: 43
+Subject: 92
+Subject: 93
+Subject: 44
+Subject: 94
+Subject: 95
+Subject: 45
+Subject: 96
+Subject: 46
+Subject: 97
+Subject: 98
+Subject: 47
+Subject: 99
+Subject: 100
+Subject: 48
+done :]
+Model #2
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           24-Apr-2023 21:28:00
+======================================================================
+Number of samples: 100
+Number of parameters: 6
+
+Number of initializations: 42
+----------------------------------------------------------------------
+Subject: 01
+Subject: 02
+Subject: 49
+Subject: 03
+Subject: 04
+Subject: 50
+Subject: 05
+Subject: 06
+Subject: 51
+Subject: 07
+Subject: 08
+Subject: 52
+Subject: 09
+Subject: 10
+Subject: 53
+Subject: 11
+Subject: 12
+Subject: 54
+Subject: 13
+Subject: 55
+Subject: 14
+Subject: 15
+Subject: 56
+Subject: 16
+Subject: 17
+Subject: 57
+Subject: 18
+Subject: 19
+Subject: 58
+Subject: 20
+Subject: 21
+Subject: 59
+Subject: 22
+Subject: 23
+Subject: 60
+Subject: 24
+Subject: 25
+Subject: 61
+Subject: 26
+Subject: 27
+Subject: 62
+Subject: 28
+Subject: 29
+Subject: 63
+Subject: 30
+Subject: 31
+Subject: 64
+Subject: 32
+Subject: 33
+Subject: 65
+Subject: 34
+Subject: 35
+Subject: 66
+Subject: 36
+Subject: 37
+Subject: 67
+Subject: 38
+Subject: 39
+Subject: 68
+Subject: 40
+Subject: 69
+Subject: 41
+Subject: 42
+Subject: 70
+Subject: 43
+Subject: 44
+Subject: 45
+Subject: 71
+Subject: 46
+Subject: 47
+Subject: 72
+Subject: 48
+Subject: 49
+Subject: 73
+Subject: 50
+Subject: 51
+Subject: 74
+Subject: 52
+Subject: 75
+Subject: 53
+Subject: 54
+Subject: 55
+Subject: 76
+Subject: 56
+Subject: 57
+Subject: 77
+Subject: 58
+Subject: 59
+Subject: 78
+Subject: 60
+Subject: 61
+Subject: 79
+Subject: 62
+Subject: 63
+Subject: 80
+Subject: 64
+Subject: 65
+Subject: 81
+Subject: 66
+Subject: 67
+Subject: 82
+Subject: 68
+Subject: 69
+Subject: 83
+Subject: 70
+Subject: 71
+Subject: 84
+Subject: 72
+Subject: 73
+Subject: 85
+Subject: 74
+Subject: 75
+Subject: 86
+Subject: 76
+Subject: 87
+Subject: 77
+Subject: 78
+Subject: 88
+Subject: 79
+Subject: 80
+Subject: 89
+Subject: 81
+Subject: 82
+Subject: 90
+Subject: 83
+Subject: 84
+Subject: 91
+Subject: 85
+Subject: 86
+Subject: 92
+Subject: 87
+Subject: 88
+Subject: 93
+Subject: 89
+Subject: 90
+Subject: 94
+Subject: 91
+Subject: 92
+Subject: 95
+Subject: 93
+Subject: 94
+Subject: 96
+Subject: 95
+Subject: 96
+Subject: 97
+Subject: 97
+Subject: 98
+Subject: 98
+Subject: 99
+Subject: 100
+Subject: 99
+done :]
+Model #3
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           24-Apr-2023 22:03:29
+======================================================================
+Number of samples: 100
+Number of parameters: 6
+
+Number of initializations: 42
+----------------------------------------------------------------------
+Subject: 01
+Subject: 02
+Subject: 100
+Subject: 03
+Subject: 04
+done :]
+Model #27
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           24-Apr-2023 22:04:42
+======================================================================
+Number of samples: 100
+Number of parameters: 8
+
+Number of initializations: 56
+----------------------------------------------------------------------
+Subject: 01
+Subject: 05
+Subject: 06
+Subject: 02
+Subject: 07
+Subject: 08
+Subject: 03
+Subject: 09
+Subject: 10
+Subject: 04
+Subject: 11
+Subject: 12
+Subject: 05
+Subject: 13
+Subject: 14
+Subject: 06
+Subject: 15
+Subject: 16
+Subject: 07
+Subject: 17
+Subject: 18
+Subject: 08
+Subject: 19
+Subject: 20
+Subject: 09
+Subject: 21
+Subject: 22
+Subject: 10
+Subject: 23
+Subject: 24
+Subject: 11
+Subject: 25
+Subject: 26
+Subject: 12
+Subject: 27
+Subject: 28
+Subject: 13
+Subject: 29
+Subject: 30
+Subject: 14
+Subject: 31
+Subject: 32
+Subject: 15
+Subject: 33
+Subject: 34
+Subject: 16
+Subject: 35
+Subject: 36
+Subject: 17
+Subject: 37
+Subject: 38
+Subject: 18
+Subject: 39
+Subject: 40
+Subject: 19
+Subject: 41
+Subject: 42
+Subject: 20
+Subject: 43
+Subject: 44
+Subject: 21
+Subject: 45
+Subject: 46
+Subject: 22
+Subject: 47
+Subject: 48
+Subject: 23
+Subject: 49
+Subject: 50
+Subject: 24
+Subject: 51
+Subject: 52
+Subject: 25
+Subject: 53
+Subject: 54
+Subject: 26
+Subject: 55
+Subject: 56
+Subject: 27
+Subject: 57
+Subject: 58
+Subject: 59
+Subject: 28
+Subject: 60
+Subject: 29
+Subject: 61
+Subject: 62
+Subject: 30
+Subject: 63
+Subject: 64
+Subject: 31
+Subject: 65
+Subject: 66
+Subject: 32
+Subject: 67
+Subject: 68
+Subject: 33
+Subject: 69
+Subject: 70
+Subject: 34
+Subject: 71
+Subject: 72
+Subject: 35
+Subject: 73
+Subject: 74
+Subject: 36
+Subject: 75
+Subject: 76
+Subject: 37
+Subject: 77
+Subject: 78
+Subject: 38
+Subject: 79
+Subject: 80
+Subject: 39
+Subject: 81
+Subject: 82
+Subject: 40
+Subject: 83
+Subject: 84
+Subject: 41
+Subject: 85
+Subject: 86
+Subject: 42
+Subject: 87
+Subject: 88
+Subject: 43
+Subject: 89
+Subject: 44
+Subject: 90
+Subject: 91
+Subject: 45
+Subject: 92
+Subject: 93
+Subject: 46
+Subject: 94
+Subject: 95
+Subject: 47
+Subject: 96
+Subject: 97
+Subject: 48
+Subject: 98
+Subject: 99
+Subject: 49
+Subject: 100
+done :]
+Model #4
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           24-Apr-2023 22:38:52
+======================================================================
+Number of samples: 100
+Number of parameters: 7
+
+Number of initializations: 49
+----------------------------------------------------------------------
+Subject: 01
+Subject: 50
+Subject: 02
+Subject: 51
+Subject: 03
+Subject: 04
+Subject: 52
+Subject: 05
+Subject: 53
+Subject: 06
+Subject: 54
+Subject: 07
+Subject: 08
+Subject: 55
+Subject: 09
+Subject: 56
+Subject: 10
+Subject: 57
+Subject: 11
+Subject: 12
+Subject: 58
+Subject: 13
+Subject: 59
+Subject: 14
+Subject: 60
+Subject: 15
+Subject: 16
+Subject: 61
+Subject: 17
+Subject: 62
+Subject: 18
+Subject: 19
+Subject: 63
+Subject: 20
+Subject: 64
+Subject: 21
+Subject: 65
+Subject: 22
+Subject: 23
+Subject: 66
+Subject: 24
+Subject: 67
+Subject: 25
+Subject: 68
+Subject: 26
+Subject: 27
+Subject: 69
+Subject: 28
+Subject: 70
+Subject: 29
+Subject: 71
+Subject: 30
+Subject: 31
+Subject: 72
+Subject: 32
+Subject: 73
+Subject: 33
+Subject: 34
+Subject: 74
+Subject: 35
+Subject: 75
+Subject: 36
+Subject: 37
+Subject: 76
+Subject: 38
+Subject: 77
+Subject: 39
+Subject: 40
+Subject: 78
+Subject: 41
+Subject: 79
+Subject: 42
+Subject: 80
+Subject: 43
+Subject: 44
+Subject: 81
+Subject: 45
+Subject: 82
+Subject: 46
+Subject: 47
+Subject: 83
+Subject: 48
+Subject: 84
+Subject: 49
+Subject: 50
+Subject: 85
+Subject: 51
+Subject: 86
+Subject: 52
+Subject: 87
+Subject: 53
+Subject: 54
+Subject: 88
+Subject: 55
+Subject: 89
+Subject: 56
+Subject: 57
+Subject: 90
+Subject: 58
+Subject: 91
+Subject: 59
+Subject: 60
+Subject: 92
+Subject: 61
+Subject: 93
+Subject: 62
+Subject: 94
+Subject: 63
+Subject: 64
+Subject: 95
+Subject: 65
+Subject: 96
+Subject: 66
+Subject: 67
+Subject: 97
+Subject: 68
+Subject: 98
+Subject: 69
+Subject: 99
+Subject: 70
+Subject: 100
+Subject: 71
+Subject: 72
+done :]
+Model #28
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           24-Apr-2023 23:14:40
+======================================================================
+Number of samples: 100
+Number of parameters: 8
+
+Number of initializations: 56
+----------------------------------------------------------------------
+Subject: 01
+Subject: 73
+Subject: 02
+Subject: 74
+Subject: 03
+Subject: 75
+Subject: 04
+Subject: 76
+Subject: 77
+Subject: 05
+Subject: 78
+Subject: 06
+Subject: 79
+Subject: 07
+Subject: 80
+Subject: 81
+Subject: 08
+Subject: 82
+Subject: 09
+Subject: 83
+Subject: 10
+Subject: 84
+Subject: 85
+Subject: 11
+Subject: 86
+Subject: 12
+Subject: 87
+Subject: 13
+Subject: 88
+Subject: 89
+Subject: 14
+Subject: 90
+Subject: 15
+Subject: 91
+Subject: 92
+Subject: 16
+Subject: 93
+Subject: 17
+Subject: 94
+Subject: 18
+Subject: 95
+Subject: 19
+Subject: 96
+Subject: 97
+Subject: 20
+Subject: 98
+Subject: 21
+Subject: 99
+Subject: 100
+Subject: 22
+done :]
+Model #5
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           24-Apr-2023 23:29:19
+======================================================================
+Number of samples: 100
+Number of parameters: 7
+
+Number of initializations: 49
+----------------------------------------------------------------------
+Subject: 01
+Subject: 23
+Subject: 02
+Subject: 03
+Subject: 24
+Subject: 04
+Subject: 25
+Subject: 05
+Subject: 06
+Subject: 26
+Subject: 07
+Subject: 27
+Subject: 08
+Subject: 09
+Subject: 28
+Subject: 10
+Subject: 29
+Subject: 11
+Subject: 30
+Subject: 12
+Subject: 13
+Subject: 31
+Subject: 14
+Subject: 32
+Subject: 15
+Subject: 33
+Subject: 16
+Subject: 17
+Subject: 34
+Subject: 18
+Subject: 35
+Subject: 19
+Subject: 36
+Subject: 20
+Subject: 21
+Subject: 37
+Subject: 22
+Subject: 38
+Subject: 23
+Subject: 39
+Subject: 24
+Subject: 40
+Subject: 25
+Subject: 26
+Subject: 41
+Subject: 27
+Subject: 42
+Subject: 28
+Subject: 43
+Subject: 29
+Subject: 30
+Subject: 44
+Subject: 31
+Subject: 45
+Subject: 32
+Subject: 46
+Subject: 33
+Subject: 34
+Subject: 47
+Subject: 35
+Subject: 48
+Subject: 36
+Subject: 49
+Subject: 37
+Subject: 38
+Subject: 50
+Subject: 39
+Subject: 51
+Subject: 40
+Subject: 52
+Subject: 41
+Subject: 42
+Subject: 53
+Subject: 43
+Subject: 54
+Subject: 44
+Subject: 55
+Subject: 45
+Subject: 46
+Subject: 56
+Subject: 47
+Subject: 57
+Subject: 48
+Subject: 49
+Subject: 58
+Subject: 50
+Subject: 59
+Subject: 51
+Subject: 60
+Subject: 52
+Subject: 53
+Subject: 61
+Subject: 54
+Subject: 62
+Subject: 55
+Subject: 56
+Subject: 63
+Subject: 57
+Subject: 64
+Subject: 58
+Subject: 65
+Subject: 59
+Subject: 60
+Subject: 66
+Subject: 61
+Subject: 67
+Subject: 62
+Subject: 68
+Subject: 63
+Subject: 64
+Subject: 69
+Subject: 65
+Subject: 70
+Subject: 66
+Subject: 67
+Subject: 71
+Subject: 68
+Subject: 72
+Subject: 69
+Subject: 70
+Subject: 73
+Subject: 71
+Subject: 74
+Subject: 72
+Subject: 75
+Subject: 73
+Subject: 74
+Subject: 76
+Subject: 75
+Subject: 77
+Subject: 76
+Subject: 77
+Subject: 78
+Subject: 78
+Subject: 79
+Subject: 79
+Subject: 80
+Subject: 80
+Subject: 81
+Subject: 81
+Subject: 82
+Subject: 82
+Subject: 83
+Subject: 83
+Subject: 84
+Subject: 84
+Subject: 85
+Subject: 86
+Subject: 85
+Subject: 87
+Subject: 86
+Subject: 88
+Subject: 89
+Subject: 87
+Subject: 90
+Subject: 88
+Subject: 91
+Subject: 89
+Subject: 92
+Subject: 93
+Subject: 90
+Subject: 94
+Subject: 91
+Subject: 95
+Subject: 92
+Subject: 96
+Subject: 93
+Subject: 97
+Subject: 98
+Subject: 94
+Subject: 99
+Subject: 95
+Subject: 100
+done :]
+Model #6
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 00:20:20
+======================================================================
+Number of samples: 100
+Number of parameters: 7
+
+Number of initializations: 49
+----------------------------------------------------------------------
+Subject: 01
+Subject: 96
+Subject: 02
+Subject: 97
+Subject: 03
+Subject: 04
+Subject: 98
+Subject: 05
+Subject: 99
+Subject: 06
+Subject: 100
+Subject: 07
+Subject: 08
+done :]
+Model #29
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 00:23:52
+======================================================================
+Number of samples: 100
+Number of parameters: 8
+
+Number of initializations: 56
+----------------------------------------------------------------------
+Subject: 01
+Subject: 09
+Subject: 02
+Subject: 10
+Subject: 03
+Subject: 11
+Subject: 04
+Subject: 12
+Subject: 13
+Subject: 05
+Subject: 14
+Subject: 06
+Subject: 15
+Subject: 16
+Subject: 07
+Subject: 17
+Subject: 08
+Subject: 18
+Subject: 09
+Subject: 19
+Subject: 20
+Subject: 10
+Subject: 21
+Subject: 11
+Subject: 22
+Subject: 12
+Subject: 23
+Subject: 24
+Subject: 13
+Subject: 25
+Subject: 14
+Subject: 26
+Subject: 27
+Subject: 15
+Subject: 28
+Subject: 16
+Subject: 29
+Subject: 17
+Subject: 30
+Subject: 31
+Subject: 18
+Subject: 32
+Subject: 19
+Subject: 33
+Subject: 20
+Subject: 34
+Subject: 35
+Subject: 21
+Subject: 36
+Subject: 22
+Subject: 37
+Subject: 23
+Subject: 38
+Subject: 39
+Subject: 24
+Subject: 40
+Subject: 25
+Subject: 41
+Subject: 42
+Subject: 26
+Subject: 43
+Subject: 27
+Subject: 44
+Subject: 45
+Subject: 28
+Subject: 46
+Subject: 47
+Subject: 29
+Subject: 48
+Subject: 30
+Subject: 49
+Subject: 31
+Subject: 50
+Subject: 51
+Subject: 32
+Subject: 52
+Subject: 33
+Subject: 53
+Subject: 54
+Subject: 34
+Subject: 55
+Subject: 35
+Subject: 56
+Subject: 57
+Subject: 36
+Subject: 58
+Subject: 37
+Subject: 59
+Subject: 60
+Subject: 38
+Subject: 61
+Subject: 39
+Subject: 62
+Subject: 40
+Subject: 63
+Subject: 64
+Subject: 41
+Subject: 65
+Subject: 42
+Subject: 66
+Subject: 67
+Subject: 43
+Subject: 68
+Subject: 44
+Subject: 69
+Subject: 45
+Subject: 70
+Subject: 71
+Subject: 46
+Subject: 72
+Subject: 47
+Subject: 73
+Subject: 48
+Subject: 74
+Subject: 75
+Subject: 49
+Subject: 76
+Subject: 50
+Subject: 77
+Subject: 78
+Subject: 51
+Subject: 79
+Subject: 52
+Subject: 80
+Subject: 53
+Subject: 81
+Subject: 82
+Subject: 54
+Subject: 83
+Subject: 55
+Subject: 84
+Subject: 56
+Subject: 85
+Subject: 86
+Subject: 57
+Subject: 87
+Subject: 58
+Subject: 88
+Subject: 89
+Subject: 59
+Subject: 90
+Subject: 60
+Subject: 91
+Subject: 92
+Subject: 61
+Subject: 93
+Subject: 62
+Subject: 94
+Subject: 63
+Subject: 95
+Subject: 96
+Subject: 64
+Subject: 97
+Subject: 65
+Subject: 98
+Subject: 66
+Subject: 99
+Subject: 100
+Subject: 67
+done :]
+Model #7
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 01:10:49
+======================================================================
+Number of samples: 100
+Number of parameters: 7
+
+Number of initializations: 49
+----------------------------------------------------------------------
+Subject: 01
+Subject: 68
+Subject: 02
+Subject: 03
+Subject: 69
+Subject: 04
+Subject: 70
+Subject: 05
+Subject: 06
+Subject: 71
+Subject: 07
+Subject: 72
+Subject: 08
+Subject: 09
+Subject: 73
+Subject: 10
+Subject: 74
+Subject: 11
+Subject: 75
+Subject: 12
+Subject: 13
+Subject: 76
+Subject: 14
+Subject: 77
+Subject: 15
+Subject: 16
+Subject: 78
+Subject: 17
+Subject: 79
+Subject: 18
+Subject: 19
+Subject: 80
+Subject: 20
+Subject: 81
+Subject: 21
+Subject: 82
+Subject: 22
+Subject: 23
+Subject: 83
+Subject: 24
+Subject: 84
+Subject: 25
+Subject: 85
+Subject: 26
+Subject: 27
+Subject: 86
+Subject: 28
+Subject: 87
+Subject: 29
+Subject: 88
+Subject: 30
+Subject: 31
+Subject: 89
+Subject: 32
+Subject: 90
+Subject: 33
+Subject: 91
+Subject: 34
+Subject: 35
+Subject: 92
+Subject: 36
+Subject: 37
+Subject: 93
+Subject: 38
+Subject: 94
+Subject: 39
+Subject: 95
+Subject: 40
+Subject: 41
+Subject: 96
+Subject: 42
+Subject: 97
+Subject: 43
+Subject: 44
+Subject: 98
+Subject: 45
+Subject: 46
+Subject: 99
+Subject: 47
+Subject: 100
+Subject: 48
+Subject: 49
+done :]
+Model #30
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 01:35:02
+======================================================================
+Number of samples: 100
+Number of parameters: 8
+
+Number of initializations: 56
+----------------------------------------------------------------------
+Subject: 01
+Subject: 50
+Subject: 02
+Subject: 51
+Subject: 03
+Subject: 52
+Subject: 53
+Subject: 04
+Subject: 54
+Subject: 05
+Subject: 55
+Subject: 56
+Subject: 06
+Subject: 57
+Subject: 07
+Subject: 58
+Subject: 59
+Subject: 08
+Subject: 60
+Subject: 09
+Subject: 61
+Subject: 10
+Subject: 62
+Subject: 63
+Subject: 11
+Subject: 64
+Subject: 12
+Subject: 65
+Subject: 66
+Subject: 13
+Subject: 67
+Subject: 14
+Subject: 68
+Subject: 69
+Subject: 15
+Subject: 70
+Subject: 16
+Subject: 71
+Subject: 17
+Subject: 72
+Subject: 18
+Subject: 73
+Subject: 74
+Subject: 19
+Subject: 75
+Subject: 20
+Subject: 76
+Subject: 77
+Subject: 21
+Subject: 78
+Subject: 22
+Subject: 79
+Subject: 23
+Subject: 80
+Subject: 81
+Subject: 24
+Subject: 82
+Subject: 25
+Subject: 83
+Subject: 26
+Subject: 84
+Subject: 85
+Subject: 27
+Subject: 86
+Subject: 28
+Subject: 87
+Subject: 88
+Subject: 29
+Subject: 89
+Subject: 30
+Subject: 90
+Subject: 31
+Subject: 91
+Subject: 92
+Subject: 32
+Subject: 93
+Subject: 33
+Subject: 94
+Subject: 95
+Subject: 34
+Subject: 96
+Subject: 35
+Subject: 97
+Subject: 36
+Subject: 98
+Subject: 99
+Subject: 37
+Subject: 100
+Subject: 38
+done :]
+Model #8
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 02:01:12
+======================================================================
+Number of samples: 100
+Number of parameters: 7
+
+Number of initializations: 49
+----------------------------------------------------------------------
+Subject: 01
+Subject: 02
+Subject: 39
+Subject: 03
+Subject: 40
+Subject: 04
+Subject: 05
+Subject: 41
+Subject: 06
+Subject: 42
+Subject: 07
+Subject: 08
+Subject: 43
+Subject: 09
+Subject: 44
+Subject: 10
+Subject: 45
+Subject: 11
+Subject: 12
+Subject: 46
+Subject: 13
+Subject: 47
+Subject: 14
+Subject: 48
+Subject: 15
+Subject: 16
+Subject: 49
+Subject: 17
+Subject: 50
+Subject: 18
+Subject: 19
+Subject: 51
+Subject: 20
+Subject: 52
+Subject: 21
+Subject: 53
+Subject: 22
+Subject: 23
+Subject: 54
+Subject: 24
+Subject: 55
+Subject: 25
+Subject: 56
+Subject: 26
+Subject: 27
+Subject: 57
+Subject: 28
+Subject: 58
+Subject: 29
+Subject: 59
+Subject: 30
+Subject: 31
+Subject: 60
+Subject: 32
+Subject: 61
+Subject: 33
+Subject: 34
+Subject: 62
+Subject: 35
+Subject: 63
+Subject: 36
+Subject: 64
+Subject: 37
+Subject: 38
+Subject: 65
+Subject: 39
+Subject: 66
+Subject: 40
+Subject: 41
+Subject: 67
+Subject: 42
+Subject: 68
+Subject: 43
+Subject: 69
+Subject: 44
+Subject: 45
+Subject: 70
+Subject: 46
+Subject: 47
+Subject: 71
+Subject: 48
+Subject: 72
+Subject: 49
+Subject: 50
+Subject: 73
+Subject: 51
+Subject: 74
+Subject: 52
+Subject: 75
+Subject: 53
+Subject: 54
+Subject: 76
+Subject: 55
+Subject: 77
+Subject: 56
+Subject: 57
+Subject: 78
+Subject: 58
+Subject: 79
+Subject: 59
+Subject: 60
+Subject: 80
+Subject: 61
+Subject: 81
+Subject: 62
+Subject: 63
+Subject: 82
+Subject: 64
+Subject: 83
+Subject: 65
+Subject: 84
+Subject: 66
+Subject: 67
+Subject: 85
+Subject: 68
+Subject: 86
+Subject: 69
+Subject: 70
+Subject: 87
+Subject: 71
+Subject: 88
+Subject: 72
+Subject: 89
+Subject: 73
+Subject: 74
+Subject: 90
+Subject: 75
+Subject: 91
+Subject: 76
+Subject: 77
+Subject: 92
+Subject: 78
+Subject: 93
+Subject: 79
+Subject: 94
+Subject: 80
+Subject: 81
+Subject: 95
+Subject: 82
+Subject: 96
+Subject: 83
+Subject: 97
+Subject: 84
+Subject: 85
+Subject: 98
+Subject: 86
+Subject: 99
+Subject: 87
+Subject: 88
+Subject: 100
+Subject: 89
+done :]
+Model #31
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 02:46:04
+======================================================================
+Number of samples: 100
+Number of parameters: 8
+
+Number of initializations: 56
+----------------------------------------------------------------------
+Subject: 01
+Subject: 90
+Subject: 91
+Subject: 02
+Subject: 92
+Subject: 03
+Subject: 93
+Subject: 04
+Subject: 94
+Subject: 95
+Subject: 05
+Subject: 96
+Subject: 06
+Subject: 97
+Subject: 98
+Subject: 07
+Subject: 99
+Subject: 08
+Subject: 100
+Subject: 09
+done :]
+Model #9
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 02:51:42
+======================================================================
+Number of samples: 100
+Number of parameters: 7
+
+Number of initializations: 49
+----------------------------------------------------------------------
+Subject: 01
+Subject: 02
+Subject: 10
+Subject: 03
+Subject: 11
+Subject: 04
+Subject: 05
+Subject: 12
+Subject: 06
+Subject: 13
+Subject: 07
+Subject: 14
+Subject: 08
+Subject: 09
+Subject: 15
+Subject: 10
+Subject: 16
+Subject: 11
+Subject: 12
+Subject: 17
+Subject: 13
+Subject: 18
+Subject: 14
+Subject: 19
+Subject: 15
+Subject: 16
+Subject: 20
+Subject: 17
+Subject: 21
+Subject: 18
+Subject: 19
+Subject: 22
+Subject: 20
+Subject: 23
+Subject: 21
+Subject: 24
+Subject: 22
+Subject: 23
+Subject: 25
+Subject: 24
+Subject: 26
+Subject: 25
+Subject: 27
+Subject: 26
+Subject: 27
+Subject: 28
+Subject: 28
+Subject: 29
+Subject: 29
+Subject: 30
+Subject: 30
+Subject: 31
+Subject: 31
+Subject: 32
+Subject: 32
+Subject: 33
+Subject: 33
+Subject: 34
+Subject: 35
+Subject: 34
+Subject: 36
+Subject: 35
+Subject: 37
+Subject: 36
+Subject: 38
+Subject: 39
+Subject: 37
+Subject: 40
+Subject: 38
+Subject: 41
+Subject: 39
+Subject: 42
+Subject: 43
+Subject: 40
+Subject: 44
+Subject: 41
+Subject: 45
+Subject: 46
+Subject: 42
+Subject: 47
+Subject: 43
+Subject: 48
+Subject: 44
+Subject: 49
+Subject: 50
+Subject: 45
+Subject: 51
+Subject: 46
+Subject: 52
+Subject: 47
+Subject: 53
+Subject: 54
+Subject: 48
+Subject: 55
+Subject: 49
+Subject: 56
+Subject: 57
+Subject: 50
+Subject: 58
+Subject: 51
+Subject: 59
+Subject: 60
+Subject: 52
+Subject: 61
+Subject: 53
+Subject: 62
+Subject: 54
+Subject: 63
+Subject: 55
+Subject: 64
+Subject: 65
+Subject: 56
+Subject: 66
+Subject: 57
+Subject: 67
+Subject: 58
+Subject: 68
+Subject: 69
+Subject: 59
+Subject: 70
+Subject: 60
+Subject: 71
+Subject: 61
+Subject: 72
+Subject: 73
+Subject: 62
+Subject: 74
+Subject: 63
+Subject: 75
+Subject: 64
+Subject: 76
+Subject: 65
+Subject: 77
+Subject: 78
+Subject: 66
+Subject: 79
+Subject: 67
+Subject: 80
+Subject: 68
+Subject: 81
+Subject: 69
+Subject: 82
+Subject: 83
+Subject: 70
+Subject: 84
+Subject: 71
+Subject: 85
+Subject: 86
+Subject: 72
+Subject: 87
+Subject: 73
+Subject: 88
+Subject: 89
+Subject: 74
+Subject: 90
+Subject: 75
+Subject: 91
+Subject: 76
+Subject: 92
+Subject: 93
+Subject: 77
+Subject: 94
+Subject: 78
+Subject: 95
+Subject: 96
+Subject: 79
+Subject: 97
+Subject: 80
+Subject: 98
+Subject: 81
+Subject: 99
+Subject: 100
+Subject: 82
+done :]
+Model #10
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 03:44:07
+======================================================================
+Number of samples: 100
+Number of parameters: 7
+
+Number of initializations: 49
+----------------------------------------------------------------------
+Subject: 01
+Subject: 83
+Subject: 02
+Subject: 03
+Subject: 84
+Subject: 04
+Subject: 85
+Subject: 05
+Subject: 86
+Subject: 06
+Subject: 07
+Subject: 87
+Subject: 08
+Subject: 88
+Subject: 09
+Subject: 89
+Subject: 10
+Subject: 11
+Subject: 90
+Subject: 12
+Subject: 91
+Subject: 13
+Subject: 14
+Subject: 92
+Subject: 15
+Subject: 93
+Subject: 16
+Subject: 94
+Subject: 17
+Subject: 18
+Subject: 95
+Subject: 19
+Subject: 96
+Subject: 20
+Subject: 97
+Subject: 21
+Subject: 22
+Subject: 98
+Subject: 23
+Subject: 99
+Subject: 24
+Subject: 25
+Subject: 100
+Subject: 26
+done :]
+Model #32
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 03:57:09
+======================================================================
+Number of samples: 100
+Number of parameters: 8
+
+Number of initializations: 56
+----------------------------------------------------------------------
+Subject: 01
+Subject: 27
+Subject: 02
+Subject: 28
+Subject: 03
+Subject: 29
+Subject: 30
+Subject: 04
+Subject: 31
+Subject: 05
+Subject: 32
+Subject: 33
+Subject: 06
+Subject: 34
+Subject: 07
+Subject: 35
+Subject: 36
+Subject: 08
+Subject: 37
+Subject: 09
+Subject: 38
+Subject: 10
+Subject: 39
+Subject: 40
+Subject: 11
+Subject: 41
+Subject: 12
+Subject: 42
+Subject: 43
+Subject: 13
+Subject: 44
+Subject: 14
+Subject: 45
+Subject: 15
+Subject: 46
+Subject: 47
+Subject: 16
+Subject: 48
+Subject: 17
+Subject: 49
+Subject: 50
+Subject: 18
+Subject: 51
+Subject: 19
+Subject: 52
+Subject: 20
+Subject: 53
+Subject: 54
+Subject: 21
+Subject: 55
+Subject: 22
+Subject: 56
+Subject: 57
+Subject: 23
+Subject: 58
+Subject: 24
+Subject: 59
+Subject: 25
+Subject: 60
+Subject: 61
+Subject: 26
+Subject: 62
+Subject: 27
+Subject: 63
+Subject: 64
+Subject: 28
+Subject: 65
+Subject: 29
+Subject: 66
+Subject: 30
+Subject: 67
+Subject: 68
+Subject: 31
+Subject: 69
+Subject: 32
+Subject: 70
+Subject: 71
+Subject: 33
+Subject: 72
+Subject: 34
+Subject: 73
+Subject: 35
+Subject: 74
+Subject: 36
+Subject: 75
+Subject: 76
+Subject: 37
+Subject: 77
+Subject: 38
+Subject: 78
+Subject: 39
+Subject: 79
+Subject: 80
+Subject: 40
+Subject: 81
+Subject: 41
+Subject: 82
+Subject: 42
+Subject: 83
+Subject: 84
+Subject: 43
+Subject: 85
+Subject: 44
+Subject: 86
+Subject: 87
+Subject: 45
+Subject: 88
+Subject: 46
+Subject: 89
+Subject: 90
+Subject: 47
+Subject: 91
+Subject: 48
+Subject: 92
+Subject: 49
+Subject: 93
+Subject: 94
+Subject: 50
+Subject: 95
+Subject: 51
+Subject: 96
+Subject: 52
+Subject: 97
+Subject: 98
+Subject: 53
+Subject: 99
+Subject: 54
+Subject: 100
+Subject: 55
+done :]
+Model #11
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 04:35:37
+======================================================================
+Number of samples: 100
+Number of parameters: 7
+
+Number of initializations: 49
+----------------------------------------------------------------------
+Subject: 01
+Subject: 02
+Subject: 56
+Subject: 03
+Subject: 57
+Subject: 04
+Subject: 58
+Subject: 05
+Subject: 06
+Subject: 59
+Subject: 07
+Subject: 60
+Subject: 08
+Subject: 09
+Subject: 61
+Subject: 10
+Subject: 62
+Subject: 11
+Subject: 63
+Subject: 12
+Subject: 13
+Subject: 64
+Subject: 14
+Subject: 65
+Subject: 15
+Subject: 66
+Subject: 16
+Subject: 67
+Subject: 17
+Subject: 18
+Subject: 68
+Subject: 19
+Subject: 69
+Subject: 20
+Subject: 21
+Subject: 70
+Subject: 22
+Subject: 71
+Subject: 23
+Subject: 24
+Subject: 72
+Subject: 25
+Subject: 73
+Subject: 26
+Subject: 74
+Subject: 27
+Subject: 28
+Subject: 75
+Subject: 29
+Subject: 76
+Subject: 30
+Subject: 77
+Subject: 31
+Subject: 32
+Subject: 78
+Subject: 33
+Subject: 79
+Subject: 34
+Subject: 35
+Subject: 80
+Subject: 36
+Subject: 81
+Subject: 37
+Subject: 38
+Subject: 82
+Subject: 39
+Subject: 83
+Subject: 40
+Subject: 84
+Subject: 41
+Subject: 42
+Subject: 85
+Subject: 43
+Subject: 86
+Subject: 44
+Subject: 87
+Subject: 45
+Subject: 46
+Subject: 88
+Subject: 47
+Subject: 89
+Subject: 48
+Subject: 90
+Subject: 49
+Subject: 50
+Subject: 91
+Subject: 51
+Subject: 92
+Subject: 52
+Subject: 53
+Subject: 93
+Subject: 54
+Subject: 94
+Subject: 55
+Subject: 56
+Subject: 95
+Subject: 57
+Subject: 96
+Subject: 58
+Subject: 59
+Subject: 97
+Subject: 60
+Subject: 98
+Subject: 61
+Subject: 99
+Subject: 62
+Subject: 63
+Subject: 100
+Subject: 64
+done :]
+Model #33
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 05:08:12
+======================================================================
+Number of samples: 100
+Number of parameters: 8
+
+Number of initializations: 56
+----------------------------------------------------------------------
+Subject: 01
+Subject: 65
+Subject: 02
+Subject: 66
+Subject: 67
+Subject: 03
+Subject: 68
+Subject: 04
+Subject: 69
+Subject: 05
+Subject: 70
+Subject: 71
+Subject: 06
+Subject: 72
+Subject: 07
+Subject: 73
+Subject: 08
+Subject: 74
+Subject: 75
+Subject: 09
+Subject: 76
+Subject: 10
+Subject: 77
+Subject: 11
+Subject: 78
+Subject: 12
+Subject: 79
+Subject: 80
+Subject: 13
+Subject: 81
+Subject: 14
+Subject: 82
+Subject: 83
+Subject: 15
+Subject: 84
+Subject: 16
+Subject: 85
+Subject: 86
+Subject: 17
+Subject: 87
+Subject: 18
+Subject: 88
+Subject: 19
+Subject: 89
+Subject: 20
+Subject: 90
+Subject: 91
+Subject: 21
+Subject: 92
+Subject: 22
+Subject: 93
+Subject: 23
+Subject: 94
+Subject: 95
+Subject: 24
+Subject: 96
+Subject: 25
+Subject: 97
+Subject: 26
+Subject: 98
+Subject: 99
+Subject: 27
+Subject: 100
+Subject: 28
+done :]
+Model #12
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 05:27:24
+======================================================================
+Number of samples: 100
+Number of parameters: 7
+
+Number of initializations: 49
+----------------------------------------------------------------------
+Subject: 01
+Subject: 02
+Subject: 29
+Subject: 03
+Subject: 30
+Subject: 04
+Subject: 05
+Subject: 31
+Subject: 06
+Subject: 32
+Subject: 07
+Subject: 33
+Subject: 08
+Subject: 09
+Subject: 34
+Subject: 10
+Subject: 35
+Subject: 11
+Subject: 36
+Subject: 12
+Subject: 13
+Subject: 37
+Subject: 14
+Subject: 38
+Subject: 15
+Subject: 39
+Subject: 16
+Subject: 17
+Subject: 40
+Subject: 18
+Subject: 41
+Subject: 19
+Subject: 42
+Subject: 20
+Subject: 21
+Subject: 43
+Subject: 22
+Subject: 44
+Subject: 23
+Subject: 45
+Subject: 24
+Subject: 25
+Subject: 46
+Subject: 26
+Subject: 47
+Subject: 27
+Subject: 28
+Subject: 48
+Subject: 29
+Subject: 49
+Subject: 30
+Subject: 50
+Subject: 31
+Subject: 32
+Subject: 51
+Subject: 33
+Subject: 52
+Subject: 34
+Subject: 35
+Subject: 53
+Subject: 36
+Subject: 54
+Subject: 37
+Subject: 38
+Subject: 55
+Subject: 39
+Subject: 56
+Subject: 40
+Subject: 57
+Subject: 41
+Subject: 42
+Subject: 58
+Subject: 43
+Subject: 59
+Subject: 44
+Subject: 45
+Subject: 60
+Subject: 46
+Subject: 61
+Subject: 47
+Subject: 62
+Subject: 48
+Subject: 49
+Subject: 63
+Subject: 50
+Subject: 64
+Subject: 51
+Subject: 65
+Subject: 52
+Subject: 53
+Subject: 66
+Subject: 54
+Subject: 67
+Subject: 55
+Subject: 68
+Subject: 56
+Subject: 57
+Subject: 69
+Subject: 58
+Subject: 70
+Subject: 59
+Subject: 60
+Subject: 71
+Subject: 61
+Subject: 72
+Subject: 62
+Subject: 63
+Subject: 73
+Subject: 64
+Subject: 74
+Subject: 65
+Subject: 75
+Subject: 66
+Subject: 67
+Subject: 76
+Subject: 68
+Subject: 77
+Subject: 69
+Subject: 70
+Subject: 78
+Subject: 71
+Subject: 79
+Subject: 72
+Subject: 80
+Subject: 73
+Subject: 81
+Subject: 74
+Subject: 75
+Subject: 82
+Subject: 76
+Subject: 83
+Subject: 77
+Subject: 84
+Subject: 78
+Subject: 79
+Subject: 85
+Subject: 80
+Subject: 86
+Subject: 81
+Subject: 87
+Subject: 82
+Subject: 83
+Subject: 88
+Subject: 84
+Subject: 89
+Subject: 85
+Subject: 86
+Subject: 90
+Subject: 87
+Subject: 91
+Subject: 88
+Subject: 92
+Subject: 89
+Subject: 90
+Subject: 93
+Subject: 91
+Subject: 94
+Subject: 92
+Subject: 95
+Subject: 93
+Subject: 94
+Subject: 96
+Subject: 95
+Subject: 97
+Subject: 96
+Subject: 97
+Subject: 98
+Subject: 98
+Subject: 99
+Subject: 99
+Subject: 100
+Subject: 100
+done :]
+Model #13
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 06:19:01
+======================================================================
+Number of samples: 100
+Number of parameters: 7
+
+Number of initializations: 49
+----------------------------------------------------------------------
+Subject: 01
+done :]
+Model #34
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 06:19:04
+======================================================================
+Number of samples: 100
+Number of parameters: 8
+
+Number of initializations: 56
+----------------------------------------------------------------------
+Subject: 01
+Subject: 02
+Subject: 02
+Subject: 03
+Subject: 03
+Subject: 04
+Subject: 05
+Subject: 04
+Subject: 06
+Subject: 05
+Subject: 07
+Subject: 08
+Subject: 06
+Subject: 09
+Subject: 07
+Subject: 10
+Subject: 08
+Subject: 11
+Subject: 12
+Subject: 09
+Subject: 13
+Subject: 10
+Subject: 14
+Subject: 11
+Subject: 15
+Subject: 16
+Subject: 12
+Subject: 17
+Subject: 13
+Subject: 18
+Subject: 14
+Subject: 19
+Subject: 20
+Subject: 15
+Subject: 21
+Subject: 16
+Subject: 22
+Subject: 23
+Subject: 17
+Subject: 24
+Subject: 18
+Subject: 25
+Subject: 19
+Subject: 26
+Subject: 27
+Subject: 20
+Subject: 28
+Subject: 21
+Subject: 29
+Subject: 22
+Subject: 30
+Subject: 31
+Subject: 23
+Subject: 32
+Subject: 24
+Subject: 33
+Subject: 25
+Subject: 34
+Subject: 35
+Subject: 26
+Subject: 36
+Subject: 27
+Subject: 37
+Subject: 38
+Subject: 28
+Subject: 39
+Subject: 29
+Subject: 40
+Subject: 30
+Subject: 41
+Subject: 42
+Subject: 31
+Subject: 43
+Subject: 32
+Subject: 44
+Subject: 33
+Subject: 45
+Subject: 46
+Subject: 34
+Subject: 47
+Subject: 35
+Subject: 48
+Subject: 36
+Subject: 49
+Subject: 50
+Subject: 37
+Subject: 51
+Subject: 38
+Subject: 52
+Subject: 53
+Subject: 39
+Subject: 54
+Subject: 40
+Subject: 55
+Subject: 41
+Subject: 56
+Subject: 57
+Subject: 42
+Subject: 58
+Subject: 43
+Subject: 59
+Subject: 60
+Subject: 44
+Subject: 61
+Subject: 45
+Subject: 62
+Subject: 46
+Subject: 63
+Subject: 64
+Subject: 47
+Subject: 65
+Subject: 48
+Subject: 66
+Subject: 49
+Subject: 67
+Subject: 68
+Subject: 50
+Subject: 69
+Subject: 51
+Subject: 70
+Subject: 52
+Subject: 71
+Subject: 72
+Subject: 53
+Subject: 73
+Subject: 54
+Subject: 74
+Subject: 55
+Subject: 75
+Subject: 56
+Subject: 76
+Subject: 77
+Subject: 57
+Subject: 78
+Subject: 58
+Subject: 79
+Subject: 59
+Subject: 80
+Subject: 81
+Subject: 60
+Subject: 82
+Subject: 61
+Subject: 83
+Subject: 62
+Subject: 84
+Subject: 63
+Subject: 85
+Subject: 86
+Subject: 64
+Subject: 87
+Subject: 65
+Subject: 88
+Subject: 89
+Subject: 66
+Subject: 90
+Subject: 67
+Subject: 91
+Subject: 68
+Subject: 92
+Subject: 69
+Subject: 93
+Subject: 94
+Subject: 70
+Subject: 95
+Subject: 71
+Subject: 96
+Subject: 72
+Subject: 97
+Subject: 98
+Subject: 73
+Subject: 99
+Subject: 74
+Subject: 100
+done :]
+Model #14
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 07:11:17
+======================================================================
+Number of samples: 100
+Number of parameters: 7
+
+Number of initializations: 49
+----------------------------------------------------------------------
+Subject: 01
+Subject: 75
+Subject: 02
+Subject: 76
+Subject: 03
+Subject: 77
+Subject: 04
+Subject: 05
+Subject: 78
+Subject: 06
+Subject: 79
+Subject: 07
+Subject: 08
+Subject: 80
+Subject: 09
+Subject: 81
+Subject: 10
+Subject: 82
+Subject: 11
+Subject: 12
+Subject: 83
+Subject: 13
+Subject: 84
+Subject: 14
+Subject: 85
+Subject: 15
+Subject: 16
+Subject: 86
+Subject: 17
+Subject: 87
+Subject: 18
+Subject: 88
+Subject: 19
+Subject: 20
+Subject: 89
+Subject: 21
+Subject: 90
+Subject: 22
+Subject: 91
+Subject: 23
+Subject: 24
+Subject: 92
+Subject: 25
+Subject: 93
+Subject: 26
+Subject: 27
+Subject: 94
+Subject: 28
+Subject: 95
+Subject: 29
+Subject: 96
+Subject: 30
+Subject: 31
+Subject: 97
+Subject: 32
+Subject: 98
+Subject: 33
+Subject: 99
+Subject: 34
+Subject: 35
+Subject: 100
+Subject: 36
+done :]
+Model #35
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 07:29:55
+======================================================================
+Number of samples: 100
+Number of parameters: 8
+
+Number of initializations: 56
+----------------------------------------------------------------------
+Subject: 01
+Subject: 37
+Subject: 02
+Subject: 38
+Subject: 03
+Subject: 39
+Subject: 40
+Subject: 04
+Subject: 41
+Subject: 05
+Subject: 42
+Subject: 43
+Subject: 06
+Subject: 44
+Subject: 07
+Subject: 45
+Subject: 08
+Subject: 46
+Subject: 47
+Subject: 09
+Subject: 48
+Subject: 10
+Subject: 49
+Subject: 50
+Subject: 11
+Subject: 51
+Subject: 12
+Subject: 52
+Subject: 13
+Subject: 53
+Subject: 54
+Subject: 14
+Subject: 55
+Subject: 56
+Subject: 15
+Subject: 57
+Subject: 16
+Subject: 58
+Subject: 17
+Subject: 59
+Subject: 18
+Subject: 60
+Subject: 61
+Subject: 19
+Subject: 62
+Subject: 20
+Subject: 63
+Subject: 64
+Subject: 21
+Subject: 65
+Subject: 22
+Subject: 66
+Subject: 23
+Subject: 67
+Subject: 68
+Subject: 24
+Subject: 69
+Subject: 25
+Subject: 70
+Subject: 26
+Subject: 71
+Subject: 72
+Subject: 27
+Subject: 73
+Subject: 28
+Subject: 74
+Subject: 75
+Subject: 29
+Subject: 76
+Subject: 30
+Subject: 77
+Subject: 31
+Subject: 78
+Subject: 32
+Subject: 79
+Subject: 80
+Subject: 33
+Subject: 81
+Subject: 34
+Subject: 82
+Subject: 35
+Subject: 83
+Subject: 84
+Subject: 36
+Subject: 85
+Subject: 37
+Subject: 86
+Subject: 87
+Subject: 38
+Subject: 88
+Subject: 39
+Subject: 89
+Subject: 40
+Subject: 90
+Subject: 41
+Subject: 91
+Subject: 92
+Subject: 42
+Subject: 93
+Subject: 43
+Subject: 94
+Subject: 95
+Subject: 44
+Subject: 96
+Subject: 45
+Subject: 97
+Subject: 46
+Subject: 98
+Subject: 47
+Subject: 99
+Subject: 100
+Subject: 48
+done :]
+Model #15
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 08:03:49
+======================================================================
+Number of samples: 100
+Number of parameters: 7
+
+Number of initializations: 49
+----------------------------------------------------------------------
+Subject: 01
+Subject: 49
+Subject: 02
+Subject: 03
+Subject: 50
+Subject: 04
+Subject: 51
+Subject: 05
+Subject: 52
+Subject: 06
+Subject: 07
+Subject: 53
+Subject: 08
+Subject: 54
+Subject: 09
+Subject: 55
+Subject: 10
+Subject: 11
+Subject: 56
+Subject: 12
+Subject: 57
+Subject: 13
+Subject: 58
+Subject: 14
+Subject: 59
+Subject: 15
+Subject: 16
+Subject: 60
+Subject: 17
+Subject: 61
+Subject: 18
+Subject: 19
+Subject: 62
+Subject: 20
+Subject: 63
+Subject: 21
+Subject: 64
+Subject: 22
+Subject: 23
+Subject: 65
+Subject: 24
+Subject: 66
+Subject: 25
+Subject: 67
+Subject: 26
+Subject: 27
+Subject: 68
+Subject: 28
+Subject: 69
+Subject: 29
+Subject: 30
+Subject: 70
+Subject: 31
+Subject: 71
+Subject: 32
+Subject: 72
+Subject: 33
+Subject: 34
+Subject: 73
+Subject: 35
+Subject: 74
+Subject: 36
+Subject: 37
+Subject: 75
+Subject: 38
+Subject: 76
+Subject: 39
+Subject: 40
+Subject: 77
+Subject: 41
+Subject: 78
+Subject: 42
+Subject: 79
+Subject: 43
+Subject: 44
+Subject: 80
+Subject: 45
+Subject: 81
+Subject: 46
+Subject: 47
+Subject: 82
+Subject: 48
+Subject: 83
+Subject: 49
+Subject: 84
+Subject: 50
+Subject: 51
+Subject: 85
+Subject: 52
+Subject: 86
+Subject: 53
+Subject: 87
+Subject: 54
+Subject: 55
+Subject: 88
+Subject: 56
+Subject: 89
+Subject: 57
+Subject: 58
+Subject: 90
+Subject: 59
+Subject: 91
+Subject: 60
+Subject: 92
+Subject: 61
+Subject: 62
+Subject: 93
+Subject: 63
+Subject: 94
+Subject: 64
+Subject: 65
+Subject: 95
+Subject: 66
+Subject: 96
+Subject: 67
+Subject: 68
+Subject: 97
+Subject: 69
+Subject: 98
+Subject: 70
+Subject: 99
+Subject: 71
+Subject: 100
+Subject: 72
+Subject: 73
+done :]
+Model #36
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 08:41:17
+======================================================================
+Number of samples: 100
+Number of parameters: 8
+
+Number of initializations: 56
+----------------------------------------------------------------------
+Subject: 01
+Subject: 74
+Subject: 02
+Subject: 75
+Subject: 03
+Subject: 76
+Subject: 77
+Subject: 04
+Subject: 78
+Subject: 05
+Subject: 79
+Subject: 06
+Subject: 80
+Subject: 81
+Subject: 07
+Subject: 82
+Subject: 08
+Subject: 83
+Subject: 09
+Subject: 84
+Subject: 10
+Subject: 85
+Subject: 86
+Subject: 11
+Subject: 87
+Subject: 12
+Subject: 88
+Subject: 13
+Subject: 89
+Subject: 90
+Subject: 14
+Subject: 91
+Subject: 15
+Subject: 92
+Subject: 93
+Subject: 16
+Subject: 94
+Subject: 17
+Subject: 95
+Subject: 18
+Subject: 96
+Subject: 19
+Subject: 97
+Subject: 98
+Subject: 20
+Subject: 99
+Subject: 21
+Subject: 100
+done :]
+Model #16
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 08:56:03
+======================================================================
+Number of samples: 100
+Number of parameters: 7
+
+Number of initializations: 49
+----------------------------------------------------------------------
+Subject: 01
+Subject: 22
+Subject: 02
+Subject: 23
+Subject: 03
+Subject: 24
+Subject: 04
+Subject: 05
+Subject: 25
+Subject: 06
+Subject: 26
+Subject: 07
+Subject: 08
+Subject: 27
+Subject: 09
+Subject: 28
+Subject: 10
+Subject: 29
+Subject: 11
+Subject: 12
+Subject: 30
+Subject: 13
+Subject: 31
+Subject: 14
+Subject: 32
+Subject: 15
+Subject: 16
+Subject: 33
+Subject: 17
+Subject: 34
+Subject: 18
+Subject: 19
+Subject: 35
+Subject: 20
+Subject: 36
+Subject: 21
+Subject: 37
+Subject: 22
+Subject: 23
+Subject: 38
+Subject: 24
+Subject: 39
+Subject: 25
+Subject: 40
+Subject: 26
+Subject: 27
+Subject: 41
+Subject: 28
+Subject: 42
+Subject: 29
+Subject: 30
+Subject: 43
+Subject: 31
+Subject: 44
+Subject: 32
+Subject: 45
+Subject: 33
+Subject: 46
+Subject: 34
+Subject: 35
+Subject: 47
+Subject: 36
+Subject: 48
+Subject: 37
+Subject: 38
+Subject: 49
+Subject: 39
+Subject: 50
+Subject: 40
+Subject: 51
+Subject: 41
+Subject: 42
+Subject: 52
+Subject: 43
+Subject: 53
+Subject: 44
+Subject: 45
+Subject: 54
+Subject: 46
+Subject: 55
+Subject: 47
+Subject: 56
+Subject: 48
+Subject: 57
+Subject: 49
+Subject: 50
+Subject: 58
+Subject: 51
+Subject: 59
+Subject: 52
+Subject: 53
+Subject: 60
+Subject: 54
+Subject: 61
+Subject: 55
+Subject: 56
+Subject: 62
+Subject: 57
+Subject: 63
+Subject: 58
+Subject: 64
+Subject: 59
+Subject: 60
+Subject: 65
+Subject: 61
+Subject: 66
+Subject: 62
+Subject: 63
+Subject: 67
+Subject: 64
+Subject: 68
+Subject: 65
+Subject: 69
+Subject: 66
+Subject: 67
+Subject: 70
+Subject: 68
+Subject: 71
+Subject: 69
+Subject: 70
+Subject: 72
+Subject: 71
+Subject: 73
+Subject: 72
+Subject: 74
+Subject: 73
+Subject: 74
+Subject: 75
+Subject: 75
+Subject: 76
+Subject: 76
+Subject: 77
+Subject: 77
+Subject: 78
+Subject: 78
+Subject: 79
+Subject: 79
+Subject: 80
+Subject: 80
+Subject: 81
+Subject: 81
+Subject: 82
+Subject: 83
+Subject: 82
+Subject: 84
+Subject: 83
+Subject: 85
+Subject: 86
+Subject: 84
+Subject: 87
+Subject: 85
+Subject: 88
+Subject: 86
+Subject: 89
+Subject: 90
+Subject: 87
+Subject: 91
+Subject: 88
+Subject: 92
+Subject: 89
+Subject: 93
+Subject: 94
+Subject: 90
+Subject: 95
+Subject: 91
+Subject: 96
+Subject: 92
+Subject: 97
+Subject: 98
+Subject: 93
+Subject: 99
+Subject: 94
+Subject: 100
+done :]
+Model #17
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 09:48:09
+======================================================================
+Number of samples: 100
+Number of parameters: 7
+
+Number of initializations: 49
+----------------------------------------------------------------------
+Subject: 01
+Subject: 95
+Subject: 02
+Subject: 96
+Subject: 03
+Subject: 04
+Subject: 97
+Subject: 05
+Subject: 98
+Subject: 06
+Subject: 99
+Subject: 07
+Subject: 08
+Subject: 100
+Subject: 09
+done :]
+Model #37
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 09:52:29
+======================================================================
+Number of samples: 100
+Number of parameters: 8
+
+Number of initializations: 56
+----------------------------------------------------------------------
+Subject: 01
+Subject: 10
+Subject: 02
+Subject: 11
+Subject: 12
+Subject: 03
+Subject: 13
+Subject: 04
+Subject: 14
+Subject: 05
+Subject: 15
+Subject: 16
+Subject: 06
+Subject: 17
+Subject: 07
+Subject: 18
+Subject: 08
+Subject: 19
+Subject: 20
+Subject: 09
+Subject: 21
+Subject: 10
+Subject: 22
+Subject: 11
+Subject: 23
+Subject: 24
+Subject: 12
+Subject: 25
+Subject: 13
+Subject: 26
+Subject: 14
+Subject: 27
+Subject: 28
+Subject: 15
+Subject: 29
+Subject: 16
+Subject: 30
+Subject: 31
+Subject: 17
+Subject: 32
+Subject: 18
+Subject: 33
+Subject: 19
+Subject: 34
+Subject: 35
+Subject: 20
+Subject: 36
+Subject: 21
+Subject: 37
+Subject: 38
+Subject: 22
+Subject: 39
+Subject: 23
+Subject: 40
+Subject: 24
+Subject: 41
+Subject: 42
+Subject: 25
+Subject: 43
+Subject: 26
+Subject: 44
+Subject: 45
+Subject: 27
+Subject: 46
+Subject: 28
+Subject: 47
+Subject: 29
+Subject: 48
+Subject: 49
+Subject: 30
+Subject: 50
+Subject: 31
+Subject: 51
+Subject: 52
+Subject: 32
+Subject: 53
+Subject: 33
+Subject: 54
+Subject: 34
+Subject: 55
+Subject: 56
+Subject: 35
+Subject: 57
+Subject: 36
+Subject: 58
+Subject: 37
+Subject: 59
+Subject: 60
+Subject: 38
+Subject: 61
+Subject: 39
+Subject: 62
+Subject: 63
+Subject: 40
+Subject: 64
+Subject: 41
+Subject: 65
+Subject: 42
+Subject: 66
+Subject: 67
+Subject: 43
+Subject: 68
+Subject: 44
+Subject: 69
+Subject: 45
+Subject: 70
+Subject: 71
+Subject: 46
+Subject: 72
+Subject: 47
+Subject: 73
+Subject: 48
+Subject: 74
+Subject: 75
+Subject: 49
+Subject: 76
+Subject: 50
+Subject: 77
+Subject: 51
+Subject: 78
+Subject: 79
+Subject: 52
+Subject: 80
+Subject: 53
+Subject: 81
+Subject: 54
+Subject: 82
+Subject: 83
+Subject: 55
+Subject: 84
+Subject: 56
+Subject: 85
+Subject: 57
+Subject: 86
+Subject: 87
+Subject: 58
+Subject: 88
+Subject: 59
+Subject: 89
+Subject: 90
+Subject: 60
+Subject: 91
+Subject: 61
+Subject: 92
+Subject: 62
+Subject: 93
+Subject: 94
+Subject: 63
+Subject: 95
+Subject: 64
+Subject: 96
+Subject: 65
+Subject: 97
+Subject: 98
+Subject: 66
+Subject: 99
+Subject: 67
+Subject: 100
+Subject: 68
+done :]
+Model #18
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 10:40:08
+======================================================================
+Number of samples: 100
+Number of parameters: 7
+
+Number of initializations: 49
+----------------------------------------------------------------------
+Subject: 01
+Subject: 02
+Subject: 69
+Subject: 03
+Subject: 70
+Subject: 04
+Subject: 05
+Subject: 71
+Subject: 06
+Subject: 72
+Subject: 07
+Subject: 08
+Subject: 73
+Subject: 09
+Subject: 74
+Subject: 10
+Subject: 75
+Subject: 11
+Subject: 12
+Subject: 76
+Subject: 13
+Subject: 77
+Subject: 14
+Subject: 78
+Subject: 15
+Subject: 16
+Subject: 79
+Subject: 17
+Subject: 80
+Subject: 18
+Subject: 81
+Subject: 19
+Subject: 20
+Subject: 82
+Subject: 21
+Subject: 83
+Subject: 22
+Subject: 23
+Subject: 84
+Subject: 24
+Subject: 85
+Subject: 25
+Subject: 86
+Subject: 26
+Subject: 27
+Subject: 87
+Subject: 28
+Subject: 88
+Subject: 29
+Subject: 30
+Subject: 89
+Subject: 31
+Subject: 90
+Subject: 32
+Subject: 91
+Subject: 33
+Subject: 34
+Subject: 92
+Subject: 35
+Subject: 93
+Subject: 36
+Subject: 37
+Subject: 94
+Subject: 38
+Subject: 95
+Subject: 39
+Subject: 40
+Subject: 96
+Subject: 41
+Subject: 97
+Subject: 42
+Subject: 43
+Subject: 98
+Subject: 44
+Subject: 99
+Subject: 45
+Subject: 100
+Subject: 46
+Subject: 47
+done :]
+Model #38
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 11:04:01
+======================================================================
+Number of samples: 100
+Number of parameters: 8
+
+Number of initializations: 56
+----------------------------------------------------------------------
+Subject: 01
+Subject: 48
+Subject: 02
+Subject: 49
+Subject: 03
+Subject: 50
+Subject: 51
+Subject: 04
+Subject: 52
+Subject: 05
+Subject: 53
+Subject: 54
+Subject: 06
+Subject: 55
+Subject: 07
+Subject: 56
+Subject: 08
+Subject: 57
+Subject: 58
+Subject: 09
+Subject: 59
+Subject: 10
+Subject: 60
+Subject: 11
+Subject: 61
+Subject: 62
+Subject: 12
+Subject: 63
+Subject: 13
+Subject: 64
+Subject: 65
+Subject: 14
+Subject: 66
+Subject: 15
+Subject: 67
+Subject: 68
+Subject: 16
+Subject: 69
+Subject: 17
+Subject: 70
+Subject: 18
+Subject: 71
+Subject: 72
+Subject: 19
+Subject: 73
+Subject: 20
+Subject: 74
+Subject: 75
+Subject: 21
+Subject: 76
+Subject: 22
+Subject: 77
+Subject: 23
+Subject: 78
+Subject: 24
+Subject: 79
+Subject: 80
+Subject: 25
+Subject: 81
+Subject: 26
+Subject: 82
+Subject: 83
+Subject: 27
+Subject: 84
+Subject: 28
+Subject: 85
+Subject: 86
+Subject: 29
+Subject: 87
+Subject: 30
+Subject: 88
+Subject: 31
+Subject: 89
+Subject: 90
+Subject: 32
+Subject: 91
+Subject: 33
+Subject: 92
+Subject: 34
+Subject: 93
+Subject: 35
+Subject: 94
+Subject: 95
+Subject: 36
+Subject: 96
+Subject: 37
+Subject: 97
+Subject: 38
+Subject: 98
+Subject: 99
+Subject: 39
+Subject: 100
+Subject: 40
+done :]
+Model #19
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 11:31:56
+======================================================================
+Number of samples: 100
+Number of parameters: 8
+
+Number of initializations: 56
+----------------------------------------------------------------------
+Subject: 01
+Subject: 41
+Subject: 02
+Subject: 42
+Subject: 03
+Subject: 43
+Subject: 04
+Subject: 44
+Subject: 05
+Subject: 45
+Subject: 06
+Subject: 46
+Subject: 07
+Subject: 47
+Subject: 08
+Subject: 48
+Subject: 09
+Subject: 49
+Subject: 10
+Subject: 50
+Subject: 11
+Subject: 51
+Subject: 12
+Subject: 52
+Subject: 13
+Subject: 53
+Subject: 14
+Subject: 54
+Subject: 15
+Subject: 55
+Subject: 16
+Subject: 56
+Subject: 17
+Subject: 57
+Subject: 18
+Subject: 58
+Subject: 19
+Subject: 59
+Subject: 20
+Subject: 60
+Subject: 21
+Subject: 61
+Subject: 22
+Subject: 62
+Subject: 23
+Subject: 63
+Subject: 24
+Subject: 64
+Subject: 25
+Subject: 65
+Subject: 26
+Subject: 66
+Subject: 27
+Subject: 67
+Subject: 28
+Subject: 68
+Subject: 29
+Subject: 69
+Subject: 30
+Subject: 70
+Subject: 31
+Subject: 71
+Subject: 32
+Subject: 72
+Subject: 33
+Subject: 73
+Subject: 34
+Subject: 74
+Subject: 35
+Subject: 75
+Subject: 36
+Subject: 76
+Subject: 37
+Subject: 77
+Subject: 38
+Subject: 39
+Subject: 78
+Subject: 40
+Subject: 79
+Subject: 41
+Subject: 80
+Subject: 42
+Subject: 81
+Subject: 43
+Subject: 82
+Subject: 44
+Subject: 83
+Subject: 45
+Subject: 84
+Subject: 46
+Subject: 85
+Subject: 47
+Subject: 86
+Subject: 48
+Subject: 87
+Subject: 49
+Subject: 88
+Subject: 50
+Subject: 89
+Subject: 51
+Subject: 90
+Subject: 52
+Subject: 91
+Subject: 53
+Subject: 92
+Subject: 54
+Subject: 93
+Subject: 55
+Subject: 94
+Subject: 56
+Subject: 95
+Subject: 57
+Subject: 96
+Subject: 58
+Subject: 59
+Subject: 97
+Subject: 60
+Subject: 98
+Subject: 99
+Subject: 61
+Subject: 100
+Subject: 62
+Subject: 63
+done :]
+Model #39
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 12:15:04
+======================================================================
+Number of samples: 100
+Number of parameters: 9
+
+Number of initializations: 63
+----------------------------------------------------------------------
+Subject: 01
+Subject: 64
+Subject: 02
+Subject: 65
+Subject: 03
+Subject: 66
+Subject: 04
+Subject: 67
+Subject: 68
+Subject: 05
+Subject: 69
+Subject: 06
+Subject: 70
+Subject: 07
+Subject: 71
+Subject: 08
+Subject: 72
+Subject: 73
+Subject: 09
+Subject: 74
+Subject: 10
+Subject: 75
+Subject: 11
+Subject: 76
+Subject: 77
+Subject: 12
+Subject: 78
+Subject: 13
+Subject: 79
+Subject: 14
+Subject: 80
+Subject: 81
+Subject: 15
+Subject: 82
+Subject: 16
+Subject: 83
+Subject: 17
+Subject: 84
+Subject: 18
+Subject: 85
+Subject: 86
+Subject: 19
+Subject: 87
+Subject: 20
+Subject: 88
+Subject: 89
+Subject: 21
+Subject: 90
+Subject: 22
+Subject: 91
+Subject: 23
+Subject: 92
+Subject: 93
+Subject: 24
+Subject: 94
+Subject: 25
+Subject: 95
+Subject: 26
+Subject: 96
+Subject: 97
+Subject: 27
+Subject: 98
+Subject: 28
+Subject: 99
+Subject: 100
+Subject: 29
+done :]
+Model #20
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 12:41:31
+======================================================================
+Number of samples: 100
+Number of parameters: 8
+
+Number of initializations: 56
+----------------------------------------------------------------------
+Subject: 01
+Subject: 30
+Subject: 02
+Subject: 31
+Subject: 03
+Subject: 04
+Subject: 32
+Subject: 05
+Subject: 33
+Subject: 06
+Subject: 34
+Subject: 07
+Subject: 08
+Subject: 35
+Subject: 09
+Subject: 36
+Subject: 10
+Subject: 37
+Subject: 11
+Subject: 38
+Subject: 12
+Subject: 13
+Subject: 39
+Subject: 14
+Subject: 40
+Subject: 15
+Subject: 41
+Subject: 16
+Subject: 17
+Subject: 42
+Subject: 18
+Subject: 43
+Subject: 19
+Subject: 44
+Subject: 20
+Subject: 45
+Subject: 21
+Subject: 22
+Subject: 46
+Subject: 23
+Subject: 47
+Subject: 24
+Subject: 48
+Subject: 25
+Subject: 49
+Subject: 26
+Subject: 27
+Subject: 50
+Subject: 28
+Subject: 51
+Subject: 29
+Subject: 52
+Subject: 30
+Subject: 53
+Subject: 31
+Subject: 32
+Subject: 54
+Subject: 33
+Subject: 55
+Subject: 34
+Subject: 56
+Subject: 35
+Subject: 36
+Subject: 57
+Subject: 37
+Subject: 58
+Subject: 38
+Subject: 59
+Subject: 39
+Subject: 40
+Subject: 60
+Subject: 41
+Subject: 61
+Subject: 42
+Subject: 62
+Subject: 43
+Subject: 44
+Subject: 63
+Subject: 45
+Subject: 64
+Subject: 46
+Subject: 47
+Subject: 65
+Subject: 48
+Subject: 66
+Subject: 49
+Subject: 67
+Subject: 50
+Subject: 68
+Subject: 51
+Subject: 52
+Subject: 69
+Subject: 53
+Subject: 70
+Subject: 54
+Subject: 55
+Subject: 71
+Subject: 56
+Subject: 72
+Subject: 57
+Subject: 73
+Subject: 58
+Subject: 59
+Subject: 74
+Subject: 60
+Subject: 75
+Subject: 61
+Subject: 76
+Subject: 62
+Subject: 63
+Subject: 77
+Subject: 64
+Subject: 78
+Subject: 65
+Subject: 79
+Subject: 66
+Subject: 67
+Subject: 80
+Subject: 68
+Subject: 81
+Subject: 69
+Subject: 82
+Subject: 70
+Subject: 71
+Subject: 83
+Subject: 72
+Subject: 84
+Subject: 73
+Subject: 85
+Subject: 74
+Subject: 86
+Subject: 75
+Subject: 87
+Subject: 76
+Subject: 77
+Subject: 88
+Subject: 78
+Subject: 89
+Subject: 79
+Subject: 90
+Subject: 80
+Subject: 81
+Subject: 91
+Subject: 82
+Subject: 92
+Subject: 83
+Subject: 93
+Subject: 84
+Subject: 85
+Subject: 94
+Subject: 86
+Subject: 95
+Subject: 87
+Subject: 96
+Subject: 88
+Subject: 89
+Subject: 97
+Subject: 90
+Subject: 98
+Subject: 91
+Subject: 99
+Subject: 92
+Subject: 100
+Subject: 93
+Subject: 94
+done :]
+Model #40
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 13:46:52
+======================================================================
+Number of samples: 100
+Number of parameters: 9
+
+Number of initializations: 63
+----------------------------------------------------------------------
+Subject: 01
+Subject: 95
+Subject: 02
+Subject: 96
+Subject: 03
+Subject: 97
+Subject: 98
+Subject: 04
+Subject: 99
+Subject: 05
+Subject: 100
+Subject: 06
+done :]
+Model #21
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 13:51:32
+======================================================================
+Number of samples: 100
+Number of parameters: 8
+
+Number of initializations: 56
+----------------------------------------------------------------------
+Subject: 01
+Subject: 02
+Subject: 07
+Subject: 03
+Subject: 08
+Subject: 04
+Subject: 09
+Subject: 05
+Subject: 06
+Subject: 10
+Subject: 07
+Subject: 11
+Subject: 08
+Subject: 12
+Subject: 09
+Subject: 10
+Subject: 13
+Subject: 11
+Subject: 14
+Subject: 12
+Subject: 15
+Subject: 13
+Subject: 14
+Subject: 16
+Subject: 15
+Subject: 17
+Subject: 16
+Subject: 18
+Subject: 17
+Subject: 18
+Subject: 19
+Subject: 19
+Subject: 20
+Subject: 20
+Subject: 21
+Subject: 21
+Subject: 22
+Subject: 22
+Subject: 23
+Subject: 23
+Subject: 24
+Subject: 24
+Subject: 25
+Subject: 26
+Subject: 25
+Subject: 27
+Subject: 26
+Subject: 28
+Subject: 27
+Subject: 29
+Subject: 30
+Subject: 28
+Subject: 31
+Subject: 29
+Subject: 32
+Subject: 30
+Subject: 33
+Subject: 31
+Subject: 34
+Subject: 35
+Subject: 32
+Subject: 36
+Subject: 33
+Subject: 37
+Subject: 34
+Subject: 38
+Subject: 39
+Subject: 35
+Subject: 40
+Subject: 36
+Subject: 41
+Subject: 37
+Subject: 42
+Subject: 43
+Subject: 38
+Subject: 44
+Subject: 39
+Subject: 45
+Subject: 40
+Subject: 46
+Subject: 47
+Subject: 41
+Subject: 48
+Subject: 42
+Subject: 49
+Subject: 43
+Subject: 50
+Subject: 51
+Subject: 44
+Subject: 52
+Subject: 45
+Subject: 53
+Subject: 54
+Subject: 46
+Subject: 55
+Subject: 47
+Subject: 56
+Subject: 48
+Subject: 57
+Subject: 58
+Subject: 49
+Subject: 59
+Subject: 50
+Subject: 60
+Subject: 51
+Subject: 61
+Subject: 62
+Subject: 52
+Subject: 63
+Subject: 53
+Subject: 64
+Subject: 54
+Subject: 65
+Subject: 66
+Subject: 55
+Subject: 67
+Subject: 56
+Subject: 68
+Subject: 57
+Subject: 69
+Subject: 70
+Subject: 58
+Subject: 71
+Subject: 59
+Subject: 72
+Subject: 60
+Subject: 73
+Subject: 61
+Subject: 74
+Subject: 75
+Subject: 62
+Subject: 76
+Subject: 63
+Subject: 77
+Subject: 64
+Subject: 78
+Subject: 79
+Subject: 65
+Subject: 80
+Subject: 66
+Subject: 81
+Subject: 67
+Subject: 82
+Subject: 68
+Subject: 83
+Subject: 84
+Subject: 69
+Subject: 85
+Subject: 70
+Subject: 86
+Subject: 87
+Subject: 71
+Subject: 88
+Subject: 72
+Subject: 89
+Subject: 73
+Subject: 90
+Subject: 91
+Subject: 74
+Subject: 92
+Subject: 75
+Subject: 93
+Subject: 76
+Subject: 94
+Subject: 95
+Subject: 77
+Subject: 96
+Subject: 78
+Subject: 97
+Subject: 98
+Subject: 79
+Subject: 99
+Subject: 80
+Subject: 100
+Subject: 81
+done :]
+Model #22
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 15:01:26
+======================================================================
+Number of samples: 100
+Number of parameters: 8
+
+Number of initializations: 56
+----------------------------------------------------------------------
+Subject: 01
+Subject: 02
+Subject: 82
+Subject: 03
+Subject: 83
+Subject: 04
+Subject: 84
+Subject: 05
+Subject: 06
+Subject: 85
+Subject: 07
+Subject: 86
+Subject: 08
+Subject: 09
+Subject: 87
+Subject: 10
+Subject: 88
+Subject: 11
+Subject: 89
+Subject: 12
+Subject: 13
+Subject: 90
+Subject: 14
+Subject: 91
+Subject: 15
+Subject: 92
+Subject: 16
+Subject: 17
+Subject: 93
+Subject: 18
+Subject: 94
+Subject: 19
+Subject: 95
+Subject: 20
+Subject: 96
+Subject: 21
+Subject: 22
+Subject: 97
+Subject: 23
+Subject: 98
+Subject: 24
+Subject: 99
+Subject: 25
+Subject: 26
+Subject: 100
+Subject: 27
+done :]
+Model #41
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 15:19:54
+======================================================================
+Number of samples: 100
+Number of parameters: 9
+
+Number of initializations: 63
+----------------------------------------------------------------------
+Subject: 01
+Subject: 28
+Subject: 02
+Subject: 29
+Subject: 03
+Subject: 30
+Subject: 04
+Subject: 31
+Subject: 32
+Subject: 05
+Subject: 33
+Subject: 06
+Subject: 34
+Subject: 35
+Subject: 07
+Subject: 36
+Subject: 08
+Subject: 37
+Subject: 09
+Subject: 38
+Subject: 10
+Subject: 39
+Subject: 40
+Subject: 11
+Subject: 41
+Subject: 12
+Subject: 42
+Subject: 13
+Subject: 43
+Subject: 44
+Subject: 14
+Subject: 45
+Subject: 15
+Subject: 46
+Subject: 16
+Subject: 47
+Subject: 48
+Subject: 17
+Subject: 49
+Subject: 18
+Subject: 50
+Subject: 19
+Subject: 51
+Subject: 52
+Subject: 20
+Subject: 53
+Subject: 21
+Subject: 54
+Subject: 55
+Subject: 22
+Subject: 56
+Subject: 23
+Subject: 57
+Subject: 24
+Subject: 58
+Subject: 59
+Subject: 25
+Subject: 60
+Subject: 26
+Subject: 61
+Subject: 27
+Subject: 62
+Subject: 63
+Subject: 28
+Subject: 64
+Subject: 29
+Subject: 65
+Subject: 30
+Subject: 66
+Subject: 67
+Subject: 31
+Subject: 68
+Subject: 32
+Subject: 69
+Subject: 33
+Subject: 70
+Subject: 34
+Subject: 71
+Subject: 35
+Subject: 72
+Subject: 73
+Subject: 36
+Subject: 74
+Subject: 37
+Subject: 75
+Subject: 38
+Subject: 76
+Subject: 39
+Subject: 77
+Subject: 78
+Subject: 40
+Subject: 79
+Subject: 41
+Subject: 80
+Subject: 42
+Subject: 81
+Subject: 43
+Subject: 82
+Subject: 83
+Subject: 44
+Subject: 84
+Subject: 45
+Subject: 85
+Subject: 86
+Subject: 46
+Subject: 87
+Subject: 47
+Subject: 88
+Subject: 48
+Subject: 89
+Subject: 49
+Subject: 90
+Subject: 91
+Subject: 50
+Subject: 92
+Subject: 51
+Subject: 93
+Subject: 52
+Subject: 94
+Subject: 95
+Subject: 53
+Subject: 96
+Subject: 54
+Subject: 97
+Subject: 55
+Subject: 98
+Subject: 56
+Subject: 99
+Subject: 100
+Subject: 57
+done :]
+Model #23
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 16:11:39
+======================================================================
+Number of samples: 100
+Number of parameters: 8
+
+Number of initializations: 56
+----------------------------------------------------------------------
+Subject: 01
+Subject: 58
+Subject: 02
+Subject: 03
+Subject: 59
+Subject: 04
+Subject: 60
+Subject: 05
+Subject: 61
+Subject: 06
+Subject: 07
+Subject: 62
+Subject: 08
+Subject: 63
+Subject: 09
+Subject: 64
+Subject: 10
+Subject: 11
+Subject: 65
+Subject: 12
+Subject: 66
+Subject: 13
+Subject: 67
+Subject: 14
+Subject: 68
+Subject: 15
+Subject: 69
+Subject: 16
+Subject: 17
+Subject: 70
+Subject: 18
+Subject: 71
+Subject: 19
+Subject: 20
+Subject: 72
+Subject: 21
+Subject: 73
+Subject: 22
+Subject: 74
+Subject: 23
+Subject: 24
+Subject: 75
+Subject: 25
+Subject: 76
+Subject: 26
+Subject: 77
+Subject: 27
+Subject: 78
+Subject: 28
+Subject: 29
+Subject: 79
+Subject: 30
+Subject: 80
+Subject: 31
+Subject: 81
+Subject: 32
+Subject: 33
+Subject: 82
+Subject: 34
+Subject: 83
+Subject: 35
+Subject: 84
+Subject: 36
+Subject: 37
+Subject: 85
+Subject: 38
+Subject: 86
+Subject: 39
+Subject: 87
+Subject: 40
+Subject: 41
+Subject: 88
+Subject: 42
+Subject: 89
+Subject: 43
+Subject: 90
+Subject: 44
+Subject: 45
+Subject: 91
+Subject: 46
+Subject: 92
+Subject: 47
+Subject: 93
+Subject: 48
+Subject: 49
+Subject: 94
+Subject: 50
+Subject: 95
+Subject: 51
+Subject: 96
+Subject: 52
+Subject: 53
+Subject: 97
+Subject: 54
+Subject: 98
+Subject: 55
+Subject: 99
+Subject: 56
+Subject: 57
+Subject: 100
+Subject: 58
+done :]
+Model #42
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 16:51:54
+======================================================================
+Number of samples: 100
+Number of parameters: 9
+
+Number of initializations: 63
+----------------------------------------------------------------------
+Subject: 01
+Subject: 59
+Subject: 02
+Subject: 60
+Subject: 03
+Subject: 61
+Subject: 62
+Subject: 04
+Subject: 63
+Subject: 05
+Subject: 64
+Subject: 06
+Subject: 65
+Subject: 66
+Subject: 07
+Subject: 67
+Subject: 08
+Subject: 68
+Subject: 69
+Subject: 09
+Subject: 70
+Subject: 10
+Subject: 71
+Subject: 11
+Subject: 72
+Subject: 12
+Subject: 73
+Subject: 74
+Subject: 13
+Subject: 75
+Subject: 14
+Subject: 76
+Subject: 15
+Subject: 77
+Subject: 78
+Subject: 16
+Subject: 79
+Subject: 17
+Subject: 80
+Subject: 18
+Subject: 81
+Subject: 19
+Subject: 82
+Subject: 83
+Subject: 20
+Subject: 84
+Subject: 21
+Subject: 85
+Subject: 86
+Subject: 22
+Subject: 87
+Subject: 23
+Subject: 88
+Subject: 24
+Subject: 89
+Subject: 90
+Subject: 25
+Subject: 91
+Subject: 26
+Subject: 92
+Subject: 93
+Subject: 27
+Subject: 94
+Subject: 28
+Subject: 95
+Subject: 29
+Subject: 96
+Subject: 30
+Subject: 97
+Subject: 98
+Subject: 31
+Subject: 99
+Subject: 32
+Subject: 100
+Subject: 33
+done :]
+Model #24
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 17:22:04
+======================================================================
+Number of samples: 100
+Number of parameters: 8
+
+Number of initializations: 56
+----------------------------------------------------------------------
+Subject: 01
+Subject: 02
+Subject: 34
+Subject: 03
+Subject: 35
+Subject: 04
+Subject: 36
+Subject: 05
+Subject: 06
+Subject: 37
+Subject: 07
+Subject: 38
+Subject: 08
+Subject: 39
+Subject: 09
+Subject: 10
+Subject: 40
+Subject: 11
+Subject: 41
+Subject: 12
+Subject: 42
+Subject: 13
+Subject: 14
+Subject: 43
+Subject: 15
+Subject: 44
+Subject: 16
+Subject: 45
+Subject: 17
+Subject: 18
+Subject: 46
+Subject: 19
+Subject: 47
+Subject: 20
+Subject: 48
+Subject: 21
+Subject: 22
+Subject: 49
+Subject: 23
+Subject: 50
+Subject: 24
+Subject: 51
+Subject: 25
+Subject: 52
+Subject: 26
+Subject: 27
+Subject: 53
+Subject: 28
+Subject: 54
+Subject: 29
+Subject: 55
+Subject: 30
+Subject: 56
+Subject: 31
+Subject: 32
+Subject: 57
+Subject: 33
+Subject: 58
+Subject: 34
+Subject: 59
+Subject: 35
+Subject: 36
+Subject: 60
+Subject: 37
+Subject: 61
+Subject: 38
+Subject: 62
+Subject: 39
+Subject: 40
+Subject: 63
+Subject: 41
+Subject: 64
+Subject: 42
+Subject: 65
+Subject: 43
+Subject: 44
+Subject: 66
+Subject: 45
+Subject: 67
+Subject: 46
+Subject: 68
+Subject: 47
+Subject: 69
+Subject: 48
+Subject: 49
+Subject: 70
+Subject: 50
+Subject: 71
+Subject: 51
+Subject: 72
+Subject: 52
+Subject: 53
+Subject: 73
+Subject: 54
+Subject: 74
+Subject: 55
+Subject: 75
+Subject: 56
+Subject: 57
+Subject: 76
+Subject: 58
+Subject: 77
+Subject: 59
+Subject: 60
+Subject: 78
+Subject: 61
+Subject: 79
+Subject: 62
+Subject: 80
+Subject: 63
+Subject: 64
+Subject: 81
+Subject: 65
+Subject: 82
+Subject: 66
+Subject: 83
+Subject: 67
+Subject: 68
+Subject: 84
+Subject: 69
+Subject: 85
+Subject: 70
+Subject: 86
+Subject: 71
+Subject: 87
+Subject: 72
+Subject: 73
+Subject: 88
+Subject: 74
+Subject: 89
+Subject: 75
+Subject: 90
+Subject: 76
+Subject: 77
+Subject: 91
+Subject: 78
+Subject: 92
+Subject: 79
+Subject: 93
+Subject: 80
+Subject: 81
+Subject: 94
+Subject: 82
+Subject: 95
+Subject: 83
+Subject: 96
+Subject: 84
+Subject: 85
+Subject: 97
+Subject: 86
+Subject: 98
+Subject: 87
+Subject: 99
+Subject: 88
+Subject: 89
+Subject: 100
+Subject: 90
+done :]
+Model #43
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 18:25:02
+======================================================================
+Number of samples: 100
+Number of parameters: 9
+
+Number of initializations: 63
+----------------------------------------------------------------------
+Subject: 01
+Subject: 91
+Subject: 02
+Subject: 92
+Subject: 03
+Subject: 93
+Subject: 94
+Subject: 04
+Subject: 95
+Subject: 05
+Subject: 96
+Subject: 06
+Subject: 97
+Subject: 98
+Subject: 07
+Subject: 99
+Subject: 08
+Subject: 100
+Subject: 09
+done :]
+Model #25
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 18:32:29
+======================================================================
+Number of samples: 100
+Number of parameters: 8
+
+Number of initializations: 56
+----------------------------------------------------------------------
+Subject: 01
+Subject: 02
+Subject: 10
+Subject: 03
+Subject: 11
+Subject: 04
+Subject: 05
+Subject: 12
+Subject: 06
+Subject: 13
+Subject: 07
+Subject: 14
+Subject: 08
+Subject: 09
+Subject: 15
+Subject: 10
+Subject: 16
+Subject: 11
+Subject: 12
+Subject: 17
+Subject: 13
+Subject: 18
+Subject: 14
+Subject: 19
+Subject: 15
+Subject: 16
+Subject: 20
+Subject: 17
+Subject: 21
+Subject: 18
+Subject: 22
+Subject: 19
+Subject: 20
+Subject: 23
+Subject: 21
+Subject: 24
+Subject: 22
+Subject: 25
+Subject: 23
+Subject: 24
+Subject: 26
+Subject: 25
+Subject: 27
+Subject: 26
+Subject: 28
+Subject: 27
+Subject: 28
+Subject: 29
+Subject: 29
+Subject: 30
+Subject: 30
+Subject: 31
+Subject: 31
+Subject: 32
+Subject: 32
+Subject: 33
+Subject: 33
+Subject: 34
+Subject: 34
+Subject: 35
+Subject: 36
+Subject: 35
+Subject: 37
+Subject: 36
+Subject: 38
+Subject: 37
+Subject: 39
+Subject: 40
+Subject: 38
+Subject: 41
+Subject: 39
+Subject: 42
+Subject: 40
+Subject: 43
+Subject: 44
+Subject: 41
+Subject: 45
+Subject: 42
+Subject: 46
+Subject: 43
+Subject: 47
+Subject: 48
+Subject: 44
+Subject: 49
+Subject: 45
+Subject: 50
+Subject: 46
+Subject: 51
+Subject: 47
+Subject: 52
+Subject: 53
+Subject: 48
+Subject: 54
+Subject: 49
+Subject: 55
+Subject: 56
+Subject: 50
+Subject: 57
+Subject: 51
+Subject: 58
+Subject: 52
+Subject: 59
+Subject: 53
+Subject: 60
+Subject: 61
+Subject: 54
+Subject: 62
+Subject: 55
+Subject: 63
+Subject: 56
+Subject: 64
+Subject: 65
+Subject: 57
+Subject: 66
+Subject: 58
+Subject: 67
+Subject: 59
+Subject: 68
+Subject: 69
+Subject: 60
+Subject: 70
+Subject: 61
+Subject: 71
+Subject: 62
+Subject: 72
+Subject: 73
+Subject: 63
+Subject: 74
+Subject: 64
+Subject: 75
+Subject: 65
+Subject: 76
+Subject: 77
+Subject: 66
+Subject: 78
+Subject: 67
+Subject: 79
+Subject: 68
+Subject: 80
+Subject: 69
+Subject: 81
+Subject: 82
+Subject: 70
+Subject: 83
+Subject: 71
+Subject: 84
+Subject: 72
+Subject: 85
+Subject: 86
+Subject: 73
+Subject: 87
+Subject: 74
+Subject: 88
+Subject: 75
+Subject: 89
+Subject: 90
+Subject: 76
+Subject: 91
+Subject: 77
+Subject: 92
+Subject: 93
+Subject: 78
+Subject: 94
+Subject: 79
+Subject: 95
+Subject: 80
+Subject: 96
+Subject: 97
+Subject: 81
+Subject: 98
+Subject: 82
+Subject: 99
+Subject: 83
+Subject: 100
+done :]
+
+ans = 
+
+  Figure (1) with properties:
+
+      Number: 1
+        Name: ''
+       Color: [1 1 1]
+    Position: [233 247 560 420]
+       Units: 'pixels'
+
+  Use GET to show all properties
+
+Subject: 84
+Subject: 85
+Subject: 86
+Subject: 87
+Subject: 88
+Subject: 89
+Subject: 90
+Subject: 91
+Subject: 92
+Subject: 93
+Subject: 94
+Subject: 95
+Subject: 96
+Subject: 97
+Subject: 98
+Subject: 99
+Subject: 100
+done :]
+Model #44
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 19:58:04
+======================================================================
+Number of samples: 100
+Number of parameters: 9
+
+Number of initializations: 63
+----------------------------------------------------------------------
+Subject: 01
+Subject: 02
+Subject: 03
+Subject: 04
+Subject: 05
+Subject: 06
+Subject: 07
+Subject: 08
+Subject: 09
+Subject: 10
+Subject: 11
+Subject: 12
+Subject: 13
+Subject: 14
+Subject: 15
+Subject: 16
+Subject: 17
+Subject: 18
+Subject: 19
+Subject: 20
+Subject: 21
+Subject: 22
+Subject: 23
+Subject: 24
+Subject: 25
+Subject: 26
+Subject: 27
+Subject: 28
+Subject: 29
+Subject: 30
+Subject: 31
+Subject: 32
+Subject: 33
+Subject: 34
+Subject: 35
+Subject: 36
+Subject: 37
+Subject: 38
+Subject: 39
+Subject: 40
+Subject: 41
+Subject: 42
+Subject: 43
+Subject: 44
+Subject: 45
+Subject: 46
+Subject: 47
+Subject: 48
+Subject: 49
+Subject: 50
+Subject: 51
+Subject: 52
+Subject: 53
+Subject: 54
+Subject: 55
+Subject: 56
+Subject: 57
+Subject: 58
+Subject: 59
+Subject: 60
+Subject: 61
+Subject: 62
+Subject: 63
+Subject: 64
+Subject: 65
+Subject: 66
+Subject: 67
+Subject: 68
+Subject: 69
+Subject: 70
+Subject: 71
+Subject: 72
+Subject: 73
+Subject: 74
+Subject: 75
+Subject: 76
+Subject: 77
+Subject: 78
+Subject: 79
+Subject: 80
+Subject: 81
+Subject: 82
+Subject: 83
+Subject: 84
+Subject: 85
+Subject: 86
+Subject: 87
+Subject: 88
+Subject: 89
+Subject: 90
+Subject: 91
+Subject: 92
+Subject: 93
+Subject: 94
+Subject: 95
+Subject: 96
+Subject: 97
+Subject: 98
+Subject: 99
+Subject: 100
+done :]
+Model #45
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 21:31:12
+======================================================================
+Number of samples: 100
+Number of parameters: 9
+
+Number of initializations: 63
+----------------------------------------------------------------------
+Subject: 01
+Subject: 02
+Subject: 03
+Subject: 04
+Subject: 05
+Subject: 06
+Subject: 07
+Subject: 08
+Subject: 09
+Subject: 10
+Subject: 11
+Subject: 12
+Subject: 13
+Subject: 14
+Subject: 15
+Subject: 16
+Subject: 17
+Subject: 18
+Subject: 19
+Subject: 20
+Subject: 21
+Subject: 22
+Subject: 23
+Subject: 24
+Subject: 25
+Subject: 26
+Subject: 27
+Subject: 28
+Subject: 29
+Subject: 30
+Subject: 31
+Subject: 32
+Subject: 33
+Subject: 34
+Subject: 35
+Subject: 36
+Subject: 37
+Subject: 38
+Subject: 39
+Subject: 40
+Subject: 41
+Subject: 42
+Subject: 43
+Subject: 44
+Subject: 45
+Subject: 46
+Subject: 47
+Subject: 48
+Subject: 49
+Subject: 50
+Subject: 51
+Subject: 52
+Subject: 53
+Subject: 54
+Subject: 55
+Subject: 56
+Subject: 57
+Subject: 58
+Subject: 59
+Subject: 60
+Subject: 61
+Subject: 62
+Subject: 63
+Subject: 64
+Subject: 65
+Subject: 66
+Subject: 67
+Subject: 68
+Subject: 69
+Subject: 70
+Subject: 71
+Subject: 72
+Subject: 73
+Subject: 74
+Subject: 75
+Subject: 76
+Subject: 77
+Subject: 78
+Subject: 79
+Subject: 80
+Subject: 81
+Subject: 82
+Subject: 83
+Subject: 84
+Subject: 85
+Subject: 86
+Subject: 87
+Subject: 88
+Subject: 89
+Subject: 90
+Subject: 91
+Subject: 92
+Subject: 93
+Subject: 94
+Subject: 95
+Subject: 96
+Subject: 97
+Subject: 98
+Subject: 99
+Subject: 100
+done :]
+Model #46
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           25-Apr-2023 23:04:29
+======================================================================
+Number of samples: 100
+Number of parameters: 9
+
+Number of initializations: 63
+----------------------------------------------------------------------
+Subject: 01
+Subject: 02
+Subject: 03
+Subject: 04
+Subject: 05
+Subject: 06
+Subject: 07
+Subject: 08
+Subject: 09
+Subject: 10
+Subject: 11
+Subject: 12
+Subject: 13
+Subject: 14
+Subject: 15
+Subject: 16
+Subject: 17
+Subject: 18
+Subject: 19
+Subject: 20
+Subject: 21
+Subject: 22
+Subject: 23
+Subject: 24
+Subject: 25
+Subject: 26
+Subject: 27
+Subject: 28
+Subject: 29
+Subject: 30
+Subject: 31
+Subject: 32
+Subject: 33
+Subject: 34
+Subject: 35
+Subject: 36
+Subject: 37
+Subject: 38
+Subject: 39
+Subject: 40
+Subject: 41
+Subject: 42
+Subject: 43
+Subject: 44
+Subject: 45
+Subject: 46
+Subject: 47
+Subject: 48
+Subject: 49
+Subject: 50
+Subject: 51
+Subject: 52
+Subject: 53
+Subject: 54
+Subject: 55
+Subject: 56
+Subject: 57
+Subject: 58
+Subject: 59
+Subject: 60
+Subject: 61
+Subject: 62
+Subject: 63
+Subject: 64
+Subject: 65
+Subject: 66
+Subject: 67
+Subject: 68
+Subject: 69
+Subject: 70
+Subject: 71
+Subject: 72
+Subject: 73
+Subject: 74
+Subject: 75
+Subject: 76
+Subject: 77
+Subject: 78
+Subject: 79
+Subject: 80
+Subject: 81
+Subject: 82
+Subject: 83
+Subject: 84
+Subject: 85
+Subject: 86
+Subject: 87
+Subject: 88
+Subject: 89
+Subject: 90
+Subject: 91
+Subject: 92
+Subject: 93
+Subject: 94
+Subject: 95
+Subject: 96
+Subject: 97
+Subject: 98
+Subject: 99
+Subject: 100
+done :]
+Model #47
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           26-Apr-2023 00:37:31
+======================================================================
+Number of samples: 100
+Number of parameters: 9
+
+Number of initializations: 63
+----------------------------------------------------------------------
+Subject: 01
+Subject: 02
+Subject: 03
+Subject: 04
+Subject: 05
+Subject: 06
+Subject: 07
+Subject: 08
+Subject: 09
+Subject: 10
+Subject: 11
+Subject: 12
+Subject: 13
+Subject: 14
+Subject: 15
+Subject: 16
+Subject: 17
+Subject: 18
+Subject: 19
+Subject: 20
+Subject: 21
+Subject: 22
+Subject: 23
+Subject: 24
+Subject: 25
+Subject: 26
+Subject: 27
+Subject: 28
+Subject: 29
+Subject: 30
+Subject: 31
+Subject: 32
+Subject: 33
+Subject: 34
+Subject: 35
+Subject: 36
+Subject: 37
+Subject: 38
+Subject: 39
+Subject: 40
+Subject: 41
+Subject: 42
+Subject: 43
+Subject: 44
+Subject: 45
+Subject: 46
+Subject: 47
+Subject: 48
+Subject: 49
+Subject: 50
+Subject: 51
+Subject: 52
+Subject: 53
+Subject: 54
+Subject: 55
+Subject: 56
+Subject: 57
+Subject: 58
+Subject: 59
+Subject: 60
+Subject: 61
+Subject: 62
+Subject: 63
+Subject: 64
+Subject: 65
+Subject: 66
+Subject: 67
+Subject: 68
+Subject: 69
+Subject: 70
+Subject: 71
+Subject: 72
+Subject: 73
+Subject: 74
+Subject: 75
+Subject: 76
+Subject: 77
+Subject: 78
+Subject: 79
+Subject: 80
+Subject: 81
+Subject: 82
+Subject: 83
+Subject: 84
+Subject: 85
+Subject: 86
+Subject: 87
+Subject: 88
+Subject: 89
+Subject: 90
+Subject: 91
+Subject: 92
+Subject: 93
+Subject: 94
+Subject: 95
+Subject: 96
+Subject: 97
+Subject: 98
+Subject: 99
+Subject: 100
+done :]
+Model #48
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           26-Apr-2023 02:11:35
+======================================================================
+Number of samples: 100
+Number of parameters: 9
+
+Number of initializations: 63
+----------------------------------------------------------------------
+Subject: 01
+Subject: 02
+Subject: 03
+Subject: 04
+Subject: 05
+Subject: 06
+Subject: 07
+Subject: 08
+Subject: 09
+Subject: 10
+Subject: 11
+Subject: 12
+Subject: 13
+Subject: 14
+Subject: 15
+Subject: 16
+Subject: 17
+Subject: 18
+Subject: 19
+Subject: 20
+Subject: 21
+Subject: 22
+Subject: 23
+Subject: 24
+Subject: 25
+Subject: 26
+Subject: 27
+Subject: 28
+Subject: 29
+Subject: 30
+Subject: 31
+Subject: 32
+Subject: 33
+Subject: 34
+Subject: 35
+Subject: 36
+Subject: 37
+Subject: 38
+Subject: 39
+Subject: 40
+Subject: 41
+Subject: 42
+Subject: 43
+Subject: 44
+Subject: 45
+Subject: 46
+Subject: 47
+Subject: 48
+Subject: 49
+Subject: 50
+Subject: 51
+Subject: 52
+Subject: 53
+Subject: 54
+Subject: 55
+Subject: 56
+Subject: 57
+Subject: 58
+Subject: 59
+Subject: 60
+Subject: 61
+Subject: 62
+Subject: 63
+Subject: 64
+Subject: 65
+Subject: 66
+Subject: 67
+Subject: 68
+Subject: 69
+Subject: 70
+Subject: 71
+Subject: 72
+Subject: 73
+Subject: 74
+Subject: 75
+Subject: 76
+Subject: 77
+Subject: 78
+Subject: 79
+Subject: 80
+Subject: 81
+Subject: 82
+Subject: 83
+Subject: 84
+Subject: 85
+Subject: 86
+Subject: 87
+Subject: 88
+Subject: 89
+Subject: 90
+Subject: 91
+Subject: 92
+Subject: 93
+Subject: 94
+Subject: 95
+Subject: 96
+Subject: 97
+Subject: 98
+Subject: 99
+Subject: 100
+done :]
+Model #49
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           26-Apr-2023 03:46:25
+======================================================================
+Number of samples: 100
+Number of parameters: 9
+
+Number of initializations: 63
+----------------------------------------------------------------------
+Subject: 01
+Subject: 02
+Subject: 03
+Subject: 04
+Subject: 05
+Subject: 06
+Subject: 07
+Subject: 08
+Subject: 09
+Subject: 10
+Subject: 11
+Subject: 12
+Subject: 13
+Subject: 14
+Subject: 15
+Subject: 16
+Subject: 17
+Subject: 18
+Subject: 19
+Subject: 20
+Subject: 21
+Subject: 22
+Subject: 23
+Subject: 24
+Subject: 25
+Subject: 26
+Subject: 27
+Subject: 28
+Subject: 29
+Subject: 30
+Subject: 31
+Subject: 32
+Subject: 33
+Subject: 34
+Subject: 35
+Subject: 36
+Subject: 37
+Subject: 38
+Subject: 39
+Subject: 40
+Subject: 41
+Subject: 42
+Subject: 43
+Subject: 44
+Subject: 45
+Subject: 46
+Subject: 47
+Subject: 48
+Subject: 49
+Subject: 50
+Subject: 51
+Subject: 52
+Subject: 53
+Subject: 54
+Subject: 55
+Subject: 56
+Subject: 57
+Subject: 58
+Subject: 59
+Subject: 60
+Subject: 61
+Subject: 62
+Subject: 63
+Subject: 64
+Subject: 65
+Subject: 66
+Subject: 67
+Subject: 68
+Subject: 69
+Subject: 70
+Subject: 71
+Subject: 72
+Subject: 73
+Subject: 74
+Subject: 75
+Subject: 76
+Subject: 77
+Subject: 78
+Subject: 79
+Subject: 80
+Subject: 81
+Subject: 82
+Subject: 83
+Subject: 84
+Subject: 85
+Subject: 86
+Subject: 87
+Subject: 88
+Subject: 89
+Subject: 90
+Subject: 91
+Subject: 92
+Subject: 93
+Subject: 94
+Subject: 95
+Subject: 96
+Subject: 97
+Subject: 98
+Subject: 99
+Subject: 100
+done :]
+Model #50
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           26-Apr-2023 05:22:29
+======================================================================
+Number of samples: 100
+Number of parameters: 9
+
+Number of initializations: 63
+----------------------------------------------------------------------
+Subject: 01
+Subject: 02
+Subject: 03
+Subject: 04
+Subject: 05
+Subject: 06
+Subject: 07
+Subject: 08
+Subject: 09
+Subject: 10
+Subject: 11
+Subject: 12
+Subject: 13
+Subject: 14
+Subject: 15
+Subject: 16
+Subject: 17
+Subject: 18
+Subject: 19
+Subject: 20
+Subject: 21
+Subject: 22
+Subject: 23
+Subject: 24
+Subject: 25
+Subject: 26
+Subject: 27
+Subject: 28
+Subject: 29
+Subject: 30
+Subject: 31
+Subject: 32
+Subject: 33
+Subject: 34
+Subject: 35
+Subject: 36
+Subject: 37
+Subject: 38
+Subject: 39
+Subject: 40
+Subject: 41
+Subject: 42
+Subject: 43
+Subject: 44
+Subject: 45
+Subject: 46
+Subject: 47
+Subject: 48
+Subject: 49
+Subject: 50
+Subject: 51
+Subject: 52
+Subject: 53
+Subject: 54
+Subject: 55
+Subject: 56
+Subject: 57
+Subject: 58
+Subject: 59
+Subject: 60
+Subject: 61
+Subject: 62
+Subject: 63
+Subject: 64
+Subject: 65
+Subject: 66
+Subject: 67
+Subject: 68
+Subject: 69
+Subject: 70
+Subject: 71
+Subject: 72
+Subject: 73
+Subject: 74
+Subject: 75
+Subject: 76
+Subject: 77
+Subject: 78
+Subject: 79
+Subject: 80
+Subject: 81
+Subject: 82
+Subject: 83
+Subject: 84
+Subject: 85
+Subject: 86
+Subject: 87
+Subject: 88
+Subject: 89
+Subject: 90
+Subject: 91
+Subject: 92
+Subject: 93
+Subject: 94
+Subject: 95
+Subject: 96
+Subject: 97
+Subject: 98
+Subject: 99
+Subject: 100
+done :]
+Model #51
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           26-Apr-2023 06:58:12
+======================================================================
+Number of samples: 100
+Number of parameters: 9
+
+Number of initializations: 63
+----------------------------------------------------------------------
+Subject: 01
+Subject: 02
+Subject: 03
+Subject: 04
+Subject: 05
+Subject: 06
+Subject: 07
+Subject: 08
+Subject: 09
+Subject: 10
+Subject: 11
+Subject: 12
+Subject: 13
+Subject: 14
+Subject: 15
+Subject: 16
+Subject: 17
+Subject: 18
+Subject: 19
+Subject: 20
+Subject: 21
+Subject: 22
+Subject: 23
+Subject: 24
+Subject: 25
+Subject: 26
+Subject: 27
+Subject: 28
+Subject: 29
+Subject: 30
+Subject: 31
+Subject: 32
+Subject: 33
+Subject: 34
+Subject: 35
+Subject: 36
+Subject: 37
+Subject: 38
+Subject: 39
+Subject: 40
+Subject: 41
+Subject: 42
+Subject: 43
+Subject: 44
+Subject: 45
+Subject: 46
+Subject: 47
+Subject: 48
+Subject: 49
+Subject: 50
+Subject: 51
+Subject: 52
+Subject: 53
+Subject: 54
+Subject: 55
+Subject: 56
+Subject: 57
+Subject: 58
+Subject: 59
+Subject: 60
+Subject: 61
+Subject: 62
+Subject: 63
+Subject: 64
+Subject: 65
+Subject: 66
+Subject: 67
+Subject: 68
+Subject: 69
+Subject: 70
+Subject: 71
+Subject: 72
+Subject: 73
+Subject: 74
+Subject: 75
+Subject: 76
+Subject: 77
+Subject: 78
+Subject: 79
+Subject: 80
+Subject: 81
+Subject: 82
+Subject: 83
+Subject: 84
+Subject: 85
+Subject: 86
+Subject: 87
+Subject: 88
+Subject: 89
+Subject: 90
+Subject: 91
+Subject: 92
+Subject: 93
+Subject: 94
+Subject: 95
+Subject: 96
+Subject: 97
+Subject: 98
+Subject: 99
+Subject: 100
+done :]
+Model #52
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           26-Apr-2023 08:31:49
+======================================================================
+Number of samples: 100
+Number of parameters: 9
+
+Number of initializations: 63
+----------------------------------------------------------------------
+Subject: 01
+Subject: 02
+Subject: 03
+Subject: 04
+Subject: 05
+Subject: 06
+Subject: 07
+Subject: 08
+Subject: 09
+Subject: 10
+Subject: 11
+Subject: 12
+Subject: 13
+Subject: 14
+Subject: 15
+Subject: 16
+Subject: 17
+Subject: 18
+Subject: 19
+Subject: 20
+Subject: 21
+Subject: 22
+Subject: 23
+Subject: 24
+Subject: 25
+Subject: 26
+Subject: 27
+Subject: 28
+Subject: 29
+Subject: 30
+Subject: 31
+Subject: 32
+Subject: 33
+Subject: 34
+Subject: 35
+Subject: 36
+Subject: 37
+Subject: 38
+Subject: 39
+Subject: 40
+Subject: 41
+Subject: 42
+Subject: 43
+Subject: 44
+Subject: 45
+Subject: 46
+Subject: 47
+Subject: 48
+Subject: 49
+Subject: 50
+Subject: 51
+Subject: 52
+Subject: 53
+Subject: 54
+Subject: 55
+Subject: 56
+Subject: 57
+Subject: 58
+Subject: 59
+Subject: 60
+Subject: 61
+Subject: 62
+Subject: 63
+Subject: 64
+Subject: 65
+Subject: 66
+Subject: 67
+Subject: 68
+Subject: 69
+Subject: 70
+Subject: 71
+Subject: 72
+Subject: 73
+Subject: 74
+Subject: 75
+Subject: 76
+Subject: 77
+Subject: 78
+Subject: 79
+Subject: 80
+Subject: 81
+Subject: 82
+Subject: 83
+Subject: 84
+Subject: 85
+Subject: 86
+Subject: 87
+Subject: 88
+Subject: 89
+Subject: 90
+Subject: 91
+Subject: 92
+Subject: 93
+Subject: 94
+Subject: 95
+Subject: 96
+Subject: 97
+Subject: 98
+Subject: 99
+Subject: 100
+done :]
+Model #53
+epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc
+cbm_lap                                           26-Apr-2023 10:05:24
+======================================================================
+Number of samples: 100
+Number of parameters: 9
+
+Number of initializations: 63
+----------------------------------------------------------------------
+Subject: 01
+Subject: 02
+Subject: 03
+Subject: 04
+Subject: 05
+Subject: 06
+Subject: 07
+Subject: 08
+Subject: 09
+Subject: 10
+Subject: 11
+Subject: 12
+Subject: 13
+Subject: 14
+Subject: 15
+Subject: 16
+Subject: 17
+Subject: 18
+Subject: 19
+Subject: 20
+Subject: 21
+Subject: 22
+Subject: 23
+Subject: 24
+Subject: 25
+Subject: 26
+Subject: 27
+Subject: 28
+Subject: 29
+Subject: 30
+Subject: 31
+Subject: 32
+Subject: 33
+Subject: 34
+Subject: 35
+Subject: 36
+Subject: 37
+Subject: 38
+Subject: 39
+Subject: 40
+Subject: 41
+Subject: 42
+Subject: 43
+Subject: 44
+Subject: 45
+Subject: 46
+Subject: 47
+Subject: 48
+Subject: 49
+Subject: 50
+Subject: 51
+Subject: 52
+Subject: 53
+Subject: 54
+Subject: 55
+Subject: 56
+Subject: 57
+Subject: 58
+Subject: 59
+Subject: 60
+Subject: 61
+Subject: 62
+Subject: 63
+Subject: 64
+Subject: 65
+Subject: 66
+Subject: 67
+Subject: 68
+Subject: 69
+Subject: 70
+Subject: 71
+Subject: 72
+Subject: 73
+Subject: 74
+Subject: 75
+Subject: 76
+Subject: 77
+Subject: 78
+Subject: 79
+Subject: 80
+Subject: 81
+Subject: 82
+Subject: 83
+Subject: 84
+Subject: 85
+Subject: 86
+Subject: 87
+Subject: 88
+Subject: 89
+Subject: 90
+Subject: 91
+Subject: 92
+Subject: 93
+Subject: 94
+Subject: 95
+Subject: 96
+Subject: 97
+Subject: 98
+Subject: 99
+Subject: 100
+done :]
+
+ans = 
+
+  Figure (1) with properties:
+
+      Number: 1
+        Name: ''
+       Color: [1 1 1]
+    Position: [233 247 560 420]
+       Units: 'pixels'
+
+  Use GET to show all properties
+
+
+                                                                              < M A T L A B (R) >
+                                                                    Copyright 1984-2020 The MathWorks, Inc.
+                                                                    R2020b (9.9.0.1467703) 64-bit (glnxa64)
+                                                                                August 26, 2020
+
+ 
+To get started, type doc.
+For product information, visit www.mathworks.com.
+ 
+cbm_hbi_hbi                                       26-Apr-2023 12:05:25
+Running hierarchical bayesian inference (HBI)...
+
+HBI has been initialized according to
+	epsilon_initi_alpha_mainc.mat [for model 1]
+	epsilon_initi_alpha_missc.mat [for model 2]
+	epsilon_initi_alpha_respc.mat [for model 3]
+	epsilon_initi_alpha_uc_mainc.mat [for model 4]
+	epsilon_initi_alpha_uc_lurec.mat [for model 5]
+	epsilon_initi_alpha_uc_missc.mat [for model 6]
+	epsilon_initi_alpha_uc_fac.mat [for model 7]
+	epsilon_initi_alpha_uc_respc.mat [for model 8]
+	epsilon_initi_alpha_mainc_lurec.mat [for model 9]
+	epsilon_initi_alpha_mainc_missc.mat [for model 10]
+	epsilon_initi_alpha_mainc_fac.mat [for model 11]
+	epsilon_initi_alpha_mainc_respc.mat [for model 12]
+	epsilon_initi_alpha_lurec_missc.mat [for model 13]
+	epsilon_initi_alpha_lurec_fac.mat [for model 14]
+	epsilon_initi_alpha_lurec_respc.mat [for model 15]
+	epsilon_initi_alpha_missc_fac.mat [for model 16]
+	epsilon_initi_alpha_missc_respc.mat [for model 17]
+	epsilon_initi_alpha_fac_respc.mat [for model 18]
+	epsilon_initi_alpha_uc_mainc_lurec.mat [for model 19]
+	epsilon_initi_alpha_uc_mainc_missc.mat [for model 20]
+	epsilon_initi_alpha_uc_mainc_fac.mat [for model 21]
+	epsilon_initi_alpha_uc_mainc_respc.mat [for model 22]
+	epsilon_initi_alpha_uc_lurec_missc.mat [for model 23]
+	epsilon_initi_alpha_uc_lurec_fac.mat [for model 24]
+	epsilon_initi_alpha_uc_lurec_respc.mat [for model 25]
+	epsilon_initi_alpha_uc_missc_fac.mat [for model 26]
+	epsilon_initi_alpha_uc_missc_respc.mat [for model 27]
+	epsilon_initi_alpha_uc_fac_respc.mat [for model 28]
+	epsilon_initi_alpha_mainc_lurec_missc.mat [for model 29]
+	epsilon_initi_alpha_mainc_lurec_fac.mat [for model 30]
+	epsilon_initi_alpha_mainc_lurec_respc.mat [for model 31]
+	epsilon_initi_alpha_mainc_missc_fac.mat [for model 32]
+	epsilon_initi_alpha_mainc_missc_respc.mat [for model 33]
+	epsilon_initi_alpha_mainc_fac_respc.mat [for model 34]
+	epsilon_initi_alpha_lurec_missc_fac.mat [for model 35]
+	epsilon_initi_alpha_lurec_missc_respc.mat [for model 36]
+	epsilon_initi_alpha_lurec_fac_respc.mat [for model 37]
+	epsilon_initi_alpha_missc_fac_respc.mat [for model 38]
+	epsilon_initi_alpha_uc_mainc_lurec_missc.mat [for model 39]
+	epsilon_initi_alpha_uc_mainc_lurec_fac.mat [for model 40]
+	epsilon_initi_alpha_uc_mainc_lurec_respc.mat [for model 41]
+	epsilon_initi_alpha_uc_mainc_missc_fac.mat [for model 42]
+	epsilon_initi_alpha_uc_mainc_missc_respc.mat [for model 43]
+	epsilon_initi_alpha_uc_mainc_fac_respc.mat [for model 44]
+	epsilon_initi_alpha_uc_lurec_missc_fac.mat [for model 45]
+	epsilon_initi_alpha_uc_lurec_missc_respc.mat [for model 46]
+	epsilon_initi_alpha_uc_lurec_fac_respc.mat [for model 47]
+	epsilon_initi_alpha_uc_missc_fac_respc.mat [for model 48]
+	epsilon_initi_alpha_mainc_lurec_missc_fac.mat [for model 49]
+	epsilon_initi_alpha_mainc_lurec_missc_respc.mat [for model 50]
+	epsilon_initi_alpha_mainc_lurec_fac_respc.mat [for model 51]
+	epsilon_initi_alpha_mainc_missc_fac_respc.mat [for model 52]
+	epsilon_initi_alpha_lurec_missc_fac_respc.mat [for model 53]
+	epsilon_initi_alpha_uc_mainc_lurec_missc_fac.mat [for model 54]
+	epsilon_initi_alpha_uc_mainc_lurec_missc_respc.mat [for model 55]
+	epsilon_initi_alpha_uc_mainc_lurec_fac_respc.mat [for model 56]
+	epsilon_initi_alpha_uc_mainc_missc_fac_respc.mat [for model 57]
+	epsilon_initi_alpha_uc_lurec_missc_fac_respc.mat [for model 58]
+	epsilon_initi_alpha_mainc_lurec_missc_fac_respc.mat [for model 59]
+	epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc.mat [for model 60]
+ 
+Number of samples: 100
+Number of models: 60
+======================================================================
+Iteration 01
+Iteration 02
+	model frequencies (percent)
+	model 1: 2.6| model 2: 2.6| model 3: 2.4| model 4: 2.5| model 5: 3.7| model 6: 2.7| model 7: 3.2| model 8: 3.2| model 9: 1.5| model 10: 1.7| model 11: 1.9| model 12: 1.7| model 13: 2.0| model 14: 2.2| model 15: 2.0| model 16: 1.9| model 17: 1.8| model 18: 2.0| model 19: 2.1| model 20: 1.4| model 21: 1.5| model 22: 1.7| model 23: 1.8| model 24: 2.3| model 25: 2.3| model 26: 1.5| model 27: 1.8| model 28: 1.9| model 29: 1.2| model 30: 1.4| model 31: 1.1| model 32: 1.4| model 33: 1.2| model 34: 1.4| model 35: 1.7| model 36: 1.6| model 37: 1.8| model 38: 1.9| model 39: 1.2| model 40: 1.1| model 41: 1.3| model 42: 1.0| model 43: 1.1| model 44: 1.2| model 45: 1.6| model 46: 1.4| model 47: 1.4| model 48: 1.3| model 49: 1.1| model 50: 1.0| model 51: 1.1| model 52: 1.1| model 53: 1.7| model 54: 0.9| model 55: 0.9| model 56: 0.8| model 57: 0.8| model 58: 1.2| model 59: 1.0| model 60: 0.7| 
+                                                           dL: 1878.42
+                                                           dm:   96.27
+                                                           dx:    0.32
+Iteration 03
+	model frequencies (percent)
+	model 1: 5.1| model 2: 5.3| model 3: 3.7| model 4: 5.2| model 5: 18.5| model 6: 6.2| model 7: 8.2| model 8: 10.1| model 9: 0.7| model 10: 1.1| model 11: 1.5| model 12: 0.8| model 13: 1.9| model 14: 2.4| model 15: 1.8| model 16: 1.5| model 17: 1.2| model 18: 1.6| model 19: 2.6| model 20: 0.4| model 21: 0.5| model 22: 0.9| model 23: 1.1| model 24: 3.1| model 25: 3.4| model 26: 0.5| model 27: 1.1| model 28: 1.4| model 29: 0.2| model 30: 0.3| model 31: 0.1| model 32: 0.3| model 33: 0.2| model 34: 0.3| model 35: 0.7| model 36: 0.6| model 37: 0.9| model 38: 0.9| model 39: 0.2| model 40: 0.1| model 41: 0.2| model 42: 0.1| model 43: 0.1| model 44: 0.1| model 45: 1.2| model 46: 0.4| model 47: 0.3| model 48: 0.2| model 49: 0.1| model 50: 0.0| model 51: 0.1| model 52: 0.1| model 53: 0.4| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.1| model 59: 0.0| model 60: 0.0| 
+                                                           dL:  507.53
+                                                           dm:   14.82
+                                                           dx:    0.25
+Iteration 04
+	model frequencies (percent)
+	model 1: 4.8| model 2: 6.4| model 3: 2.3| model 4: 4.1| model 5: 43.5| model 6: 7.2| model 7: 9.0| model 8: 15.3| model 9: 0.0| model 10: 0.0| model 11: 0.1| model 12: 0.0| model 13: 0.3| model 14: 0.7| model 15: 0.3| model 16: 0.1| model 17: 0.0| model 18: 0.2| model 19: 0.6| model 20: 0.0| model 21: 0.0| model 22: 0.0| model 23: 0.0| model 24: 2.7| model 25: 1.4| model 26: 0.0| model 27: 0.0| model 28: 0.1| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 0.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.7| model 46: 0.0| model 47: 0.0| model 48: 0.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| 
+                                                           dL:  358.07
+                                                           dm:   24.92
+                                                           dx:    0.73
+Iteration 05
+	model frequencies (percent)
+	model 1: 2.6| model 2: 6.3| model 3: 0.7| model 4: 1.1| model 5: 59.3| model 6: 5.8| model 7: 7.1| model 8: 14.2| model 9: 0.0| model 10: 0.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 0.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 0.0| model 22: 0.0| model 23: 0.0| model 24: 2.4| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 0.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.5| model 46: 0.0| model 47: 0.0| model 48: 0.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| 
+                                                           dL:   97.49
+                                                           dm:   15.84
+                                                           dx:    0.62
+Iteration 06
+	model frequencies (percent)
+	model 1: 0.9| model 2: 5.9| model 3: 0.1| model 4: 0.0| model 5: 69.2| model 6: 4.6| model 7: 6.2| model 8: 10.7| model 9: 0.0| model 10: 0.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 0.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 0.0| model 22: 0.0| model 23: 0.0| model 24: 2.3| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 0.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 0.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| 
+                                                           dL:   38.10
+                                                           dm:    9.93
+                                                           dx:    0.48
+Iteration 07
+	model frequencies (percent)
+	model 1: 0.1| model 2: 5.3| model 3: 0.0| model 4: 0.0| model 5: 75.1| model 6: 4.0| model 7: 6.5| model 8: 6.8| model 9: 0.0| model 10: 0.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 0.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 0.0| model 22: 0.0| model 23: 0.0| model 24: 2.3| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 0.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 0.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| 
+                                                           dL:   21.23
+                                                           dm:    5.85
+                                                           dx:    0.58
+Iteration 08
+	model frequencies (percent)
+	model 1: 0.0| model 2: 5.0| model 3: 0.0| model 4: 0.0| model 5: 78.2| model 6: 3.8| model 7: 7.0| model 8: 3.7| model 9: 0.0| model 10: 0.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 0.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 0.0| model 22: 0.0| model 23: 0.0| model 24: 2.3| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 0.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 0.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| 
+                                                           dL:   10.25
+                                                           dm:    3.14
+                                                           dx:    0.31
+Iteration 09
+	model frequencies (percent)
+	model 1: 0.0| model 2: 4.9| model 3: 0.0| model 4: 0.0| model 5: 79.4| model 6: 3.8| model 7: 8.0| model 8: 1.7| model 9: 0.0| model 10: 0.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 0.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 0.0| model 22: 0.0| model 23: 0.0| model 24: 2.2| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 0.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 0.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| 
+                                                           dL:    5.91
+                                                           dm:    1.22
+                                                           dx:    0.35
+Iteration 10
+	model frequencies (percent)
+	model 1: 0.0| model 2: 4.7| model 3: 0.0| model 4: 0.0| model 5: 79.5| model 6: 3.9| model 7: 8.7| model 8: 1.0| model 9: 0.0| model 10: 0.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 0.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 0.0| model 22: 0.0| model 23: 0.0| model 24: 2.2| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 0.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 0.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| 
+                                                           dL:    2.98
+                                                           dm:    0.04
+                                                           dx:    0.23
+Iteration 11
+	model frequencies (percent)
+	model 1: 0.0| model 2: 4.4| model 3: 0.0| model 4: 0.0| model 5: 79.0| model 6: 4.1| model 7: 9.3| model 8: 1.0| model 9: 0.0| model 10: 0.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 0.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 0.0| model 22: 0.0| model 23: 0.0| model 24: 2.2| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 0.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 0.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| 
+                                                           dL:    1.32
+                                                           dm:    0.51
+                                                           dx:    0.18
+Iteration 12
+	model frequencies (percent)
+	model 1: 0.0| model 2: 4.0| model 3: 0.0| model 4: 0.0| model 5: 78.4| model 6: 4.6| model 7: 9.9| model 8: 1.0| model 9: 0.0| model 10: 0.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 0.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 0.0| model 22: 0.0| model 23: 0.0| model 24: 2.2| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 0.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 0.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| 
+                                                           dL:    1.30
+                                                           dm:    0.55
+                                                           dx:    0.05
+Iteration 13
+	model frequencies (percent)
+	model 1: 0.0| model 2: 3.4| model 3: 0.0| model 4: 0.0| model 5: 77.9| model 6: 5.1| model 7: 10.4| model 8: 1.0| model 9: 0.0| model 10: 0.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 0.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 0.0| model 22: 0.0| model 23: 0.0| model 24: 2.1| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 0.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 0.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| 
+                                                           dL:    1.66
+                                                           dm:    0.49
+                                                           dx:    0.03
+Iteration 14
+	model frequencies (percent)
+	model 1: 0.0| model 2: 2.9| model 3: 0.0| model 4: 0.0| model 5: 77.5| model 6: 5.7| model 7: 10.8| model 8: 1.0| model 9: 0.0| model 10: 0.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 0.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 0.0| model 22: 0.0| model 23: 0.0| model 24: 2.1| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 0.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 0.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| 
+                                                           dL:    1.64
+                                                           dm:    0.46
+                                                           dx:    0.04
+Iteration 15
+	model frequencies (percent)
+	model 1: 0.0| model 2: 2.6| model 3: 0.0| model 4: 0.0| model 5: 77.1| model 6: 6.1| model 7: 11.1| model 8: 1.0| model 9: 0.0| model 10: 0.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 0.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 0.0| model 22: 0.0| model 23: 0.0| model 24: 2.1| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 0.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 0.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| 
+                                                           dL:    0.68
+                                                           dm:    0.38
+                                                           dx:    0.05
+Iteration 16
+	model frequencies (percent)
+	model 1: 0.0| model 2: 2.4| model 3: 0.0| model 4: 0.0| model 5: 76.8| model 6: 6.3| model 7: 11.4| model 8: 1.0| model 9: 0.0| model 10: 0.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 0.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 0.0| model 22: 0.0| model 23: 0.0| model 24: 2.1| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 0.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 0.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| 
+                                                           dL:    0.35
+                                                           dm:    0.25
+                                                           dx:    0.04
+Iteration 17
+	model frequencies (percent)
+	model 1: 0.0| model 2: 2.2| model 3: 0.0| model 4: 0.0| model 5: 76.6| model 6: 6.4| model 7: 11.7| model 8: 1.0| model 9: 0.0| model 10: 0.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 0.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 0.0| model 22: 0.0| model 23: 0.0| model 24: 2.1| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 0.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 0.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| 
+                                                           dL:    0.25
+                                                           dm:    0.20
+                                                           dx:    0.05
+Iteration 18
+	model frequencies (percent)
+	model 1: 0.0| model 2: 2.1| model 3: 0.0| model 4: 0.0| model 5: 76.5| model 6: 6.4| model 7: 11.9| model 8: 1.0| model 9: 0.0| model 10: 0.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 0.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 0.0| model 22: 0.0| model 23: 0.0| model 24: 2.1| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 0.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 0.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| 
+                                                           dL:    0.17
+                                                           dm:    0.18
+                                                           dx:    0.06
+Iteration 19
+	model frequencies (percent)
+	model 1: 0.0| model 2: 2.0| model 3: 0.0| model 4: 0.0| model 5: 76.3| model 6: 6.5| model 7: 12.1| model 8: 1.0| model 9: 0.0| model 10: 0.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 0.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 0.0| model 22: 0.0| model 23: 0.0| model 24: 2.1| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 0.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 0.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| 
+                                                           dL:    0.12
+                                                           dm:    0.18
+                                                           dx:    0.06
+Iteration 20
+	model frequencies (percent)
+	model 1: 0.0| model 2: 2.0| model 3: 0.0| model 4: 0.0| model 5: 76.1| model 6: 6.5| model 7: 12.3| model 8: 1.0| model 9: 0.0| model 10: 0.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 0.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 0.0| model 22: 0.0| model 23: 0.0| model 24: 2.1| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 0.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 0.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| 
+                                                           dL:    0.09
+                                                           dm:    0.18
+                                                           dx:    0.04
+Iteration 21
+	model frequencies (percent)
+	model 1: 0.0| model 2: 2.0| model 3: 0.0| model 4: 0.0| model 5: 75.9| model 6: 6.6| model 7: 12.4| model 8: 1.0| model 9: 0.0| model 10: 0.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 0.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 0.0| model 22: 0.0| model 23: 0.0| model 24: 2.1| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 0.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 0.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| 
+                                                           dL:    0.07
+                                                           dm:    0.18
+                                                           dx:    0.03
+Iteration 22
+	model frequencies (percent)
+	model 1: 0.0| model 2: 2.0| model 3: 0.0| model 4: 0.0| model 5: 75.7| model 6: 6.6| model 7: 12.6| model 8: 1.0| model 9: 0.0| model 10: 0.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 0.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 0.0| model 22: 0.0| model 23: 0.0| model 24: 2.1| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 0.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 0.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| 
+                                                           dL:    0.05
+                                                           dm:    0.17
+                                                           dx:    0.02
+Iteration 23
+	model frequencies (percent)
+	model 1: 0.0| model 2: 2.0| model 3: 0.0| model 4: 0.0| model 5: 75.6| model 6: 6.6| model 7: 12.7| model 8: 1.0| model 9: 0.0| model 10: 0.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 0.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 0.0| model 22: 0.0| model 23: 0.0| model 24: 2.1| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 0.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 0.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| 
+                                                           dL:    0.04
+                                                           dm:    0.17
+                                                           dx:    0.02
+Iteration 24
+	model frequencies (percent)
+	model 1: 0.0| model 2: 2.0| model 3: 0.0| model 4: 0.0| model 5: 75.4| model 6: 6.7| model 7: 12.9| model 8: 1.0| model 9: 0.0| model 10: 0.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 0.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 0.0| model 22: 0.0| model 23: 0.0| model 24: 2.1| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 0.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 0.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| 
+                                                           dL:    0.03
+                                                           dm:    0.17
+                                                           dx:    0.01
+Iteration 25
+	model frequencies (percent)
+	model 1: 0.0| model 2: 1.9| model 3: 0.0| model 4: 0.0| model 5: 75.2| model 6: 6.7| model 7: 13.0| model 8: 1.0| model 9: 0.0| model 10: 0.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 0.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 0.0| model 22: 0.0| model 23: 0.0| model 24: 2.1| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 0.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 0.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| 
+                                                           dL:    0.03
+                                                           dm:    0.16
+                                                           dx:    0.01
+Iteration 26
+	model frequencies (percent)
+	model 1: 0.0| model 2: 1.9| model 3: 0.0| model 4: 0.0| model 5: 75.1| model 6: 6.8| model 7: 13.1| model 8: 1.0| model 9: 0.0| model 10: 0.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 0.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 0.0| model 22: 0.0| model 23: 0.0| model 24: 2.1| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 0.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 0.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| 
+                                                           dL:    0.02
+                                                           dm:    0.16
+                                                           dx:    0.01
+                                                          Converged :]
+cbm_hbi_hbi                                       27-Apr-2023 00:56:12
+Running hierarchical bayesian inference (HBI)- null mode...
+
+HBI has been initialized according to
+	epsilon_initi_alpha_mainc.mat [for model 1]
+	epsilon_initi_alpha_missc.mat [for model 2]
+	epsilon_initi_alpha_respc.mat [for model 3]
+	epsilon_initi_alpha_uc_mainc.mat [for model 4]
+	epsilon_initi_alpha_uc_lurec.mat [for model 5]
+	epsilon_initi_alpha_uc_missc.mat [for model 6]
+	epsilon_initi_alpha_uc_fac.mat [for model 7]
+	epsilon_initi_alpha_uc_respc.mat [for model 8]
+	epsilon_initi_alpha_mainc_lurec.mat [for model 9]
+	epsilon_initi_alpha_mainc_missc.mat [for model 10]
+	epsilon_initi_alpha_mainc_fac.mat [for model 11]
+	epsilon_initi_alpha_mainc_respc.mat [for model 12]
+	epsilon_initi_alpha_lurec_missc.mat [for model 13]
+	epsilon_initi_alpha_lurec_fac.mat [for model 14]
+	epsilon_initi_alpha_lurec_respc.mat [for model 15]
+	epsilon_initi_alpha_missc_fac.mat [for model 16]
+	epsilon_initi_alpha_missc_respc.mat [for model 17]
+	epsilon_initi_alpha_fac_respc.mat [for model 18]
+	epsilon_initi_alpha_uc_mainc_lurec.mat [for model 19]
+	epsilon_initi_alpha_uc_mainc_missc.mat [for model 20]
+	epsilon_initi_alpha_uc_mainc_fac.mat [for model 21]
+	epsilon_initi_alpha_uc_mainc_respc.mat [for model 22]
+	epsilon_initi_alpha_uc_lurec_missc.mat [for model 23]
+	epsilon_initi_alpha_uc_lurec_fac.mat [for model 24]
+	epsilon_initi_alpha_uc_lurec_respc.mat [for model 25]
+	epsilon_initi_alpha_uc_missc_fac.mat [for model 26]
+	epsilon_initi_alpha_uc_missc_respc.mat [for model 27]
+	epsilon_initi_alpha_uc_fac_respc.mat [for model 28]
+	epsilon_initi_alpha_mainc_lurec_missc.mat [for model 29]
+	epsilon_initi_alpha_mainc_lurec_fac.mat [for model 30]
+	epsilon_initi_alpha_mainc_lurec_respc.mat [for model 31]
+	epsilon_initi_alpha_mainc_missc_fac.mat [for model 32]
+	epsilon_initi_alpha_mainc_missc_respc.mat [for model 33]
+	epsilon_initi_alpha_mainc_fac_respc.mat [for model 34]
+	epsilon_initi_alpha_lurec_missc_fac.mat [for model 35]
+	epsilon_initi_alpha_lurec_missc_respc.mat [for model 36]
+	epsilon_initi_alpha_lurec_fac_respc.mat [for model 37]
+	epsilon_initi_alpha_missc_fac_respc.mat [for model 38]
+	epsilon_initi_alpha_uc_mainc_lurec_missc.mat [for model 39]
+	epsilon_initi_alpha_uc_mainc_lurec_fac.mat [for model 40]
+	epsilon_initi_alpha_uc_mainc_lurec_respc.mat [for model 41]
+	epsilon_initi_alpha_uc_mainc_missc_fac.mat [for model 42]
+	epsilon_initi_alpha_uc_mainc_missc_respc.mat [for model 43]
+	epsilon_initi_alpha_uc_mainc_fac_respc.mat [for model 44]
+	epsilon_initi_alpha_uc_lurec_missc_fac.mat [for model 45]
+	epsilon_initi_alpha_uc_lurec_missc_respc.mat [for model 46]
+	epsilon_initi_alpha_uc_lurec_fac_respc.mat [for model 47]
+	epsilon_initi_alpha_uc_missc_fac_respc.mat [for model 48]
+	epsilon_initi_alpha_mainc_lurec_missc_fac.mat [for model 49]
+	epsilon_initi_alpha_mainc_lurec_missc_respc.mat [for model 50]
+	epsilon_initi_alpha_mainc_lurec_fac_respc.mat [for model 51]
+	epsilon_initi_alpha_mainc_missc_fac_respc.mat [for model 52]
+	epsilon_initi_alpha_lurec_missc_fac_respc.mat [for model 53]
+	epsilon_initi_alpha_uc_mainc_lurec_missc_fac.mat [for model 54]
+	epsilon_initi_alpha_uc_mainc_lurec_missc_respc.mat [for model 55]
+	epsilon_initi_alpha_uc_mainc_lurec_fac_respc.mat [for model 56]
+	epsilon_initi_alpha_uc_mainc_missc_fac_respc.mat [for model 57]
+	epsilon_initi_alpha_uc_lurec_missc_fac_respc.mat [for model 58]
+	epsilon_initi_alpha_mainc_lurec_missc_fac_respc.mat [for model 59]
+	epsilon_initi_alpha_uc_mainc_lurec_missc_fac_respc.mat [for model 60]
+ 
+Number of samples: 100
+Number of models: 60
+======================================================================
+Iteration 01
+Iteration 02
+                                                           dL: 1660.78
+                                                           dx:    0.23
+Iteration 03
+                                                           dL:   63.31
+                                                           dx:    0.10
+Iteration 04
+                                                           dL:   38.13
+                                                           dx:    0.04
+Iteration 05
+                                                           dL:   26.82
+                                                           dx:    0.02
+Iteration 06
+                                                           dL:   20.53
+                                                           dx:    0.02
+Iteration 07
+                                                           dL:   17.04
+                                                           dx:    0.02
+Iteration 08
+                                                           dL:   14.71
+                                                           dx:    0.02
+Iteration 09
+                                                           dL:   12.89
+                                                           dx:    0.02
+Iteration 10
+                                                           dL:   11.53
+                                                           dx:    0.02
+Iteration 11
+                                                           dL:   10.07
+                                                           dx:    0.02
+Iteration 12
+                                                           dL:    8.61
+                                                           dx:    0.02
+Iteration 13
+                                                           dL:    7.14
+                                                           dx:    0.02
+Iteration 14
+                                                           dL:    6.00
+                                                           dx:    0.01
+Iteration 15
+                                                           dL:    4.94
+                                                           dx:    0.02
+Iteration 16
+                                                           dL:    4.01
+                                                           dx:    0.01
+Iteration 17
+                                                           dL:    3.31
+                                                           dx:    0.01
+Iteration 18
+                                                           dL:    2.79
+                                                           dx:    0.01
+Iteration 19
+                                                           dL:    2.18
+                                                           dx:    0.01
+Iteration 20
+                                                           dL:    1.67
+                                                           dx:    0.01
+                                                          Converged :]
+
+                                                                              < M A T L A B (R) >
+                                                                    Copyright 1984-2020 The MathWorks, Inc.
+                                                                    R2020b (9.9.0.1467703) 64-bit (glnxa64)
+                                                                                August 26, 2020
+
+ 
+To get started, type doc.
+For product information, visit www.mathworks.com.
+ 
+cbm_hbi_hbi                                       01-May-2023 12:40:59
+Running hierarchical bayesian inference (HBI)...
+
+HBI has been initialized according to
+	epsilon_initi_alpha_uc.mat [for model 1]
+	epsilon_initi_alpha_mainc.mat [for model 2]
+	epsilon_initi_alpha_lurec.mat [for model 3]
+	epsilon_initi_alpha_missc.mat [for model 4]
+	epsilon_initi_alpha_fac.mat [for model 5]
+	epsilon_initi_alpha_respc.mat [for model 6]
+	epsilon_initi_alpha_uc_mainc.mat [for model 7]
+	epsilon_initi_alpha_uc_missc.mat [for model 8]
+	epsilon_initi_alpha_uc_fac.mat [for model 9]
+	epsilon_initi_alpha_uc_respc.mat [for model 10]
+	epsilon_initi_alpha_mainc_lurec.mat [for model 11]
+	epsilon_initi_alpha_mainc_missc.mat [for model 12]
+	epsilon_initi_alpha_mainc_fac.mat [for model 13]
+	epsilon_initi_alpha_mainc_respc.mat [for model 14]
+	epsilon_initi_alpha_lurec_missc.mat [for model 15]
+	epsilon_initi_alpha_lurec_fac.mat [for model 16]
+	epsilon_initi_alpha_lurec_respc.mat [for model 17]
+	epsilon_initi_alpha_missc_fac.mat [for model 18]
+	epsilon_initi_alpha_missc_respc.mat [for model 19]
+	epsilon_initi_alpha_fac_respc.mat [for model 20]
+	epsilon_initi_alpha_uc_mainc_lurec.mat [for model 21]
+	epsilon_initi_alpha_uc_mainc_missc.mat [for model 22]
+	epsilon_initi_alpha_uc_mainc_fac.mat [for model 23]
+	epsilon_initi_alpha_uc_lurec_missc.mat [for model 24]
+	epsilon_initi_alpha_uc_fac_respc.mat [for model 25]
+	epsilon_initi_alpha_mainc_lurec_respc.mat [for model 26]
+	epsilon_initi_alpha_mainc_missc_fac.mat [for model 27]
+	epsilon_initi_alpha_mainc_fac_respc.mat [for model 28]
+	epsilon_initi_alpha_lurec_missc_fac.mat [for model 29]
+	epsilon_initi_alpha_uc_mainc_lurec_fac.mat [for model 30]
+	epsilon_initi_alpha_uc_mainc_lurec_respc.mat [for model 31]
+	epsilon_initi_alpha_uc_mainc_missc_fac.mat [for model 32]
+	epsilon_initi_alpha_uc_lurec_missc_fac.mat [for model 33]
+	epsilon_initi_alpha_uc_missc_fac_respc.mat [for model 34]
+	epsilon_initi_alpha_mainc_lurec_missc_fac.mat [for model 35]
+	epsilon_initi_alpha_mainc_lurec_missc_respc.mat [for model 36]
+	epsilon_initi_alpha_mainc_missc_fac_respc.mat [for model 37]
+	epsilon_initi_alpha_lurec_missc_fac_respc.mat [for model 38]
+	epsilon_initi_alpha_uc_mainc_lurec_fac_respc.mat [for model 39]
+	epsilon_initi_alpha_mainc_lurec_missc_fac_respc.mat [for model 40]
+	epsilon_init_deltai_uc.mat [for model 41]
+	epsilon_init_deltai_mainc.mat [for model 42]
+	epsilon_init_deltai_lurec.mat [for model 43]
+	epsilon_init_deltai_missc.mat [for model 44]
+	epsilon_init_deltai_fac.mat [for model 45]
+	epsilon_init_deltai_respc.mat [for model 46]
+	epsilon_init_deltai_uc_mainc.mat [for model 47]
+	epsilon_init_deltai_uc_lurec.mat [for model 48]
+	epsilon_init_deltai_uc_fac.mat [for model 49]
+	epsilon_init_deltai_uc_respc.mat [for model 50]
+	epsilon_init_deltai_mainc_lurec.mat [for model 51]
+	epsilon_init_deltai_mainc_missc.mat [for model 52]
+	epsilon_init_deltai_mainc_fac.mat [for model 53]
+	epsilon_init_deltai_mainc_respc.mat [for model 54]
+	epsilon_init_deltai_lurec_missc.mat [for model 55]
+	epsilon_init_deltai_lurec_fac.mat [for model 56]
+	epsilon_init_deltai_lurec_respc.mat [for model 57]
+	epsilon_init_deltai_missc_fac.mat [for model 58]
+	epsilon_init_deltai_missc_respc.mat [for model 59]
+	epsilon_init_deltai_fac_respc.mat [for model 60]
+	epsilon_init_deltai_uc_mainc_lurec.mat [for model 61]
+	epsilon_init_deltai_uc_mainc_missc.mat [for model 62]
+	epsilon_init_deltai_uc_mainc_fac.mat [for model 63]
+	epsilon_init_deltai_uc_mainc_respc.mat [for model 64]
+	epsilon_init_deltai_uc_lurec_missc.mat [for model 65]
+	epsilon_init_deltai_uc_lurec_fac.mat [for model 66]
+	epsilon_init_deltai_uc_missc_fac.mat [for model 67]
+	epsilon_init_deltai_uc_missc_respc.mat [for model 68]
+	epsilon_init_deltai_mainc_lurec_missc.mat [for model 69]
+	epsilon_init_deltai_mainc_lurec_fac.mat [for model 70]
+	epsilon_init_deltai_mainc_lurec_respc.mat [for model 71]
+	epsilon_init_deltai_mainc_missc_respc.mat [for model 72]
+	epsilon_init_deltai_mainc_fac_respc.mat [for model 73]
+	epsilon_init_deltai_lurec_missc_fac.mat [for model 74]
+	epsilon_init_deltai_lurec_missc_respc.mat [for model 75]
+	epsilon_init_deltai_missc_fac_respc.mat [for model 76]
+	epsilon_init_deltai_uc_mainc_lurec_missc.mat [for model 77]
+	epsilon_init_deltai_uc_mainc_missc_respc.mat [for model 78]
+	epsilon_init_deltai_uc_mainc_fac_respc.mat [for model 79]
+	epsilon_init_deltai_uc_lurec_missc_fac.mat [for model 80]
+	epsilon_init_deltai_mainc_lurec_missc_fac.mat [for model 81]
+	epsilon_init_deltai_mainc_lurec_missc_respc.mat [for model 82]
+	epsilon_init_deltai_mainc_missc_fac_respc.mat [for model 83]
+	epsilon_init_deltai_uc_mainc_lurec_missc_respc.mat [for model 84]
+ 
+Number of samples: 100
+Number of models: 84
+======================================================================
+Iteration 01
+Iteration 02
+	model frequencies (percent)
+	model 1: 5.4| model 2: 2.6| model 3: 2.8| model 4: 2.7| model 5: 2.6| model 6: 2.4| model 7: 2.2| model 8: 2.5| model 9: 2.7| model 10: 3.3| model 11: 1.6| model 12: 1.7| model 13: 2.1| model 14: 1.8| model 15: 2.1| model 16: 2.7| model 17: 2.0| model 18: 2.0| model 19: 1.9| model 20: 2.1| model 21: 2.3| model 22: 1.3| model 23: 1.5| model 24: 2.0| model 25: 2.0| model 26: 1.2| model 27: 1.4| model 28: 1.6| model 29: 1.9| model 30: 1.3| model 31: 1.5| model 32: 1.0| model 33: 1.8| model 34: 1.4| model 35: 1.3| model 36: 1.0| model 37: 1.2| model 38: 1.8| model 39: 1.0| model 40: 1.1| model 41: 3.5| model 42: 0.3| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 1.3| model 48: 1.9| model 49: 1.1| model 50: 1.7| model 51: 0.2| model 52: 0.1| model 53: 0.1| model 54: 0.2| model 55: 0.1| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| model 61: 1.2| model 62: 0.7| model 63: 0.6| model 64: 0.7| model 65: 0.8| model 66: 0.7| model 67: 0.6| model 68: 0.6| model 69: 0.1| model 70: 0.1| model 71: 0.1| model 72: 0.1| model 73: 0.1| model 74: 0.1| model 75: 0.0| model 76: 0.0| model 77: 0.8| model 78: 0.4| model 79: 0.7| model 80: 1.3| model 81: 0.1| model 82: 0.1| model 83: 0.1| model 84: 0.6| 
+                                                           dL: 2747.29
+                                                           dm:   94.64
+                                                           dx:    0.75
+Iteration 03
+	model frequencies (percent)
+	model 1: 28.2| model 2: 3.3| model 3: 4.9| model 4: 3.6| model 5: 3.0| model 6: 2.5| model 7: 2.0| model 8: 3.2| model 9: 3.7| model 10: 7.5| model 11: 0.5| model 12: 0.6| model 13: 1.7| model 14: 0.7| model 15: 1.3| model 16: 3.4| model 17: 1.2| model 18: 1.0| model 19: 0.9| model 20: 1.2| model 21: 3.7| model 22: 0.2| model 23: 0.4| model 24: 1.4| model 25: 1.2| model 26: 0.1| model 27: 0.2| model 28: 0.3| model 29: 0.6| model 30: 0.2| model 31: 0.5| model 32: 0.0| model 33: 1.4| model 34: 0.2| model 35: 0.1| model 36: 0.0| model 37: 0.1| model 38: 0.3| model 39: 0.0| model 40: 0.0| model 41: 7.9| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.4| model 48: 3.0| model 49: 0.3| model 50: 0.9| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| model 61: 0.5| model 62: 0.1| model 63: 0.0| model 64: 0.0| model 65: 0.1| model 66: 0.0| model 67: 0.0| model 68: 0.0| model 69: 0.0| model 70: 0.0| model 71: 0.0| model 72: 0.0| model 73: 0.0| model 74: 0.0| model 75: 0.0| model 76: 0.0| model 77: 0.1| model 78: 0.0| model 79: 0.0| model 80: 0.8| model 81: 0.0| model 82: 0.0| model 83: 0.0| model 84: 0.0| 
+                                                           dL:  572.15
+                                                           dm:   22.83
+                                                           dx:    0.71
+Iteration 04
+	model frequencies (percent)
+	model 1: 59.5| model 2: 1.3| model 3: 5.8| model 4: 1.7| model 5: 1.5| model 6: 0.7| model 7: 0.2| model 8: 1.3| model 9: 1.6| model 10: 8.0| model 11: 0.0| model 12: 0.0| model 13: 0.7| model 14: 0.0| model 15: 0.1| model 16: 2.7| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 4.2| model 22: 0.0| model 23: 0.0| model 24: 0.2| model 25: 0.1| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.9| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 6.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 3.5| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| model 61: 0.0| model 62: 0.0| model 63: 0.0| model 64: 0.0| model 65: 0.0| model 66: 0.0| model 67: 0.0| model 68: 0.0| model 69: 0.0| model 70: 0.0| model 71: 0.0| model 72: 0.0| model 73: 0.0| model 74: 0.0| model 75: 0.0| model 76: 0.0| model 77: 0.0| model 78: 0.0| model 79: 0.0| model 80: 0.1| model 81: 0.0| model 82: 0.0| model 83: 0.0| model 84: 0.0| 
+                                                           dL:  321.62
+                                                           dm:   31.28
+                                                           dx:    0.74
+Iteration 05
+	model frequencies (percent)
+	model 1: 71.2| model 2: 0.1| model 3: 6.7| model 4: 0.2| model 5: 0.7| model 6: 0.0| model 7: 0.0| model 8: 0.1| model 9: 0.1| model 10: 5.6| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 1.9| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 5.1| model 22: 0.0| model 23: 0.0| model 24: 0.0| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.8| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 3.9| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 3.4| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| model 61: 0.0| model 62: 0.0| model 63: 0.0| model 64: 0.0| model 65: 0.0| model 66: 0.0| model 67: 0.0| model 68: 0.0| model 69: 0.0| model 70: 0.0| model 71: 0.0| model 72: 0.0| model 73: 0.0| model 74: 0.0| model 75: 0.0| model 76: 0.0| model 77: 0.0| model 78: 0.0| model 79: 0.0| model 80: 0.0| model 81: 0.0| model 82: 0.0| model 83: 0.0| model 84: 0.0| 
+                                                           dL:   79.06
+                                                           dm:   11.73
+                                                           dx:    0.67
+Iteration 06
+	model frequencies (percent)
+	model 1: 74.9| model 2: 0.0| model 3: 7.5| model 4: 0.0| model 5: 0.5| model 6: 0.0| model 7: 0.0| model 8: 0.0| model 9: 0.0| model 10: 3.1| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 1.3| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 6.1| model 22: 0.0| model 23: 0.0| model 24: 0.0| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.8| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 2.7| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 3.2| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| model 61: 0.0| model 62: 0.0| model 63: 0.0| model 64: 0.0| model 65: 0.0| model 66: 0.0| model 67: 0.0| model 68: 0.0| model 69: 0.0| model 70: 0.0| model 71: 0.0| model 72: 0.0| model 73: 0.0| model 74: 0.0| model 75: 0.0| model 76: 0.0| model 77: 0.0| model 78: 0.0| model 79: 0.0| model 80: 0.0| model 81: 0.0| model 82: 0.0| model 83: 0.0| model 84: 0.0| 
+                                                           dL:   25.49
+                                                           dm:    3.66
+                                                           dx:    0.60
+Iteration 07
+	model frequencies (percent)
+	model 1: 76.8| model 2: 0.0| model 3: 7.9| model 4: 0.0| model 5: 0.2| model 6: 0.0| model 7: 0.0| model 8: 0.0| model 9: 0.0| model 10: 1.5| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 1.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 6.5| model 22: 0.0| model 23: 0.0| model 24: 0.0| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.9| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 2.2| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 3.0| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| model 61: 0.0| model 62: 0.0| model 63: 0.0| model 64: 0.0| model 65: 0.0| model 66: 0.0| model 67: 0.0| model 68: 0.0| model 69: 0.0| model 70: 0.0| model 71: 0.0| model 72: 0.0| model 73: 0.0| model 74: 0.0| model 75: 0.0| model 76: 0.0| model 77: 0.0| model 78: 0.0| model 79: 0.0| model 80: 0.0| model 81: 0.0| model 82: 0.0| model 83: 0.0| model 84: 0.0| 
+                                                           dL:    7.14
+                                                           dm:    1.93
+                                                           dx:    0.60
+Iteration 08
+	model frequencies (percent)
+	model 1: 77.6| model 2: 0.0| model 3: 8.1| model 4: 0.0| model 5: 0.0| model 6: 0.0| model 7: 0.0| model 8: 0.0| model 9: 0.0| model 10: 1.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 1.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 6.6| model 22: 0.0| model 23: 0.0| model 24: 0.0| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.9| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 1.8| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 2.9| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| model 61: 0.0| model 62: 0.0| model 63: 0.0| model 64: 0.0| model 65: 0.0| model 66: 0.0| model 67: 0.0| model 68: 0.0| model 69: 0.0| model 70: 0.0| model 71: 0.0| model 72: 0.0| model 73: 0.0| model 74: 0.0| model 75: 0.0| model 76: 0.0| model 77: 0.0| model 78: 0.0| model 79: 0.0| model 80: 0.0| model 81: 0.0| model 82: 0.0| model 83: 0.0| model 84: 0.0| 
+                                                           dL:    5.59
+                                                           dm:    0.84
+                                                           dx:    0.48
+Iteration 09
+	model frequencies (percent)
+	model 1: 77.9| model 2: 0.0| model 3: 8.3| model 4: 0.0| model 5: 0.0| model 6: 0.0| model 7: 0.0| model 8: 0.0| model 9: 0.0| model 10: 1.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 1.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 6.6| model 22: 0.0| model 23: 0.0| model 24: 0.0| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 0.9| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 1.6| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 2.7| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| model 61: 0.0| model 62: 0.0| model 63: 0.0| model 64: 0.0| model 65: 0.0| model 66: 0.0| model 67: 0.0| model 68: 0.0| model 69: 0.0| model 70: 0.0| model 71: 0.0| model 72: 0.0| model 73: 0.0| model 74: 0.0| model 75: 0.0| model 76: 0.0| model 77: 0.0| model 78: 0.0| model 79: 0.0| model 80: 0.0| model 81: 0.0| model 82: 0.0| model 83: 0.0| model 84: 0.0| 
+                                                           dL:    1.73
+                                                           dm:    0.27
+                                                           dx:    0.56
+Iteration 10
+	model frequencies (percent)
+	model 1: 78.1| model 2: 0.0| model 3: 8.7| model 4: 0.0| model 5: 0.0| model 6: 0.0| model 7: 0.0| model 8: 0.0| model 9: 0.0| model 10: 1.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 1.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 6.5| model 22: 0.0| model 23: 0.0| model 24: 0.0| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 1.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 1.3| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 2.4| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| model 61: 0.0| model 62: 0.0| model 63: 0.0| model 64: 0.0| model 65: 0.0| model 66: 0.0| model 67: 0.0| model 68: 0.0| model 69: 0.0| model 70: 0.0| model 71: 0.0| model 72: 0.0| model 73: 0.0| model 74: 0.0| model 75: 0.0| model 76: 0.0| model 77: 0.0| model 78: 0.0| model 79: 0.0| model 80: 0.0| model 81: 0.0| model 82: 0.0| model 83: 0.0| model 84: 0.0| 
+                                                           dL:    1.49
+                                                           dm:    0.18
+                                                           dx:    0.09
+Iteration 11
+	model frequencies (percent)
+	model 1: 78.2| model 2: 0.0| model 3: 9.3| model 4: 0.0| model 5: 0.0| model 6: 0.0| model 7: 0.0| model 8: 0.0| model 9: 0.0| model 10: 1.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 1.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 6.4| model 22: 0.0| model 23: 0.0| model 24: 0.0| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 1.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 1.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 2.1| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| model 61: 0.0| model 62: 0.0| model 63: 0.0| model 64: 0.0| model 65: 0.0| model 66: 0.0| model 67: 0.0| model 68: 0.0| model 69: 0.0| model 70: 0.0| model 71: 0.0| model 72: 0.0| model 73: 0.0| model 74: 0.0| model 75: 0.0| model 76: 0.0| model 77: 0.0| model 78: 0.0| model 79: 0.0| model 80: 0.0| model 81: 0.0| model 82: 0.0| model 83: 0.0| model 84: 0.0| 
+                                                           dL:    2.74
+                                                           dm:    0.08
+                                                           dx:    0.15
+Iteration 12
+	model frequencies (percent)
+	model 1: 78.1| model 2: 0.0| model 3: 9.8| model 4: 0.0| model 5: 0.0| model 6: 0.0| model 7: 0.0| model 8: 0.0| model 9: 0.0| model 10: 1.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 1.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 6.3| model 22: 0.0| model 23: 0.0| model 24: 0.0| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 1.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 1.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 1.7| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| model 61: 0.0| model 62: 0.0| model 63: 0.0| model 64: 0.0| model 65: 0.0| model 66: 0.0| model 67: 0.0| model 68: 0.0| model 69: 0.0| model 70: 0.0| model 71: 0.0| model 72: 0.0| model 73: 0.0| model 74: 0.0| model 75: 0.0| model 76: 0.0| model 77: 0.0| model 78: 0.0| model 79: 0.0| model 80: 0.0| model 81: 0.0| model 82: 0.0| model 83: 0.0| model 84: 0.0| 
+                                                           dL:    1.19
+                                                           dm:    0.04
+                                                           dx:    0.42
+Iteration 13
+	model frequencies (percent)
+	model 1: 78.1| model 2: 0.0| model 3: 10.1| model 4: 0.0| model 5: 0.0| model 6: 0.0| model 7: 0.0| model 8: 0.0| model 9: 0.0| model 10: 1.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 1.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 6.3| model 22: 0.0| model 23: 0.0| model 24: 0.0| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 1.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 1.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 1.6| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| model 61: 0.0| model 62: 0.0| model 63: 0.0| model 64: 0.0| model 65: 0.0| model 66: 0.0| model 67: 0.0| model 68: 0.0| model 69: 0.0| model 70: 0.0| model 71: 0.0| model 72: 0.0| model 73: 0.0| model 74: 0.0| model 75: 0.0| model 76: 0.0| model 77: 0.0| model 78: 0.0| model 79: 0.0| model 80: 0.0| model 81: 0.0| model 82: 0.0| model 83: 0.0| model 84: 0.0| 
+                                                           dL:    0.46
+                                                           dm:    0.03
+                                                           dx:    0.11
+Iteration 14
+	model frequencies (percent)
+	model 1: 78.1| model 2: 0.0| model 3: 10.2| model 4: 0.0| model 5: 0.0| model 6: 0.0| model 7: 0.0| model 8: 0.0| model 9: 0.0| model 10: 1.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 1.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 6.3| model 22: 0.0| model 23: 0.0| model 24: 0.0| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 1.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 1.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 1.5| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| model 61: 0.0| model 62: 0.0| model 63: 0.0| model 64: 0.0| model 65: 0.0| model 66: 0.0| model 67: 0.0| model 68: 0.0| model 69: 0.0| model 70: 0.0| model 71: 0.0| model 72: 0.0| model 73: 0.0| model 74: 0.0| model 75: 0.0| model 76: 0.0| model 77: 0.0| model 78: 0.0| model 79: 0.0| model 80: 0.0| model 81: 0.0| model 82: 0.0| model 83: 0.0| model 84: 0.0| 
+                                                           dL:    0.24
+                                                           dm:    0.01
+                                                           dx:    0.05
+Iteration 15
+	model frequencies (percent)
+	model 1: 78.1| model 2: 0.0| model 3: 10.3| model 4: 0.0| model 5: 0.0| model 6: 0.0| model 7: 0.0| model 8: 0.0| model 9: 0.0| model 10: 1.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 1.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 6.3| model 22: 0.0| model 23: 0.0| model 24: 0.0| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 1.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 1.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 1.4| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| model 61: 0.0| model 62: 0.0| model 63: 0.0| model 64: 0.0| model 65: 0.0| model 66: 0.0| model 67: 0.0| model 68: 0.0| model 69: 0.0| model 70: 0.0| model 71: 0.0| model 72: 0.0| model 73: 0.0| model 74: 0.0| model 75: 0.0| model 76: 0.0| model 77: 0.0| model 78: 0.0| model 79: 0.0| model 80: 0.0| model 81: 0.0| model 82: 0.0| model 83: 0.0| model 84: 0.0| 
+                                                           dL:    0.18
+                                                           dm:    0.01
+                                                           dx:    0.01
+Iteration 16
+	model frequencies (percent)
+	model 1: 78.1| model 2: 0.0| model 3: 10.3| model 4: 0.0| model 5: 0.0| model 6: 0.0| model 7: 0.0| model 8: 0.0| model 9: 0.0| model 10: 1.0| model 11: 0.0| model 12: 0.0| model 13: 0.0| model 14: 0.0| model 15: 0.0| model 16: 1.0| model 17: 0.0| model 18: 0.0| model 19: 0.0| model 20: 0.0| model 21: 6.3| model 22: 0.0| model 23: 0.0| model 24: 0.0| model 25: 0.0| model 26: 0.0| model 27: 0.0| model 28: 0.0| model 29: 0.0| model 30: 0.0| model 31: 0.0| model 32: 0.0| model 33: 1.0| model 34: 0.0| model 35: 0.0| model 36: 0.0| model 37: 0.0| model 38: 0.0| model 39: 0.0| model 40: 0.0| model 41: 1.0| model 42: 0.0| model 43: 0.0| model 44: 0.0| model 45: 0.0| model 46: 0.0| model 47: 0.0| model 48: 1.3| model 49: 0.0| model 50: 0.0| model 51: 0.0| model 52: 0.0| model 53: 0.0| model 54: 0.0| model 55: 0.0| model 56: 0.0| model 57: 0.0| model 58: 0.0| model 59: 0.0| model 60: 0.0| model 61: 0.0| model 62: 0.0| model 63: 0.0| model 64: 0.0| model 65: 0.0| model 66: 0.0| model 67: 0.0| model 68: 0.0| model 69: 0.0| model 70: 0.0| model 71: 0.0| model 72: 0.0| model 73: 0.0| model 74: 0.0| model 75: 0.0| model 76: 0.0| model 77: 0.0| model 78: 0.0| model 79: 0.0| model 80: 0.0| model 81: 0.0| model 82: 0.0| model 83: 0.0| model 84: 0.0| 
+                                                           dL:    0.14
+                                                           dm:    0.02
+                                                           dx:    0.01
+                                                          Converged :]
+cbm_hbi_hbi                                       01-May-2023 23:21:53
+Running hierarchical bayesian inference (HBI)- null mode...
+
+HBI has been initialized according to
+	epsilon_initi_alpha_uc.mat [for model 1]
+	epsilon_initi_alpha_mainc.mat [for model 2]
+	epsilon_initi_alpha_lurec.mat [for model 3]
+	epsilon_initi_alpha_missc.mat [for model 4]
+	epsilon_initi_alpha_fac.mat [for model 5]
+	epsilon_initi_alpha_respc.mat [for model 6]
+	epsilon_initi_alpha_uc_mainc.mat [for model 7]
+	epsilon_initi_alpha_uc_missc.mat [for model 8]
+	epsilon_initi_alpha_uc_fac.mat [for model 9]
+	epsilon_initi_alpha_uc_respc.mat [for model 10]
+	epsilon_initi_alpha_mainc_lurec.mat [for model 11]
+	epsilon_initi_alpha_mainc_missc.mat [for model 12]
+	epsilon_initi_alpha_mainc_fac.mat [for model 13]
+	epsilon_initi_alpha_mainc_respc.mat [for model 14]
+	epsilon_initi_alpha_lurec_missc.mat [for model 15]
+	epsilon_initi_alpha_lurec_fac.mat [for model 16]
+	epsilon_initi_alpha_lurec_respc.mat [for model 17]
+	epsilon_initi_alpha_missc_fac.mat [for model 18]
+	epsilon_initi_alpha_missc_respc.mat [for model 19]
+	epsilon_initi_alpha_fac_respc.mat [for model 20]
+	epsilon_initi_alpha_uc_mainc_lurec.mat [for model 21]
+	epsilon_initi_alpha_uc_mainc_missc.mat [for model 22]
+	epsilon_initi_alpha_uc_mainc_fac.mat [for model 23]
+	epsilon_initi_alpha_uc_lurec_missc.mat [for model 24]
+	epsilon_initi_alpha_uc_fac_respc.mat [for model 25]
+	epsilon_initi_alpha_mainc_lurec_respc.mat [for model 26]
+	epsilon_initi_alpha_mainc_missc_fac.mat [for model 27]
+	epsilon_initi_alpha_mainc_fac_respc.mat [for model 28]
+	epsilon_initi_alpha_lurec_missc_fac.mat [for model 29]
+	epsilon_initi_alpha_uc_mainc_lurec_fac.mat [for model 30]
+	epsilon_initi_alpha_uc_mainc_lurec_respc.mat [for model 31]
+	epsilon_initi_alpha_uc_mainc_missc_fac.mat [for model 32]
+	epsilon_initi_alpha_uc_lurec_missc_fac.mat [for model 33]
+	epsilon_initi_alpha_uc_missc_fac_respc.mat [for model 34]
+	epsilon_initi_alpha_mainc_lurec_missc_fac.mat [for model 35]
+	epsilon_initi_alpha_mainc_lurec_missc_respc.mat [for model 36]
+	epsilon_initi_alpha_mainc_missc_fac_respc.mat [for model 37]
+	epsilon_initi_alpha_lurec_missc_fac_respc.mat [for model 38]
+	epsilon_initi_alpha_uc_mainc_lurec_fac_respc.mat [for model 39]
+	epsilon_initi_alpha_mainc_lurec_missc_fac_respc.mat [for model 40]
+	epsilon_init_deltai_uc.mat [for model 41]
+	epsilon_init_deltai_mainc.mat [for model 42]
+	epsilon_init_deltai_lurec.mat [for model 43]
+	epsilon_init_deltai_missc.mat [for model 44]
+	epsilon_init_deltai_fac.mat [for model 45]
+	epsilon_init_deltai_respc.mat [for model 46]
+	epsilon_init_deltai_uc_mainc.mat [for model 47]
+	epsilon_init_deltai_uc_lurec.mat [for model 48]
+	epsilon_init_deltai_uc_fac.mat [for model 49]
+	epsilon_init_deltai_uc_respc.mat [for model 50]
+	epsilon_init_deltai_mainc_lurec.mat [for model 51]
+	epsilon_init_deltai_mainc_missc.mat [for model 52]
+	epsilon_init_deltai_mainc_fac.mat [for model 53]
+	epsilon_init_deltai_mainc_respc.mat [for model 54]
+	epsilon_init_deltai_lurec_missc.mat [for model 55]
+	epsilon_init_deltai_lurec_fac.mat [for model 56]
+	epsilon_init_deltai_lurec_respc.mat [for model 57]
+	epsilon_init_deltai_missc_fac.mat [for model 58]
+	epsilon_init_deltai_missc_respc.mat [for model 59]
+	epsilon_init_deltai_fac_respc.mat [for model 60]
+	epsilon_init_deltai_uc_mainc_lurec.mat [for model 61]
+	epsilon_init_deltai_uc_mainc_missc.mat [for model 62]
+	epsilon_init_deltai_uc_mainc_fac.mat [for model 63]
+	epsilon_init_deltai_uc_mainc_respc.mat [for model 64]
+	epsilon_init_deltai_uc_lurec_missc.mat [for model 65]
+	epsilon_init_deltai_uc_lurec_fac.mat [for model 66]
+	epsilon_init_deltai_uc_missc_fac.mat [for model 67]
+	epsilon_init_deltai_uc_missc_respc.mat [for model 68]
+	epsilon_init_deltai_mainc_lurec_missc.mat [for model 69]
+	epsilon_init_deltai_mainc_lurec_fac.mat [for model 70]
+	epsilon_init_deltai_mainc_lurec_respc.mat [for model 71]
+	epsilon_init_deltai_mainc_missc_respc.mat [for model 72]
+	epsilon_init_deltai_mainc_fac_respc.mat [for model 73]
+	epsilon_init_deltai_lurec_missc_fac.mat [for model 74]
+	epsilon_init_deltai_lurec_missc_respc.mat [for model 75]
+	epsilon_init_deltai_missc_fac_respc.mat [for model 76]
+	epsilon_init_deltai_uc_mainc_lurec_missc.mat [for model 77]
+	epsilon_init_deltai_uc_mainc_missc_respc.mat [for model 78]
+	epsilon_init_deltai_uc_mainc_fac_respc.mat [for model 79]
+	epsilon_init_deltai_uc_lurec_missc_fac.mat [for model 80]
+	epsilon_init_deltai_mainc_lurec_missc_fac.mat [for model 81]
+	epsilon_init_deltai_mainc_lurec_missc_respc.mat [for model 82]
+	epsilon_init_deltai_mainc_missc_fac_respc.mat [for model 83]
+	epsilon_init_deltai_uc_mainc_lurec_missc_respc.mat [for model 84]
+ 
+Number of samples: 100
+Number of models: 84
+======================================================================
+Iteration 01
+Iteration 02
+                                                           dL: 2303.32
+                                                           dx:    0.22
+Iteration 03
+                                                           dL:  105.93
+                                                           dx:    0.12
+Iteration 04
+                                                           dL:   70.26
+                                                           dx:    0.06
+Iteration 05
+                                                           dL:   54.41
+                                                           dx:    0.05
+Iteration 06
+                                                           dL:   45.09
+                                                           dx:    0.05
+Iteration 07
+                                                           dL:   38.42
+                                                           dx:    0.03
+Iteration 08
+                                                           dL:   34.40
+                                                           dx:    0.03
+Iteration 09
+                                                           dL:   29.91
+                                                           dx:    0.02
+Iteration 10
+                                                           dL:   24.98
+                                                           dx:    0.02
+Iteration 11
+                                                           dL:   19.45
+                                                           dx:    0.02
+Iteration 12
+                                                           dL:   13.92
+                                                           dx:    0.02
+Iteration 13
+                                                           dL:    9.17
+                                                           dx:    0.02
+Iteration 14
+                                                           dL:    5.63
+                                                           dx:    0.01
+Iteration 15
+                                                           dL:    3.22
+                                                           dx:    0.01
+Iteration 16
+                                                           dL:    1.68
+                                                           dx:    0.01
+                                                          Converged :]

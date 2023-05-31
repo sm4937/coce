@@ -7,9 +7,6 @@ load('simdata/toanalyze.mat')
 %scale things appropriately
 toanalyze.BDM = (toanalyze.BDM./25) + 1;
 
-taskcolors = [0.75 0.75 0.75;0 0.75 0.75; 0.75 0.75 0; 0.75 0 0.75];
-tasklabels = {'1-detect','1-back','3-detect','2-back'};
-
 responsibility = cbm.output.responsibility; %modelstofit = best_model.overallfit.fitmodels;
 lowparams = cbm.output.parameters; %for accessibility, grab important info from cbi structures
 NFCsubjs = [21 36 22 74 79 73];
@@ -52,13 +49,13 @@ for task = 1:(ntasks-1)
     end
 end
 
-errorbar(nanmean(rtask1),nanstd(rtask1)/sqrt(n),'Color',taskcolors(2,:),'LineWidth',2)
+errorbar(nanmean(rtask1),nanstd(rtask1)/sqrt(n),'Color',taskcolors(2,:),'LineWidth',2.5)
 hold on
-errorbar(nanmean(rtask3),nanstd(rtask3)/sqrt(n),'Color',taskcolors(3,:),'LineWidth',2)
-errorbar(nanmean(rtask2),nanstd(rtask2)/sqrt(n),'Color',taskcolors(4,:),'LineWidth',2)
-errorbar(nanmean(sim_task1),nanstd(sim_task1)/sqrt(n),'--','Color',taskcolors(2,:)+0.1,'LineWidth',2)
-errorbar(nanmean(sim_task3),nanstd(sim_task3)/sqrt(n),'--','Color',taskcolors(3,:)+0.1,'LineWidth',2)
-errorbar(nanmean(sim_task2),nanstd(sim_task2)/sqrt(n),'--','Color',taskcolors(4,:)+0.1,'LineWidth',2)
+errorbar(nanmean(rtask3),nanstd(rtask3)/sqrt(n),'Color',taskcolors(3,:),'LineWidth',2.5)
+errorbar(nanmean(rtask2),nanstd(rtask2)/sqrt(n),'Color',taskcolors(4,:),'LineWidth',2.5)
+errorbar(nanmean(sim_task1),nanstd(sim_task1)/sqrt(n),'--','Color',taskcolors(2,:),'LineWidth',2.5)
+errorbar(nanmean(sim_task3),nanstd(sim_task3)/sqrt(n),'--','Color',taskcolors(3,:),'LineWidth',2.5)
+errorbar(nanmean(sim_task2),nanstd(sim_task2)/sqrt(n),'--','Color',taskcolors(4,:),'LineWidth',2.5)
 legend({'1-back','3-detect','2-back'})
 ax = gca; ax.FontSize = 14;
 ylim([1.9 3.3])

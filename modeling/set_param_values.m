@@ -1,5 +1,5 @@
 function [uc,epsilon,init,missc,mainc,matchc,noisec,respc,lurec,errorc,fac,alpha,delta] = set_param_values(params,model)
-%   Scale, set parameter values for cost learning models
+%   Scale, set parameter values for cost adaptation models
 global scalingvector canbeneg
 
 scalingvector = ones(1,length(params)); canbeneg = false(1,length(params));
@@ -24,7 +24,7 @@ if model.alpha
 end
 if model.deltai || model.delta
     idx = find(contains(model.paramnames,'delta'));
-    scalingvector(idx) = 0.05; %0.1; %0.05; 
+    scalingvector(idx) = 0.5; %0.1;
     canbeneg(idx) = true;
     delta = params(idx).*scalingvector(idx);
     % delta should now be a vector, not a single number
@@ -45,6 +45,9 @@ if model.init || model.initi
     idx = find(contains(model.paramnames,'init'));
     scalingvector(idx) = 100;
     init = params(idx).*scalingvector(idx);
+    if length(idx) == 1
+        init = repmat(init,1,3);
+    end
 end
 if model.missc
     idx = find(contains(model.paramnames,'missc'));

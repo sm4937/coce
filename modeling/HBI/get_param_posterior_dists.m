@@ -20,7 +20,7 @@ all_params_all_models = {'uc','epsilon','initi_1','initi_2','initi_3','missc', .
 nparams = length(all_params_all_models);
 
 % all possible values for all possible parameters
-xs = [-2:0.01:2];
+xs = [-1.75:0.01:1.75];
 % bins too big?
 
 % Write Theta for all the possible parameters across models with empirical
@@ -51,8 +51,8 @@ end
 % Saved below in:
 % dists_j(:,:,p) = normpdf(xs,fit_values(:,p),subj_stds(p,:)');
 
-% Okay, so of particular interest are mainc, lurec, fac
-top_costs = {'mainc','lurec','fac'};
+% Okay, so of particular interest are uc, mainc, lurec, fac?
+top_costs = {'uc','mainc','lurec'};
 overall_index = contains(all_params_all_models,top_costs);
 overall_index(contains(all_params_all_models,'delta')) = false;
 top_costs_indx = find(overall_index);
@@ -74,27 +74,27 @@ for j = 1:length(modelstofit)
     % about?
     % get model group-level prior
     model = coc_createModels(modelstofit{j});
-    idx_mainc = find(contains(model.paramnames,'mainc')); 
-    contains_mainc = ~isempty(idx_mainc);
-    if contains_mainc
+    idx_1 = find(contains(model.paramnames,top_costs{1})); 
+    contains_1 = ~isempty(idx_1);
+    if contains_1
         %oneD = normpdf(xs,cbm.output.group_mean{j}(idx_mainc),cbm.math.Sdiag{j}(idx_mainc));
-        oneD = normpdf(xs,cbm.output.group_mean{j}(idx_mainc),cbm.output.group_hierarchical_errorbar{j}(idx_mainc)); 
+        oneD = normpdf(xs,cbm.output.group_mean{j}(idx_1),cbm.output.group_hierarchical_errorbar{j}(idx_1)); 
         p_theta_j_prime(1,:) = p_theta_j_prime(1,:) + rho_j*oneD;
     end
 
-    % 2nd dimension is lurec
-    idx_lurec = find(contains(model.paramnames,'lurec')); 
-    contains_lurec = ~isempty(idx_lurec);
-    if contains_lurec
-        twoD = normpdf(xs,cbm.output.group_mean{j}(idx_lurec),cbm.output.group_hierarchical_errorbar{j}(idx_lurec));        
+    % 2nd dimension 
+    idx_2 = find(contains(model.paramnames,top_costs{2})); 
+    contains_2 = ~isempty(idx_2);
+    if contains_2
+        twoD = normpdf(xs,cbm.output.group_mean{j}(idx_2),cbm.output.group_hierarchical_errorbar{j}(idx_2));        
         p_theta_j_prime(2,:) = p_theta_j_prime(2,:) + rho_j*twoD;
     end
 
-    % 3rd dimension is fac
-    idx_fac = find(contains(model.paramnames,'fac')); 
-    contains_fac = ~isempty(idx_fac);
-    if contains_fac
-        threeD = normpdf(xs,cbm.output.group_mean{j}(idx_fac),cbm.output.group_hierarchical_errorbar{j}(idx_fac));        
+    % 3rd dimension 
+    idx_3 = find(contains(model.paramnames,top_costs{3})); 
+    contains_3 = ~isempty(idx_3);
+    if contains_3
+        threeD = normpdf(xs,cbm.output.group_mean{j}(idx_3),cbm.output.group_hierarchical_errorbar{j}(idx_3));        
         p_theta_j_prime(3,:) = p_theta_j_prime(3,:) + rho_j*threeD;
     end
 
@@ -107,7 +107,7 @@ p_theta_j_prime = p_theta_j_prime./sum(p_theta_j_prime,2);
 plotflag = false;
 if plotflag
     figure
-    plot(p_theta_j_prime(1,:),'DisplayName','MainC'); hold on; plot(p_theta_j_prime(2,:),'DisplayName','LureC'); plot(p_theta_j_prime(3,:),'DisplayName','FA C'); legend('Location','Best')
+    plot(p_theta_j_prime(1,:),'DisplayName',top_costs{1}); hold on; plot(p_theta_j_prime(2,:),'DisplayName',top_costs{2}); plot(p_theta_j_prime(3,:),'DisplayName',top_costs{3}); legend('Location','Best')
     title('Group-level priors')
 end
 
@@ -230,7 +230,7 @@ for s = 1:nsubjs
 
 end % end of subject loop
 
-save('joint_cost_distributions.mat','joint','big_posterior','xs','-v7.3')
+save('joint_cost_distributions_2023.mat','joint','big_posterior','xs','-v7.3')
 
 
 

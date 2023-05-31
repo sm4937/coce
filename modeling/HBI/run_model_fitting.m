@@ -32,9 +32,8 @@ end
 % version 4
 
 load([prefix 'toanalyze.mat'])
-
-paramcolors = [1 0 0; 1 0.5 0; 1 0 0.5; 0 0 1; 0 0.5 1; 0 0.7 0; 1 1 0];
-% Set up some plotting variables
+% Set up for plotting 
+paramcolors = parula(12); % [1 0 0; 1 0.5 0; 1 0 0.5; 0 0 1; 0 0.5 1; 0 0.7 0; 1 1 0];
 
 % WHICH PARAMETER COMBINATIONS DO YOU WANT?
 % Models are specified by which parameters you want to include, like so:
@@ -45,11 +44,11 @@ paramcolors = [1 0 0; 1 0.5 0; 1 0 0.5; 0 0 1; 0 0.5 1; 0 0.7 0; 1 1 0];
 % recovered model in the full dataset of 100 subjects)
 
 % Dictate models to fit here by specifying which parameters are of interest
-paramsofinterest = {'mainc','lurec','missc','fac','respc','initi'};
+paramsofinterest = {'uc','mainc','lurec','missc','fac','respc','initi'};
 
 modelstofit = get_all_param_combos(paramsofinterest);
 % Combine into one set of models
-modelstofit = [modelstofit get_all_param_combos({'mainc','lurec','missc','fac','respc','deltai','initi'})];
+modelstofit = [modelstofit get_all_param_combos({'uc','mainc','lurec','missc','fac','respc','delta','initi'})];
 % Add delta models into the mix by specifying the parameter 'deltai', which
 % provides a different delta for each cost, or the parameter 'delta' which
 % provides one delta for all costs.
@@ -59,7 +58,7 @@ modelstofit = [modelstofit get_all_param_combos({'mainc','lurec','missc','fac','
 % fidelity of recovered parameters has already been confirmed)
 % Having a sense for this requires that you run test_model_recoverability
 
-strict_criterion_for_fitting = false;
+strict_criterion_for_fitting = true;
 
 recoverability = true(length(modelstofit),1);
 
@@ -102,20 +101,27 @@ end
 %% NOW, RUN REAL FITS! NO MORE PREPARATION NECESSARY!
 % FIT REAL SUBJECT DATA!
 
-fitflag = true;
+fitflag = false;
 % Run the whole model fitting, or just display previous fits?
 
 % Define the parameters/inputs to HBI, including MLE fits of each model
 v = 6.25;
 for m = 1:length(modelstofit)
-    model_name = modelstofit{m}; modeltofit = coc_createModels(model_name);
+    model_name = modelstofit{m};
+    modeltofit = coc_createModels(model_name);
     fnames{m} = [modelstofit{m} '.mat'];
     eval(['func = @fit_' modelstofit{m} ';']); funcs{m} = func;
     priors{m} = struct('mean',zeros(modeltofit.nparams,1),'variance',v); 
     model_labels{m} = strrep(modelstofit{m},'_','-');
     if fitflag; cbm_lap(data, func, priors{m}, fnames{m}); end
+    %catalog, in case matlab crashes, which model was last finished running
+    save('/Users/sarah/Desktop/Matlab-free-log.mat','m')
 end
-fname_hbi = 'HBI_coc_48models_2022.mat'; 
+% original fits
+%fname_hbi = 'HBI_coc_48models_2022.mat'; 
+% replication fits, post-code review
+fname_hbi = 'HBI_coc_reproduction_2022.mat'; 
+%fname_hbi = 'reduced_model_space.mat';
 
 % % RUN HBI %%
 
@@ -128,14 +134,33 @@ if fitflag
 end
 
 %% ANALYZE MODEL FITS!
+%fname_hbi = 'HBI_coc_onemodel_2022.mat';
+%fname_hbi = 'HBI_coc_oneparammodels_2022.mat';
+%fname_hbi = 'HBI_coc_48models_2022.mat';
+
+%fname_hbi = 'HBI_coc_reproduction_2022.mat';
+fname_hbi = 'different_deltas_versus_winning_models_strict.mat';
 
 %Model fits get saved in a structure called cbm, load that up here and
 % grab variables of interest from it.
 fits = load(fname_hbi);
-cbm   = fits.cbm;
+cbm = fits.cbm;
+
+% select best model based on protected exceedance probability, but analyze
+% model frequency in tandem
 freqs = cbm.output.model_frequency;
-[~,best] = max(cbm.exceedance.pxp);
-best_model = coc_createModels(modelstofit{best});
+[~,best] = max(cbm.output.protected_exceedance_prob);
+
+model_files = cbm.input.fcbm_maps;
+modelstofit = model_files;
+model_labels = {};
+
+for f = 1:length(model_files)
+    temp_label = strrep(model_files{f},'.mat','');
+    model_labels{f} = strrep(temp_label,'_','-');
+end
+
+best_model = coc_createModels(model_labels{best});
 
 % Here I create my own structure, best_model, for saving other measures of
 % interest, like the name of every model that ran in this model fitting
@@ -145,7 +170,7 @@ best_model.lowparams = cbm.output.parameters{best};
 best_model.highparams = cbm.output.group_mean{best}; best_model.overallfit = cbm.output;
 best_model.overallfit.fitmodels = model_labels; best_model.name = model_labels{best};
 best_model.cbm = cbm;
-modelStruct.best_model = best_model; save('HBI_modelStruct.mat','modelStruct');
+save('HBI_modelStruct_2023.mat','best_model');
 
 % Format parameter names, etc. to be input in to CBM toolbox plot command
 % below
@@ -176,20 +201,20 @@ cbm_hbi_plot(fname_hbi, model_labels, param_names(1:best_model.nparams), transfo
 % this function creates a model comparison plot (exceednace probability and model frequency) as well as 
 % a plot of transformed parameters of the most frequent model.
 
-% % run a t-test on maintenance costs (from best model) versus 0
+% % run a t-test on update costs (from best model) versus 0
 % % 2nd input: the index of the model of interest in the cbm file
-k = 1; % model including maintenance costs
+k = 1; % model including update costs
 % % 3rd input: the test will be done compared with this value (i.e. this value indicates the null hypothesis)
-m = 0; % here the maintenance costs parameter should be tested against m = 0
+m = 0; % here the costs parameter should be tested against m = 0
 % % 4th input: the index of the parameter of interest 
-i = 3; % here the maintenance parameter is the 3rd parameter of the winning model
+i = 3; % here the update parameter is the 3rd parameter of the winning model
 [p,stats] = cbm_hbi_ttest(cbm,k,m,i);
 
-k = 2; % model including interference (lure) costs
+k = 3; % model including interference (lure) costs
 % other arguments to this function are the same
 [p,stats] = cbm_hbi_ttest(cbm,k,m,i);
 
-k = 4; % third-best model including interference (lure) costs
+k = 5; % third-best model including false alarm (error) costs
 % other arguments to this function are the same
 [p,stats] = cbm_hbi_ttest(cbm,k,m,i);
 
@@ -198,10 +223,11 @@ k = 4; % third-best model including interference (lure) costs
 k = 1; i = 2;
 m = 1./(1+exp(0));
 % run t-test on transformed 0 value - same as alpha is transformed ??
-[p,stats] = cbm_hbi_ttest(cbm,k,m,i)
+[p,stats] = cbm_hbi_ttest(cbm,k,m,i);
 
 % count up total model frequency w response and miss costs
-idx = contains(modelstofit,'missc') | contains(modelstofit,'respc');
+idx = contains(model_labels,'missc') | contains(model_labels,'respc');
+disp(' ')
 disp(['missc and respc reprsented in ' num2str(sum(freqs(idx))) '% model frequency'])
 
 figure
@@ -213,7 +239,7 @@ title('Fit model freq (HBI)')
 fig = gcf; fig.Color = 'w';
 best_models = find(cbm.output.model_frequency>=0.01);
 for m = 1:length(best_models)
-    modeltofit = coc_createModels(modelstofit{best_models(m)});
+    modeltofit = coc_createModels(model_labels{best_models(m)});
     means = applyTrans_parameters(modeltofit,cbm.output.group_mean{best_models(m)});
     subplot(4,3,m+1)
     for p = 1:modeltofit.nparams
@@ -250,6 +276,7 @@ model_validation_HBI()
 
 % Plot individual model information if you want confirmation it's fitting
 % well
-cbm.input.model_names = modelstofit;
-% model_inspection(best_models(end),cbm)
-model_inspection(1,cbm)
+cbm.input.model_names = model_labels;
+m = best;
+%m = 22; % supplementary figure 2
+model_inspection(m,cbm)

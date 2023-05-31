@@ -46,7 +46,7 @@ function_folder = dir('model-functions'); list_existing_functions = cellstr(stri
 
 % Run a test to ensure that individual parameters are being fit reasonably
 % WHICH PARAMS DO YOU WANT YOUR MODEL TO CONTAIN?
-paramsofinterest = {'uc','mainc','lurec','missc','fac','respc','initi','delta'};
+paramsofinterest = {'uc','mainc','lurec','missc','fac','respc','deltai'};
 
 % NOTE: ALPHA AND DELTA DO NOT COEXIST IN ONE MODEL! If you want delta
 % models, add 'delta' to your list of params. It will automatically remove
@@ -57,16 +57,12 @@ paramsofinterest = {'uc','mainc','lurec','missc','fac','respc','initi','delta'};
 modelstosim = get_all_param_combos(paramsofinterest); 
 modelstosim(~contains(modelstosim,'c')) = [];
 
-% here I'm just trying to figure out which models can handle having uc
-% included 
-% modelstosim = modelstosim(contains(modelstosim,'_uc'));
-
 modelstofit = modelstosim;
 
 subjnums = unique(toanalyze.subj);
 nsubjs = length(subjnums); 
 
-nsubjstofit = 30;
+nsubjstofit = 50;
 % can reduce model fitting space this way, make fitting faster, by reducing
 % number of subjects to fit
 
@@ -83,7 +79,11 @@ end
 %examine the gen/rec results without re-running fitting from scratch.
 forcefit = true;
 
-for m = 32:length(modelstosim)
+% modelstosim = {};
+% modelstosim{1} = 'epsilon_initi_alpha_uc_mainc_fac';
+% model 22 in run_model_fitting
+
+for m = 10:length(modelstosim)
     
     model_name = modelstosim{m};
     modeltosim = coc_createModels(model_name); modeltofit = modeltosim;
@@ -97,7 +97,12 @@ for m = 32:length(modelstosim)
         for subj = 1:nsubjs 
             subjnum = subjnums(subj); %grab real subj number
             params = rand(1,modeltosim.nparams); 
-            %params(:,end-1:end) = -params(:,end-1:end);
+            
+            inits = contains(modeltosim.paramnames,'init');
+            params(inits) = normrnd(0.5,0.2,1,sum(inits)); %real init spreads
+            deltas = contains(modeltosim.paramnames,'delta');
+            params(deltas) = normrnd(0.03,1,1,sum(deltas));
+            
             onesubj = toanalyze(toanalyze.subj==subjnum,:);
             data{subj} = simulate_cost_model(modeltosim,params,onesubj);
             %names = modeltofit.paramnames;
@@ -135,17 +140,19 @@ for m = 32:length(modelstosim)
         subplot(5,3,p)
         scatter(realparamlist(subset,p),fitparams(:,p),[],rand(length(subset),3),'Filled');
         hold on
-        plot([0 1],[0 1],'--')
+        line_coords = min([max(realparamlist(subset,p)) max(fitparams(:,p))]);
+        plot([0 line_coords],[0 line_coords],'k--','LineWidth',2)
         xlabel(['Real ' modeltofit.paramnames{p}])
         ylabel('Fit values')
-        xlim([0 1]); ylim([0 1]);
+        %xlim([0 1]); ylim([0 1]);
     end
     fig = gcf; fig.Color = 'w';
     [r,p] = corr(realparamlist(subset,:),fitparams); %have to do some selecting since there are some nans in the simulated parameter values
-    rs = diag(r);
-    ps = diag(p);
+    rs = diag(r)
+    ps = diag(p)
     disp(['Model ' num2str(m)])
-    reliable = input('does this model fit look reliable? y/n','s'); close 1
+    reliable = input('does this model fit look reliable? y/n','s');
+    close 1
     %reliable = 'n'; close 1
     save(['model-details/' modelstosim{m}],'realparamlist','fitparams','subset','reliable','data','subsetdata')
     
@@ -177,13 +184,15 @@ for m = 32:length(modelstosim)
             plot([0 1],[0 1],'--')
             xlabel(['Real ' modeltofit.paramnames{p}])
             ylabel('Fit values')
-            xlim([0 1]); ylim([0 1]);
+            %xlim([0 1]); ylim([0 1]);
         end
         fig = gcf; fig.Color = 'w';
         MSEs = mean((realparamlist(1:size(fitparams,2))-fitparams).^2);
         disp(['MSE = ' num2str(MSEs)])
 
-        [rs,ps] = corr(fitparams,realparamlist(subset,:))
+        [rs,ps] = corr(fitparams,realparamlist(subset,:));
+        r = diag(rs)
+        p = diag(ps)
         disp(['Param fits for ' modelstosim{m}])  
         % how reliable is the recovery? r's closer to 1 are better, close
         % to 0 are worse
@@ -266,3 +275,8 @@ for m = 1:length(unique(true_models))
     reliable = input('does this model fit look reliable? y/n','s'); close 1
     save(['model-details/' model_name],'realparamlist','fitparams','reliable')
 end
+
+%% 
+
+model_inspection(m,cbm)
+
