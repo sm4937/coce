@@ -1,4 +1,4 @@
-function [big_posterior,joint,xs] =  get_param_posterior_dists(best_model)
+function [big_posterior,joint,xs] =  get_param_posterior_dists_top_costs(best_model)
 
 %% Obtain posterior distributions over parameter values, taking into account
 % different solutions for different models, and different fits for
@@ -20,7 +20,7 @@ all_params_all_models = {'uc','epsilon','initi_1','initi_2','initi_3','missc', .
 nparams = length(all_params_all_models);
 
 % all possible values for all possible parameters
-xs = [-1.75:0.01:1.75];
+xs = [-1.5:0.01:1.5]; %previously 0.01 was step size
 % bins too big?
 
 % Write Theta for all the possible parameters across models with empirical
@@ -77,8 +77,8 @@ for j = 1:length(modelstofit)
     idx_1 = find(contains(model.paramnames,top_costs{1})); 
     contains_1 = ~isempty(idx_1);
     if contains_1
-        %oneD = normpdf(xs,cbm.output.group_mean{j}(idx_mainc),cbm.math.Sdiag{j}(idx_mainc));
-        oneD = normpdf(xs,cbm.output.group_mean{j}(idx_1),cbm.output.group_hierarchical_errorbar{j}(idx_1)); 
+        oneD = normpdf(xs,cbm.output.group_mean{j}(idx_1),cbm.math.Sdiag{j}(idx_1));
+        %oneD = normpdf(xs,cbm.output.group_mean{j}(idx_1),cbm.output.group_hierarchical_errorbar{j}(idx_1)); 
         p_theta_j_prime(1,:) = p_theta_j_prime(1,:) + rho_j*oneD;
     end
 
@@ -86,7 +86,8 @@ for j = 1:length(modelstofit)
     idx_2 = find(contains(model.paramnames,top_costs{2})); 
     contains_2 = ~isempty(idx_2);
     if contains_2
-        twoD = normpdf(xs,cbm.output.group_mean{j}(idx_2),cbm.output.group_hierarchical_errorbar{j}(idx_2));        
+        twoD = normpdf(xs,cbm.output.group_mean{j}(idx_2),cbm.math.Sdiag{j}(idx_2));
+        %twoD = normpdf(xs,cbm.output.group_mean{j}(idx_2),cbm.output.group_hierarchical_errorbar{j}(idx_2));        
         p_theta_j_prime(2,:) = p_theta_j_prime(2,:) + rho_j*twoD;
     end
 
@@ -94,7 +95,8 @@ for j = 1:length(modelstofit)
     idx_3 = find(contains(model.paramnames,top_costs{3})); 
     contains_3 = ~isempty(idx_3);
     if contains_3
-        threeD = normpdf(xs,cbm.output.group_mean{j}(idx_3),cbm.output.group_hierarchical_errorbar{j}(idx_3));        
+        threeD = normpdf(xs,cbm.output.group_mean{j}(idx_3),cbm.math.Sdiag{j}(idx_3));
+        %threeD = normpdf(xs,cbm.output.group_mean{j}(idx_3),cbm.output.group_hierarchical_errorbar{j}(idx_3));        
         p_theta_j_prime(3,:) = p_theta_j_prime(3,:) + rho_j*threeD;
     end
 
@@ -102,8 +104,7 @@ end
 
 p_theta_j_prime = p_theta_j_prime./sum(p_theta_j_prime,2);
 % normalize so these priors sum to 1 
-% this provides an aggregrate prior from all models ??
-
+% this provides an aggregrate prior from all models
 plotflag = false;
 if plotflag
     figure
@@ -187,7 +188,7 @@ for s = 1:nsubjs
 
             plotflag = false;
             if plotflag
-                figure(1)
+                figure(5)
                 plot(squeeze(sum(sum(pop_prior_j_prime_3D,1),3)),'DisplayName','Lure C Prior','LineWidth',1.5)
                 hold on; plot(squeeze(sum(sum(pop_prior_j_prime_3D,2),3)),'DisplayName','Main C Prior','LineWidth',1.5)
                 plot(squeeze(sum(sum(pop_prior_j_prime_3D,1),2)),'DisplayName','False alarm C Prior','LineWidth',1.5)
@@ -215,13 +216,15 @@ for s = 1:nsubjs
 
     plotflag = false;
     if plotflag
-        figure(6); plot(xs,squeeze(sum(sum(joint{s},1),3)),'DisplayName','Lure C','LineWidth',1.5)
-        hold on; plot(xs,squeeze(sum(sum(joint{s},2),3)),'DisplayName','Main C','LineWidth',1.5)
+        figure(5); 
+        plot(xs,squeeze(sum(sum(joint{s},1),3)),'DisplayName','Lure C','LineWidth',1.5)
+        hold on;
+        plot(xs,squeeze(sum(sum(joint{s},2),3)),'DisplayName','Main C','LineWidth',1.5)
         plot(xs,squeeze(sum(sum(joint{s},1),2)),'DisplayName','False alarm C','LineWidth',1.5)
+        hold off
         legend('location','best')
         pause(0.1)
         title(['Posteriors at Subject #' num2str(s)])
-        hold off
     end
 
     non_zero_default = 0.000000000000000000001;

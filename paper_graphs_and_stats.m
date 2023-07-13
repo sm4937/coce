@@ -50,6 +50,7 @@ NFCcolors = [.15 0 .15; .60 0 .60; 1 0 1];
 SAPScolors = [0 .2 .2; 0 .6 .6; 0 0.9 0.9];
 modelcolors = parula(16);
 modelcolors = modelcolors(7:end,:);
+modelcolors = [modelcolors(1:2:end,:); flip(modelcolors(2:2:end,:))];
 
 list = data.subjnum;
 save([prefix 'fullsubjnumbers.mat'],'list');
@@ -366,17 +367,21 @@ disp([num2str(sum(assignments>6)) ' subjects best explained by a model with more
 full_labels = best_model.overallfit.fitmodels;
 model_labels = cell(length(full_labels),1);
 for ll = 1:length(full_labels)
+
     % trim model labels down to just the cost labels
     class_label = '-\alpha';
     temp_label = strsplit(full_labels{ll},'epsilon-initi-alpha-');
     if length(temp_label) == 1
         temp_label = strsplit(full_labels{ll},'epsilon-init-');
         % indicate that it's a delta cost model
-        temp_label = strsplit(temp_label{2},'-');
+        %temp_label = strsplit(temp_label{2},'-');
         if sum(contains(temp_label,'delta'))>0
             class_label = ['-\' temp_label{contains(temp_label,'delta')}];
             if contains(class_label,'deltai')
                 class_label = '-\delta_{i}';
+                temp_label = strsplit(temp_label{2},'deltai-');
+            else
+                temp_label = strsplit(temp_label{2},'delta-');
             end
         end
     end
@@ -390,7 +395,7 @@ for ll = 1:length(full_labels)
             new_name = [new_name '}'];
         end
     end
-    
+
     if contains(new_name,'c_{lure}')
         % calling this the "interference cost" in the manuscript
         new_name = strrep(new_name,'c_{lure}','c_{interference}');
@@ -433,11 +438,12 @@ xticklabels(model_labels(models_at_play));xtickangle(45)
 ax = gca; ax.FontSize = 14;
 fig = gcf; fig.Color = 'w';
 
-calcflag = true;
+calcflag = false;
 
 if calcflag
-    cd('modeling/HBI/')
-    [big_posterior,joint,xs] = get_param_posterior_dists(best_model);
+    cd('/Users/sarah/Documents/MATLAB/coce_alldata/modeling/HBI/')
+    %[big_posterior,joint,xs] = get_param_posterior_dists_all_costs(best_model);
+    [big_posterior,joint,xs] = get_param_posterior_dists_all_costs(best_model);
     cd('../../')
 else
     load('modeling/HBI/joint_cost_distributions_2023.mat')
@@ -463,67 +469,109 @@ end
 modelstofit = best_model.overallfit.fitmodels;
 
 dim1 = logsumexp(big_posterior,1);
-dim2 = logsumexp(dim1,2);
+dim2 = logsumexp(dim1,2); 
 dim3 = logsumexp(dim2,3);
-big_posterior = big_posterior - dim3;
+dim4 = logsumexp(dim3,4); 
+big_posterior = big_posterior - dim4;
 % normalize to make sure it's a real posterior
 big_posterior = exp(big_posterior);
 
-uc_dist = sum(sum(big_posterior,1),3);
-lurec_dist = squeeze(sum(sum(big_posterior,2),3));
-fac_dist = squeeze(sum(sum(big_posterior,2),1));
+subplot(1,3,2)
+top_costs = {'uc','mainc','lurec','fac'};
 
-subplot(1,3,2); hold on;
-plot(xs',fac_dist,'Color',modelcolors(3,:),'LineWidth',2.5,'DisplayName','False Alarm')
-plot(xs',uc_dist,'Color',modelcolors(1,:),'LineWidth',2.5,'DisplayName','Update')
-plot(xs',lurec_dist,'Color',modelcolors(2,:),'LineWidth',2.5,'DisplayName','Interference')
-legend('Location','Best')
-ylabel('Posterior probability')
-xlabel('Parameter value')
-xlim([0 1.5])
-fig = gcf; ax = gca;
-fig.Color = 'w'; ax.FontSize = 14;
+for cii = 1:length(top_costs)
+    
+    margin_list = [1:length(top_costs)];
+    margin_list(cii) = [];
+    one_marginal = nansum(nansum(nansum(big_posterior,margin_list(3)), ...
+        margin_list(2)),margin_list(1));
+%     plot(xs,squeeze(one_marginal),'Color',modelcolors(cii,:),'DisplayName',top_costs{cii},'LineWidth',1.5)
+%     hold on;
+    eval([top_costs{cii} '_dist = squeeze(one_marginal);'])
+    
+end
+% legend('location','best')
+% pause(0.5)
+% hold off
+
+group_level_means_top_level(2) = sum(xs'.*uc_dist);
+group_level_means_top_level(1) = sum(xs.*mainc_dist);
+group_level_means_top_level(3) = sum(xs'.*lurec_dist);
+group_level_means_top_level(4) = sum(xs'.*fac_dist);
+
+
+% calculate variance of distributions
+group_level_variance_top_level(1) = sum(((xs.*mainc_dist)-group_level_means_top_level(2)).^2)./length(xs);
+group_level_variance_top_level(2) = sum(((xs'.*uc_dist)-group_level_means_top_level(2)).^2)./length(xs);
+group_level_variance_top_level(3) = sum(((xs'.*lurec_dist)-group_level_means_top_level(2)).^2)./length(xs);
+group_level_variance_top_level(4) = sum(((xs'.*fac_dist)-group_level_means_top_level(2)).^2)./length(xs);
+
+N_bar(2) = sum(sum(cbm.output.responsibility(:,contains(best_model.overallfit.fitmodels,'uc')),1));
+N_bar(1) = sum(sum(cbm.output.responsibility(:,contains(best_model.overallfit.fitmodels,'mainc')),1));
+N_bar(3) = sum(sum(cbm.output.responsibility(:,contains(best_model.overallfit.fitmodels,'lurec')),1));
+N_bar(4) = sum(sum(cbm.output.responsibility(:,contains(best_model.overallfit.fitmodels,'fac')),1));
+
+
+
+for cii = 1:length(group_level_means_top_level)
+    bar(cii,group_level_means_top_level(cii),'FaceColor',modelcolors(cii,:))
+    hold on
+    errorbar(cii,group_level_means_top_level(cii),sqrt(group_level_variance_top_level(cii))./sqrt(N_bar(cii)),'*k','LineWidth',2)
+    % error bar numerator = 
+    % error bar denominator = sqrt(1+sum_1toN(r_nk))
+    % = sqrt(1+sum(cbm.output.responsibility,1))
+end
+xticks([1:length(group_level_means_top_level)])
+xticklabels({'c_{update}','c_{maintenance}','c_{interference}','c_{false alarm}'})
+xtickangle(45)
+clean_fig();
+
+model = coc_createModels(modelstofit{models_at_play(1)});
+idx_cost = find(contains(model.paramnames,'uc'));
+group_level_means_mid_level(1) = best_model.cbm.output.group_mean{models_at_play(1)}(idx_cost);
+
+model = coc_createModels(modelstofit{models_at_play(5)});
+idx_cost = contains(model.paramnames,'mainc');
+group_level_means_mid_level(2) = best_model.cbm.output.group_mean{models_at_play(5)}(idx_cost);
+
+model = coc_createModels(modelstofit{models_at_play(2)});
+idx_cost = find(contains(model.paramnames,'lurec'));
+group_level_means_mid_level(3) = best_model.cbm.output.group_mean{models_at_play(2)}(idx_cost);
+
+model = coc_createModels(modelstofit{models_at_play(4)});
+idx_cost = find(contains(model.paramnames,'fac'));
+group_level_means_mid_level(4) = best_model.cbm.output.group_mean{models_at_play(4)}(idx_cost);
+
+disp('Your means are: ')
+disp(group_level_means_top_level)
+disp('The means from the HBI package are: ')
+disp(group_level_means_mid_level)
+    
 
 subplot(1,3,3);
 % model validation plot
 make_model_validation_subplot()
 
-group_level_means_sarah(1) = sum(xs.*uc_dist);
-group_level_means_sarah(2) = sum(xs'.*lurec_dist);
-group_level_means_sarah(3) = sum(xs'.*fac_dist);
-
-model = coc_createModels(modelstofit{models_at_play(1)});
-idx_cost = find(contains(model.paramnames,'uc'));
-group_level_means_payam(1) = best_model.cbm.output.group_mean{models_at_play(1)}(idx_cost);
-
-model = coc_createModels(modelstofit{models_at_play(2)});
-idx_cost = find(contains(model.paramnames,'lurec'));
-group_level_means_payam(2) = best_model.cbm.output.group_mean{models_at_play(2)}(idx_cost);
-
-model = coc_createModels(modelstofit{models_at_play(5)});
-idx_cost = contains(model.paramnames,'mainc');
-group_level_means_payam(3) = best_model.cbm.output.group_mean{models_at_play(5)}(idx_cost);
-
-disp('Your means are: ')
-disp(group_level_means_sarah)
-disp('The means from the HBI package are: ')
-disp(group_level_means_payam)
-
 load([prefix 'toanalyze.mat'])
-[monetary_costs,costs_per_unit] = get_costs_in_dollars(group_level_means_sarah,{'updates','lures','fas'},toanalyze);
+[monetary_costs,costs_per_unit] = get_costs_in_dollars(group_level_means_top_level,{'updates','maintained','lures','fas'},toanalyze);
 mean_monetary_costs = nanmean(monetary_costs,1);
 
 % and what about the costs NOT in the winning models? what model frequency
 % are they represented in?
 losing_costs = {'respc','missc'};
 losing_cost_freq = sum(cbm.output.model_frequency(contains(best_model.overallfit.fitmodels,losing_costs)));
-disp(['Response cost, miss cost represented in ' num2str(losing_cost_freq.*100) '% of subject data.'])
+disp(['Response cost, miss cost represented in ' num2str(losing_cost_freq*100) '% of subject data.'])
+
+% what about covariance between cost components in model fitting?
+%covariance_calculation_across_models()
+%writetable(weighted,'Weighted.txt','WriteVariableNames',true,'WriteRowNames',true)
+%writetable(not_weighted,'NotWeighted.txt','WriteVariableNames',true,'WriteRowNames',true)
 
 %% Relate model-agnostic and model-based findings
 
 % Are interference costs related to the difference between 2-back and
 % 3-detect fair wages?
-
+cbm = best_model.cbm;
 % where lure cost parameter in output?
 model = coc_createModels(best_model.overallfit.fitmodels{3});
 column = find(contains(model.paramnames,'lurec'));
@@ -546,17 +594,27 @@ xlabel('Difference in mean 2-back and 3-detect BDM')
 title('All subjects')
 clean_fig();
 
-%same analysis, within subjects best fit by lure cost model
+% is maintenance cost related to differences in mean 1- and 2-back fair
+% wage ratings?
+% look into model 21 (third best model)
+model = coc_createModels(best_model.overallfit.fitmodels{21});
+column = (contains(model.paramnames,'mainc'));
+
+% interference costs from second-best model (number 3)
+main_costs = cbm.output.parameters{21}(:,column);
+
+% mean wage difference for each subject, 2-back minus 3-detect
+BDM_difference = nanmean(n2subjvalue,2) - nanmean(n1subjvalue,2);
+
 subplot(2,1,2)
-scatter(BDM_difference(assignments==3),lure_costs(assignments==3),'filled')
-[r,p] = corr(BDM_difference(assignments==3),lure_costs(assignments==3));
-% almost significant (p = 0.05), but low N really shooting us in foot here
+scatter(BDM_difference,main_costs,'filled')
+[r,p] = corr(BDM_difference,main_costs);
 if p < 0.05
     lsline
 end
-ylabel('Interference cost parameter')
-xlabel('Difference in mean 2-back and 3-detect BDM')
-title('Subjects best fit by lure cost model')
+ylabel('Maintenance cost parameter')
+xlabel('Difference in mean 2-back and 1-back BDM')
+title('All subjects')
 clean_fig();
 
 
@@ -823,6 +881,8 @@ for measure = 1:2  %set measure = 1:2 to see SAPS score bins also, not just NFC
     modelnum = 1;
     nparams = size(all_params{modelnum},2);
     paramnames = best_model.paramnames;
+    paramnames = strrep(paramnames,'epsilon','\sigma');
+    paramnames = strrep(paramnames,'alpha','\alpha');
     %paramnames{3} = 'maintenance cost';
     [~,assignments] = max(best_model.cbm.output.responsibility,[],2);
     modelgroup = assignments==modelnum;
@@ -903,7 +963,8 @@ for measure = 1:2
         dim1 = logsumexp(full_posterior,1);
         dim2 = logsumexp(dim1,2);
         dim3 = logsumexp(dim2,3);
-        full_posterior = full_posterior - dim3;
+        dim4 = logsumexp(dim3,4);
+        full_posterior = full_posterior - dim4;
         %     % normalize to make sure it's a real posterior
         eval([group_label '_group = exp(full_posterior);'])
         
@@ -916,20 +977,38 @@ for measure = 1:2
     % from their population prior very much - which is just the property you
     % want.
     
-    marginal_mainc(1,:) = sum(sum(low_group,1),3);
-    marginal_mainc(2,:) = sum(sum(mid_group,1),3);
-    marginal_mainc(3,:) = sum(sum(high_group,1),3);
+    % come back to this to make 4D
+    % top_costs = {'uc','mainc','lurec','fac'};
+
+    marginal_uc(1,:) = sum(sum(sum(low_group,1),3),4);
+    marginal_uc(2,:) = sum(sum(sum(mid_group,1),3),4);
+    marginal_uc(3,:) = sum(sum(sum(high_group,1),3),4);
     
-    marginal_lurec(1,:) = sum(sum(low_group,2),3);
-    marginal_lurec(2,:) = sum(sum(mid_group,2),3);
-    marginal_lurec(3,:) = sum(sum(high_group,2),3);
+    marginal_mainc(1,:) = sum(sum(sum(low_group,2),3),4);
+    marginal_mainc(2,:) = sum(sum(sum(mid_group,2),3),4);
+    marginal_mainc(3,:) = sum(sum(sum(high_group,2),3),4);
     
-    marginal_fac(1,:) = sum(sum(low_group,2),1);
-    marginal_fac(2,:) = sum(sum(mid_group,2),1);
-    marginal_fac(3,:) = sum(sum(high_group,2),1);
+    marginal_lurec(1,:) = sum(sum(sum(low_group,2),1),4);
+    marginal_lurec(2,:) = sum(sum(sum(mid_group,2),1),4);
+    marginal_lurec(3,:) = sum(sum(sum(high_group,2),1),4);
+    
+    marginal_fac(1,:) = sum(sum(sum(low_group,3),2),1);
+    marginal_fac(2,:) = sum(sum(sum(mid_group,3),2),1);
+    marginal_fac(3,:) = sum(sum(sum(high_group,3),2),1);
     
     count = count+1;
-    subplot(2,3,count)
+    subplot(2,4,count)
+    plot(xs,marginal_uc(1,:),'Color',colors(1,:),'LineWidth',1.5,'DisplayName',['Low ' measure_label])
+    hold on
+    plot(xs,marginal_uc(2,:),'Color',colors(2,:),'LineWidth',1.5,'DisplayName',['Mid ' measure_label])
+    plot(xs,marginal_uc(3,:),'Color',colors(3,:),'LineWidth',1.5,'DisplayName',['High ' measure_label])
+    legend('Location','Best')
+    xlim([0 1.5])
+    ax = gca; ax.FontSize = 14;
+    title('Update cost')
+    
+    count = count+1;
+    subplot(2,4,count)
     plot(xs,marginal_mainc(1,:),'Color',colors(1,:),'LineWidth',1.5,'DisplayName',['Low ' measure_label])
     hold on
     plot(xs,marginal_mainc(2,:),'Color',colors(2,:),'LineWidth',1.5,'DisplayName',['Mid ' measure_label])
@@ -937,10 +1016,10 @@ for measure = 1:2
     legend('Location','Best')
     xlim([0 1.5])
     ax = gca; ax.FontSize = 14;
-    title('Update cost')
+    title('Maintenance cost')
     
     count = count+1;
-    subplot(2,3,count)
+    subplot(2,4,count)
     plot(xs,marginal_lurec(1,:),'Color',colors(1,:),'LineWidth',1.5,'DisplayName',['Low ' measure_label])
     hold on
     plot(xs,marginal_lurec(2,:),'Color',colors(2,:),'LineWidth',1.5,'DisplayName',['Mid ' measure_label])
@@ -951,7 +1030,7 @@ for measure = 1:2
     title('Interference cost')
     
     count = count+1;
-    subplot(2,3,count)
+    subplot(2,4,count)
     plot(xs,marginal_fac(1,:),'Color',colors(1,:),'LineWidth',1.5,'DisplayName',['Low ' measure_label])
     hold on
     plot(xs,marginal_fac(2,:),'Color',colors(2,:),'LineWidth',1.5,'DisplayName',['Mid ' measure_label])
@@ -972,6 +1051,7 @@ end
 
 % Plot first rating versus total iterations
 tempcolors = taskcolors.*1.33;
+tempcolors(tempcolors>1) = 1; tempcolors(tempcolors<0) = 0;
 
 tasknumbers = [0 1 7 2];
 % 1-back is 1
@@ -998,7 +1078,8 @@ for task = 1:3
     for i = 1:length(n_rounds)
         tomean = ratings(ratings(:,1)==n_rounds(i),2:end);
         toplot = nanmean(tomean,1);
-        tempcolors(task+1,tempcolors(task+1,:)~=0) = tempcolors(task+1,tempcolors(task+1,:)~=0)-0.08;
+        tempcolors(task+1,tempcolors(task+1,:)~=0) = tempcolors(task+1,tempcolors(task+1,:)~=0)-0.03;
+        tempcolors(tempcolors>1) = 1; tempcolors(tempcolors<0) = 0;
         errorbar(toplot,nanstd(tomean,[],1)./sqrt(size(tomean,1)),'Color',tempcolors(task+1,:),'LineWidth',1.5)
         hold on
         

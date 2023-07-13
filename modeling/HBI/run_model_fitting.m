@@ -58,7 +58,7 @@ modelstofit = [modelstofit get_all_param_combos({'uc','mainc','lurec','missc','f
 % fidelity of recovered parameters has already been confirmed)
 % Having a sense for this requires that you run test_model_recoverability
 
-strict_criterion_for_fitting = true;
+strict_criterion_for_fitting = false;
 
 recoverability = true(length(modelstofit),1);
 
@@ -150,6 +150,8 @@ cbm = fits.cbm;
 % model frequency in tandem
 freqs = cbm.output.model_frequency;
 [~,best] = max(cbm.output.protected_exceedance_prob);
+[~,assignments] = max(cbm.output.responsibility,[],2);
+models_at_play = unique(assignments);
 
 model_files = cbm.input.fcbm_maps;
 modelstofit = model_files;
@@ -226,9 +228,9 @@ m = 1./(1+exp(0));
 [p,stats] = cbm_hbi_ttest(cbm,k,m,i);
 
 % count up total model frequency w response and miss costs
-idx = contains(model_labels,'missc') | contains(model_labels,'respc');
+idx = contains(model_labels,'respc') | contains(model_labels,'missc');
 disp(' ')
-disp(['missc and respc reprsented in ' num2str(sum(freqs(idx))) '% model frequency'])
+disp(['missc and respc represented in ' num2str(sum(freqs(idx)).*100) '% model frequency'])
 
 figure
 subplot(4,3,1)
@@ -237,9 +239,13 @@ title('Fit model freq (HBI)')
 %xticklabels(model_labels)
 %xtickangle(45)
 fig = gcf; fig.Color = 'w';
-best_models = find(cbm.output.model_frequency>=0.01);
+
+xs = 1; xtick_labels = [];
+
+best_models = find(cbm.output.model_frequency>=0.001);
 for m = 1:length(best_models)
     modeltofit = coc_createModels(model_labels{best_models(m)});
+    param_names = modeltofit.paramnames;
     means = applyTrans_parameters(modeltofit,cbm.output.group_mean{best_models(m)});
     subplot(4,3,m+1)
     for p = 1:modeltofit.nparams
@@ -250,21 +256,30 @@ for m = 1:length(best_models)
     xticks(1:length(means))
     errorbar(means,cbm.output.group_hierarchical_errorbar{best_models(m)},'*k')
     xticklabels(modeltofit.paramnames)
-    title('Parameter means from subjects best fit by model')
+    title('from subjects best fit by model')
+    ylabel('Mean parameter value')
+    
+    
+    subplot(4,3,(length(best_models)+2)); 
+    costs = find(contains(modeltofit.paramnames,'c')); 
+    means = applyTrans_parameters(modeltofit,cbm.output.group_mean{best_models(m)});
+    xs = xs+length(costs);
+    
+    bar([xs-length(costs):(xs-1)],means(:,costs),'FaceColor',[0 0.7 0])
+    hold on
+    errorbar([xs-length(costs):(xs-1)],means(:,costs),cbm.output.group_hierarchical_errorbar{m}(costs),'*k')
+    %plot(1:length(costs),best_model.lowparams(:,costs),'--k')
+    fig = gcf; fig.Color = 'w';
+    xtick_labels = [xtick_labels param_names(costs)];
+    ylabel('Mean parameter value')
+    xlabel('Cost parameter')
+    
 end
 
-subplot(4,3,m+2); 
-costs = find(costs(1:best_model.nparams)); 
-means = applyTrans_parameters(modeltofit,cbm.output.group_mean{2});
-bar(means(:,costs),'FaceColor',[0 0.7 0])
-hold on
-errorbar(means(:,costs),cbm.output.group_hierarchical_errorbar{m}(costs),'*k')
-%plot(1:length(costs),best_model.lowparams(:,costs),'--k')
-fig = gcf; fig.Color = 'w';
-xticklabels(param_names(costs))
+xticks([1:length(xtick_labels)])
+xticklabels({'uc','lurec','uc','respc','lurec','fac','uc','mainc','lurec','uc','lurec','missc','fac','uc','uc','lurec'})
 xtickangle(30)
-ylabel('Mean parameter value')
-xlabel('Cost parameter')
+
 
 %% Model simulations and validation figures
 % Call a couple functions to see the effects of previous model
@@ -279,4 +294,5 @@ model_validation_HBI()
 cbm.input.model_names = model_labels;
 m = best;
 %m = 22; % supplementary figure 2
+m = 33;
 model_inspection(m,cbm)
