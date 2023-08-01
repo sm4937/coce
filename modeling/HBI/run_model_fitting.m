@@ -113,15 +113,17 @@ for m = 1:length(modelstofit)
     eval(['func = @fit_' modelstofit{m} ';']); funcs{m} = func;
     priors{m} = struct('mean',zeros(modeltofit.nparams,1),'variance',v); 
     model_labels{m} = strrep(modelstofit{m},'_','-');
+    
     if fitflag; cbm_lap(data, func, priors{m}, fnames{m}); end
-    %catalog, in case matlab crashes, which model was last finished running
-    save('/Users/sarah/Desktop/Matlab-free-log.mat','m')
+    
+    % keep low-level fits separate from high-level fits, this becomes
+    % relevant when calculating covariances of cost parameters
+    copyfile(fnames{m},['low-level-fits/' fnames{m}])
+    
 end
-% original fits
-%fname_hbi = 'HBI_coc_48models_2022.mat'; 
-% replication fits, post-code review
-fname_hbi = 'HBI_coc_reproduction_2022.mat'; 
-%fname_hbi = 'reduced_model_space.mat';
+
+
+fname_hbi = 'final_fits_strict.mat'; 
 
 % % RUN HBI %%
 
@@ -134,12 +136,8 @@ if fitflag
 end
 
 %% ANALYZE MODEL FITS!
-%fname_hbi = 'HBI_coc_onemodel_2022.mat';
-%fname_hbi = 'HBI_coc_oneparammodels_2022.mat';
-%fname_hbi = 'HBI_coc_48models_2022.mat';
 
-%fname_hbi = 'HBI_coc_reproduction_2022.mat';
-fname_hbi = 'different_deltas_versus_winning_models_strict.mat';
+fname_hbi = 'final_fits_strict.mat';
 
 %Model fits get saved in a structure called cbm, load that up here and
 % grab variables of interest from it.

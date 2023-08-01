@@ -20,7 +20,7 @@ all_params_all_models = {'uc','epsilon','initi_1','initi_2','initi_3','missc', .
 nparams = length(all_params_all_models);
 
 % all possible values for all possible parameters
-xs = [-1.5:0.025:1.5]; %previously 0.01 was step size
+xs = [-1.5:0.05:1.5]; %previously 0.01 was step size
 % now we're in 6D...
 % bins too big?
 % doesn't work otherwise though
@@ -275,18 +275,3 @@ end % end of subject loop
 
 save('joint_cost_distributions_2023.mat','joint','big_posterior','xs','-v7.3')
 
-
-
-
-
-
-% xs = exp(xs);
-% group_level_means_trans(1) = sum(xs'.*mainc_dist);
-% group_level_means_trans(2) = sum(xs.*lurec_dist);
-% group_level_means_trans(3) = sum(xs'.*fac_dist);
-% disp('The transformed means are: ')
-% disp(group_level_means_sarah)
-
-% These are different but they don't account for all models containing
-% those parameter values. So that needs to be amended, I think, in the
-% future. 

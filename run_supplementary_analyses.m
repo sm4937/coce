@@ -1,11 +1,24 @@
 %% Analysis of cost of control task data
-% task written in JsPsych, data printed in CSV form
-% Analysis script for version 4 of the task, the n-back version
 
-%% Check data quality - how long each task takes, how many times they've been completed
+% THIS SCRIPT DEPENDS ON VARIABLES PULLED FROM PAPER_GRAPHS_AND_STATS.M 
+% IT CAN'T BE RUN ON ITS OWN, ONLY NESTED WITHIN PAPER_GRAPHS_AND_STATS.M
 
+% What is this script for?
+% Produces all sorts of supplementary figures, NOT the supplementary
+% figures in the paper, but data quality checks and other simple analyses
+% of task & BDM rating data.
+
+
+%% Check data quality - how long each task takes, 
+% & what sort of task completion rates are we looking at?
+
+% first, double-check that all tasks take the same amount of time, as we
+% designed them to
+% there was a bug in very early data collection which makes it appear that
+% the 1-detect takes really long in 3-4 subjects, but that was fixed
+% such that the 1-detect was accurately timed in subjects after that point
 figure
-subplot(1,2,1)
+subplot(1,3,3)
 for subj = 1:n
     y = data.TOT(subj,data.task_progression(subj,:)==tasks(1));
     x = data.TOT(subj,data.task_progression(subj,:)==tasks(2));
@@ -34,7 +47,10 @@ ax.FontSize = 12;
 
 errorbar(1:length(tasklabels),[mean(y) mean(x) mean(z) mean(a)],[std(y)/sqrt(length(y)) std(x)/sqrt(length(x)) std(z)/sqrt(length(z)) std(a)/sqrt(length(a))],'k')
 
-subplot(1,2,2)
+% second, how many times was each task completed, across all subjects? how much
+% data are we really analyzing/modeling?
+
+subplot(1,3,2)
 y = sum(data.taskfreqs(:,1));
 x = sum(data.taskfreqs(:,2));
 w = sum(data.taskfreqs(:,3));
@@ -48,10 +64,24 @@ fig.Color = 'w';
 ax.FontSize = 12;
 title('# times each task completed across subjects')
 ylabel('Count')
-%% accuracy, rt, important BDM plots
 
-%Mean accuracy by task, mean RTs, make sure "harder" tasks are actually
-%harder
+% Where in the task is dropout occurring?
+subplot(1,3,1)
+bar([sum(excluded.values(excluded.exp_version==4,1:4))+n n])
+labels = [excluded.labels(1,1:4) 'finished'];
+xticklabels([labels])
+title('# Subjects completed each phase')
+ylabel('n')
+ax = gca; fig = gcf;
+ax.FontSize = 14;
+fig.Color = 'w';
+
+
+%% Differences in task accuracy, RT, and explicit difficulty ratings (collected at conclusion of expt.)
+
+% Mean accuracy, explicit difficulty ratings, 
+% how accuracy changes over subjects across tasks, and mean reaction times
+% (RTs)
 figure
 subplot(2,2,1)
 fig = gcf;
@@ -106,13 +136,11 @@ xticklabels(tasklabels)
 xtickangle(45)
 title('Mean RT by task')
 
-% subplot(2,2,4)
-% bar(nanmean(data.task_blurs))
-% hold on
-% errorbar(nanmean(data.task_blurs),nanstd(data.task_blurs)/sqrt(n),'LineWidth',1.5)
-% title('Blur events by task')
-% xticklabels(tasklabels)
-% this is nothing, no one tunes out during tasks I guess?
+%% Examine overall trends in fair wage (BDM) ratings
+% and in task performance over time
+
+% do the BDM's evolve? do BDM RTs evolve?
+% does task performance evolve?
 
 %just check out subject BDM strategy
 figure
@@ -228,6 +256,11 @@ xticklabels([0:20])
 legend(tasklabels(2:end))
 fig = gcf; fig.Color = 'w';
 
+%% MEAN BDM RATINGS NOT DIFFERENT BETWEEN 1-BACK and 3-DETECT
+% Is that true within-subject, too, or just on the group-level>
+% Seems like it's just on the group-level, and subjects are not treating
+% these tasks exactly the same way.
+
 %are there individual differences in n1 vs ndetect valuation?
 %there aren't group differences
 figure
@@ -257,8 +290,10 @@ xticklabels({'Autocorr 1-back','Autocorr 3-detect','Cross corr'})
 xtickangle(45)
 fig = gcf; fig.Color = 'w';
 
+%% LEARNING CURVES
+% plot task performance by block, any visible learning or decay?
+% (No.)
 
-% plot task performance by block, any learning or decay?
 figure
 subplot(1,4,1)
 ax = gca; fig = gcf;
@@ -332,7 +367,9 @@ xlabel('Block #')
 ylabel('Accuracy')
 linkaxes
 
-%% Plot first rating versus total iterations
+%% How do people rate these tasks right before they complete them?
+% Based on task iteration, what's the mean BDM?
+% Grouping subjects with similar numbers of task iterations
 
 figure
 for task = 1:3
@@ -355,74 +392,79 @@ for task = 1:3
 end
 fig = gcf; fig.Color = 'w';
 
+
 %% Plot stuff related to BDM gaming etc.
-ignore_flag = true;
-if ~ignore_flag
-    figure
-    for row = 1:n
-        init = NaN(default_length,1);
-        init(data.offers(row,:)>data.values(row,:)) = data.offers(row,data.offers(row,:)>data.values(row,:));
-        init(data.values(row,:)>data.offers(row,:)) = 1;
-        y = init;
-        x = [NaN data.perf(row,1:end-1)]';
-        matrix = sortrows([y,x],1);
-        plot(matrix(:,1),matrix(:,2),'o')
-        hold on
-    end
-    ax = gca; fig = gcf;
-    title('Performance by BDM offer')
-    fig.Color = 'w';
-    ax.FontSize = 12;
-    xlabel('BDM points at stake')
-    ylabel('Accuracy')
-    
-    %plot BDM request by previous offer
-    figure
-    subplot(1,2,1)
-    for row = 1:n
-        y = data.offers(row,:)';
-        x = [NaN data.values(row,2:end)]';
-        matrix = sortrows([y,x],1);
-        plot(matrix(:,1),matrix(:,2),'o')
-        hold on
-    end
-    ax = gca; fig = gcf;
-    fig.Color = 'w';
-    ax.FontSize = 12;
-    title('BDM value by prev. computer offer')
-    ylim([1 5.1])
-    ylabel('BDM points')
-    xlabel('Last offer')
-    
-    %plot late responses/changed responses by task
-    subplot(1,2,2)
-    for task = 1:length(tasks)
-        bar(task,nanmean(data.lateresponse(data.task_progression==tasks(task))))
-        scatter(task*ones(sum(sum(data.task_progression==tasks(task))),1),data.lateresponse(data.task_progression==tasks(task)))
-        hold on
-    end
-    ax = gca; fig = gcf;
-    xticks(1:length(tasks))
-    xticklabels(tasklabels)
-    xtickangle(45)
-    ylabel('mean late responses')
-    ax.FontSize = 12;
-    fig.Color = 'w';
-    
-    figure
-    rts = data.incorrectrts;
-    % just kidding, there aren't any incorrect rts yet...
-    for task = 1:length(tasklabels)
-        subplot(2,2,task)
-        histogram(rts{task})
-        title(['Dist. of Incorrect RTs for ' tasklabels(task)])
-        fig = gcf; fig.Color = 'w';
-    end
-end %of plot_flag if
+% are people tracking the offer at stake, and adjusting performance to it?
+% seems like no.
+
+figure
+subplot(1,2,1)
+for row = 1:n
+    init = NaN(default_length,1);
+    init(data.offers(row,:)>data.values(row,:)) = data.offers(row,data.offers(row,:)>data.values(row,:));
+    init(data.values(row,:)>data.offers(row,:)) = 1;
+    y = init;
+    x = [NaN data.perf(row,1:end-1)]';
+    matrix = sortrows([y,x],1);
+    plot(matrix(:,1),matrix(:,2),'o')
+    hold on
+end
+ax = gca; fig = gcf;
+title('Performance by BDM offer')
+fig.Color = 'w';
+ax.FontSize = 12;
+xlabel('BDM points at stake')
+ylabel('Accuracy')
+
+% are subjects matching the previous offers to try and manipulate the
+% points system? (it wouldn't work, but is a possible strategy if you think
+% the computer isn't random & is maybe going lower on its bids)
+
+%plot BDM request by previous offer
+subplot(1,2,2)
+for row = 1:n
+    y = data.offers(row,:)';
+    x = [NaN data.values(row,2:end)]';
+    matrix = sortrows([y,x],1);
+    plot(matrix(:,1),matrix(:,2),'o')
+    hold on
+end
+ax = gca; fig = gcf;
+fig.Color = 'w';
+ax.FontSize = 12;
+title('BDM value by prev. computer offer')
+ylim([1 5.1])
+ylabel('BDM points')
+xlabel('Last offer')
+
+%% Plot late responses/changed responses by task
+
+% are subjects more inattentive in one task than another?%
+% not enough data on this
+
+figure
+for task = 1:length(tasks)
+    bar(task,nanmean(data.lateresponse(data.task_progression==tasks(task))))
+    scatter(task*ones(sum(sum(data.task_progression==tasks(task))),1),data.lateresponse(data.task_progression==tasks(task)))
+    hold on
+end
+ax = gca; fig = gcf;
+xticks(1:length(tasks))
+xticklabels(tasklabels)
+xtickangle(45)
+ylabel('mean late responses')
+ax.FontSize = 12;
+fig.Color = 'w';
+
 
 %% Understand n-back matches' effect on costs
 % very noisy to plot, not very informative
 % the correlation analyses are more useful, but essentially fruitless
+
+% this analysis was a first stab at understanding which components were
+% costly, pre-process model - just pull matches, and see whether BDM
+% requests went up in response to them. the number of matches was set each
+% round to be 3, 4, or 5.
 
 %first, plot general nbackmatches effect for all subjects
 figure
@@ -466,9 +508,16 @@ for task = 1:(length(tasklabels)-1) %cycle through what is being displayed, disp
         idx = displayed == (task+1);
         matches = [NaN data.nbackmatches(subj,:)]; matches(end) = []; %last trial not influential
         BDMs = data.values(subj,:);
-        completed = NaN(1,default_length);completed(data.task_progression(subj,:)==tasks(2)) = 2;
-        completed(data.task_progression(subj,:)==tasks(3)) = 3;completed(data.task_progression(subj,:)==tasks(4)) = 8;
-        completed(:,end) = []; completed = [NaN completed];%delete last column
+        
+        % take stock of which task was actually completed when (stochastic
+        % task completion because of rating procedure means the rated task is
+        % not always the completed task on that round)
+        completed = NaN(1,default_length);
+        completed(data.task_progression(subj,:)==tasks(2)) = 2;
+        completed(data.task_progression(subj,:)==tasks(3)) = 3;
+        completed(data.task_progression(subj,:)==tasks(4)) = 8;
+        completed(:,end) = []; completed = [NaN completed];%delete last column, but conserve size & shift numbers down w/ a NaN
+        
         same = completed==displayed;
         different = ~isnan(completed)&completed~=displayed; %different but not detection
         same_long = [same_long; matches(same&idx)' BDMs(same&idx)'];
@@ -533,9 +582,16 @@ fig = gcf;
 fig.Color = 'w';
 ylim([1 5.1])
 
+%% How does delay between task iterations affect behavior, or BDM ratings?
 
+% are people forgetting their previous task experience?
+% i.e. is there decay of BDM values when the time between task rating
+% iterations is increased (measured by proxy, looking at the number of
+% intervening task ratings)?
+% what about task accuracy?
+% or task RT?
 figure
-subplot(2,2,1)
+subplot(3,1,1)
 toplot = count_entries([n2effect(:,4) n2effect(:,6)]);
 scatter(toplot(:,1),toplot(:,2),(toplot(:,3)+1).*5,'r','Filled')
 hold on
@@ -546,7 +602,7 @@ ylabel('Accuracy')
 title('Effect of delay since last time task completed')
 ax = gca; ax.FontSize = 12; fig = gcf; fig.Color = 'w';
 
-subplot(2,2,2)
+subplot(3,1,2)
 toplot = count_entries([n2effect(:,4:5)]);
 scatter(toplot(:,1),toplot(:,2),(toplot(:,3)+1).*5,'r','Filled')
 hold on
@@ -557,7 +613,7 @@ ylabel('BDM request')
 title('Effect of delay since last time task completed')
 ax = gca; ax.FontSize = 12; fig = gcf; fig.Color = 'w';
 
-subplot(2,2,3)
+subplot(3,1,3)
 %effect structures are 1. subj 2. matches 3. misses 4. delay 5. BDM 6. perf
 toplot = count_entries([n2effect(:,3:4)]);
 scatter(toplot(:,1),toplot(:,2),(toplot(:,3)+1).*5,'b','Filled')
@@ -570,41 +626,19 @@ title('Effect of delay since last time task completed')
 ax = gca; ax.FontSize = 12; fig = gcf; fig.Color = 'w';
 
 
-%% deal with individual differences in perfectionism
+%% Some interesting plots dealing with individual differences measures,
+% Need for Cognition (NFC) and Short Almost Perfect Scale (SAPS) responses,
+% already scored.
 
-% are NFC and SAPS scores related?
-figure
-subplot(1,3,1)
-histogram(data.NFC)
-title('Hist of NFC scores (normalized)')
-subplot(1,3,2)
-histogram(data.SAPS)
-title('Hist of SAPS scores (normalized)')
-meanBDM = nanmean(data.values(:,2:end),2);
-subplot(1,3,3)
-scatter(data.NFC,data.SAPS,'Filled')
-lsline
-title('NFC by SAPS score')
-xlabel('NFC score')
-ylabel('SAPS score')
-[r,p] = corr(data.NFC(~isnan(data.NFC)),data.SAPS(~isnan(data.NFC)),'Type','Spearman');
-if p<0.05
-    hold on
-    lsline
-end
-fig = gcf; fig.Color = 'w';
 figure
 %tertile split SAPS scores
 split = tertile_split(data.SAPS);
 %plot accuracy by SAPS score
 
+% are highly perfectionistic subjects actually better at the tasks?
+% or does perfectionism not translate to better task performance?
+
 subplot(1,3,1)
-%bar([nanmean(data.perf(split==1)) nanmean(data.perf(split==2)) nanmean(data.perf(split==3))])
-% bar(1,[nanmean(data.overall(split==1))],'c')
-% hold on
-% bar(2,[nanmean(data.overall(split==2))],'b')
-% bar(3,[nanmean(data.overall(split==3))],'r')
-% errorbar([nanmean(data.overall(split==1)) nanmean(data.overall(split==2)) nanmean(data.overall(split==3))],[nanstd(data.overall(split==1)) nanstd(data.overall(split==2)) nanstd(data.overall(split==3))]./[sqrt(sum(split==1)) sqrt(sum(split==2)) sqrt(sum(split==3))],'*k','LineWidth',1.5)
 bars = [nanmean(tasks_overall(split==1,1)) nanmean(tasks_overall(split==2,1)) nanmean(tasks_overall(split==3,1)); ...
     nanmean(tasks_overall(split==1,2)) nanmean(tasks_overall(split==2,2)) nanmean(tasks_overall(split==3,2)); ...
     nanmean(tasks_overall(split==1,3)) nanmean(tasks_overall(split==2,3)) nanmean(tasks_overall(split==3,3)); ...
@@ -629,6 +663,15 @@ ylabel('Mean Accuracy')
 fig = gcf; fig.Color = 'w';
 %diff in accuracy in high and low SAPS groups?
 [h,p] = ttest2(data.overall(split==1),data.overall(split==3)); % no
+clean_fig();
+
+
+% looks like highly perfectionist subjects are LESS accurate in their task
+% performance, especially on 2-back task. how does that effect their BDM
+% fair wage ratings?
+
+% maybe they ask for higher wages after errors, because the errors are so
+% aversive to them?
 
 subplot(1,3,2)
 low = []; mid = []; high = [];
@@ -658,6 +701,12 @@ legend('boxoff')
 xlabel('Accuracy')
 ylabel('BDM value')
 xlim([50 100])
+clean_fig();
+
+% same logic as above for the following analysis, but now looking at the
+% frequency of ommission errors specifically
+% it kind of looks vaguely like they're asking for fewer points when their
+% performance is lower, almost apologetically
 
 subplot(1,3,3)
 low = []; mid = []; high = [];
@@ -686,7 +735,14 @@ legend({'Low SAPS','Mid SAPS','High SAPS'},'Location','Best')
 legend('boxoff')
 xlabel('Missed Matches')
 ylabel('BDM value')
-fig = gcf; fig.Color = 'w';
+clean_fig();
+
+
+%% What does behavior look like after errors are made?
+% how do perfectionistic subjects bounce back? do they get back on track,
+% or does their overall error frequency go up?
+% they seem to slow down, but not sure whether they get more or less
+% accurate
 
 %make this figure for mean post-error ER and RT
 ys{1} = data.posterrorER;
@@ -711,7 +767,7 @@ for col = 1:length(ys)
         title([ datalabels{col} ' after first error - ' tasklabels(task+1)])
         ylabel(['Mean Post-Error ' datalabels{col}])
         xlabel('Perfectionism')
-        fig = gcf; fig.Color = 'w';
+        clean_fig();
         subplot(3,3,task+6)
         for subj = 1:n
             specific = y(subj,:);
@@ -722,12 +778,15 @@ for col = 1:length(ys)
         title([ datalabels{col} ' after first error - ' tasklabels(task+1)])
         ylabel(['Mean Post-Error ' datalabels{col}])
         xlabel('NFC')
-        fig = gcf; fig.Color = 'w';
+        clean_fig();
     end
 end
 
+%% Perfectionism and mean RT on each task
+% Maybe perfectionist subjects are more careful during task completion,
+% resulting in overall slower RTs?
+
 figure
-%slower performance, higher perfectionism?
 bars = [nanmean(tasks_rts(split==1,1)) nanmean(tasks_rts(split==2,1)) nanmean(tasks_rts(split==3,1)); ...
     nanmean(tasks_rts(split==1,2)) nanmean(tasks_rts(split==2,2)) nanmean(tasks_rts(split==3,2)); ...
     nanmean(tasks_rts(split==1,3)) nanmean(tasks_rts(split==2,3)) nanmean(tasks_rts(split==3,3)); ...
@@ -747,34 +806,17 @@ xticks([2:3:12])
 title('Mean RTs by SAPS group')
 legend({'Low SAPS','Mid SAPS','High SAPS'})
 xticklabels(tasklabels)
+clean_fig();
 
+%% Are perfectionistic subjects better from the start of the task (practice rounds)?
+% Are they more confident? Do they find certain tasks more difficult
+% (explicit difficulty ratings)?
+
+% Plot perfectionism tertiles by practice accuracy on 2-back task
 figure
 subplot(1,3,1)
-pracn0acc = data.practiceacc(:,1);
-prac3dacc = data.practiceacc(:,2);
-pracn1acc = data.practiceacc(:,3);
-pracn2acc = data.practiceacc(:,4); %first practice round for each task
-bars = [nanmean(pracn0acc(split==1,:)) nanmean(pracn0acc(split==2,:)) nanmean(pracn0acc(split==3,:)); ...
-    nanmean(pracn1acc(split==1,:)) nanmean(pracn1acc(split==2,:)) nanmean(pracn1acc(split==3,:)); ...
-    nanmean(pracn2acc(split==1,:)) nanmean(pracn2acc(split==2,:)) nanmean(pracn2acc(split==3,:)); ...
-    nanmean(prac3dacc(split==1,:)) nanmean(prac3dacc(split==2,:)) nanmean(prac3dacc(split==3,:))];
-E = [nanstd(pracn0acc(split==1,:)) nanstd(pracn0acc(split==2,:)) nanstd(pracn0acc(split==3,:)); ...
-    nanstd(pracn1acc(split==1,:)) nanstd(pracn1acc(split==2,:)) nanstd(pracn1acc(split==3,:)); ...
-    nanstd(pracn2acc(split==1,:)) nanstd(pracn2acc(split==2,:)) nanstd(pracn2acc(split==3,:)); ...
-    nanstd(prac3dacc(split==1,:)) nanstd(prac3dacc(split==2,:)) nanstd(prac3dacc(split==3,:))]./[sqrt(sum(split==1)) sqrt(sum(split==2)) sqrt(sum(split==3))];
-% bar(1:3:12,bars(:,1),'FaceColor',SAPScolors(1,:),'BarWidth',0.2)
-% hold on
-% bar(2:3:12,bars(:,2),'FaceColor',SAPScolors(2,:),'BarWidth',0.2)
-% bar(3:3:12,bars(:,3),'FaceColor',SAPScolors(3,:),'BarWidth',0.2)
-% bars = reshape(bars',1,numel(bars));
-% E = reshape(E',1,numel(E));
-% errorbar(bars,E,'*k')
-% xticks([2:3:12])
-% xticklabels(tasklabels)
-% legend({'Low SAPS','Mid SAPS','High SAPS'})
-% title('Interaction of SAPS group with practice accuracy')
 scatter(data.practiceacc(:,4),data.SAPS,[],SAPScolors(2,:),'Filled')
-[r,p] = corr(data.practiceacc(~isnan(data.SAPS),4),data.SAPS(~isnan(data.SAPS)))
+[r,p] = corr(data.practiceacc(~isnan(data.SAPS),4),data.SAPS(~isnan(data.SAPS)));
 xlabel('Practice Accuracy on 2-back')
 ylabel('Perfectionism')
 ax = gca; fig = gcf;
@@ -819,7 +861,11 @@ xticklabels(tasklabels)
 xticks([2:3:12])
 fig = gcf; fig.Color = 'w';
 
-%% Tertile split NFC scores
+%% Now let's dive into NFC, instead of perfectionism
+
+% are subjects with high NFC more responsive to the number of matches per
+% round?
+
 % individual differences in NFC and cognition
 split = tertile_split(data.NFC);
 %plot nswitches vs. BDM as function of NFC score
@@ -903,83 +949,15 @@ if p<0.05
     plot(unique(high(:,1)),y,'k','LineWidth',1.5)
 end
 
-n1effect = []; n2effect = []; n3effect = []; % keep track of numbers pulled out here for stats later
-figure
-for task = 1:(length(tasklabels)-1) %cycle through what is being displayed, display by what happened before
-    subplot(2,2,task)
-    for subj = 1:n %go subject by subject
-        group = split(subj);
-        displayed = data.task_displayed(subj,:);
-        idx = find(displayed == tasknumbers(task+1));
-        matches = data.nbackmatches(subj,:);
-        if task == 3
-            matches = data.ndetectmatches(subj,:);
-        end
-        perf = data.perf(subj,:);
-        BDMs = data.values(subj,:);
-        completed = find(data.task_progression(subj,:)==tasks(task+1));
-        for trial = 1:length(idx)
-            now = idx(trial);
-            if sum(completed<now)>0 %they've done the last once before
-                last = completed(completed<now); last = last(end);
-                delay = now-last;
-                if ~isnan(group)
-                    %color = colors{group};
-                    %scatter(matches(last),BDMs(now),color,'Filled')
-                    eval(['n' num2str(task) 'effect = [n' num2str(task) 'effect; subj matches(last) delay BDMs(now) group];'])
-                end
-            end
-        end
-    end
-    eval(['low = n' num2str(task) 'effect(n' num2str(task) 'effect(:,5)==1,:); mid = n' num2str(task) 'effect(n' num2str(task) 'effect(:,5)==2,:); high = n' num2str(task) 'effect(n' num2str(task) 'effect(:,5)==3,:);'])
-    toplot = count_entries([mid(:,2),mid(:,4)]);
-    scatter(toplot(:,1),toplot(:,2),(toplot(:,3)+1)*10,NFCcolors(2,:),'Filled');
-    hold on
-    toplot = count_entries([low(:,2),low(:,4)]);
-    scatter(toplot(:,1),toplot(:,2),(toplot(:,3)+1)*10,NFCcolors(1,:),'Filled');
-    toplot = count_entries([high(:,2),high(:,4)]);
-    scatter(toplot(:,1),toplot(:,2),(toplot(:,3)+1)*10,NFCcolors(3,:),'Filled');
-    ylabel('BDM points')
-    title(['BDM for ' tasklabels(task+1)])
-    legend({'Mid NFC','Low NFC','High NFC'})
-    xlabel(['n-back matches in last block'])
-    fig = gcf;
-    fig.Color = 'w';
-    ylim([1 5.1])
-end
-
-low = n1effect(n1effect(:,5)==1,:); mid = n1effect(n1effect(:,5)==2,:); high = n1effect(n1effect(:,5)==3,:);
-low(isnan(low(:,4)),:) = []; mid(isnan(mid(:,4)),:) = []; high(isnan(high(:,4)),:) = [];
-
-[r,p] = corr(low(:,2),low(:,4));
-% disp('low NFC spearman corr of matches and BDM, 1-back')
-
-[r,p] = corr(mid(:,2),mid(:,4));
-% disp('mid NFC spearman corr of matches and BDM, 1-back')
-
-[r,p] = corr(high(:,2),high(:,4));
-% disp('high NFC spearman corr of matches and BDM, 1-back')
-
-low = n2effect(n2effect(:,5)==1,:); mid = n2effect(n2effect(:,5)==2,:); high = n2effect(n2effect(:,5)==3,:);
-low(isnan(low(:,4)),:) = []; mid(isnan(mid(:,4)),:) = []; high(isnan(high(:,4)),:) = [];
-
-[r,p] = corr(low(:,2),low(:,4));
-% disp('low NFC spearman corr of matches and BDM, 2-back')
-
-[r,p] = corr(mid(:,2),mid(:,4));
-% disp('mid NFC spearman corr of matches and BDM, 2-back')
-
-[r,p] = corr(high(:,2),high(:,4));
-% disp('high NFC spearman corr of matches and BDM, 2-back')
-
 %% Baseline executive function by NFC group
 % Are high NFC people showing more baseline EF, as has been seen in
 % previous work?
-% Plot NFC group by 
+% Plot NFC group by practice round accuracy
 
 split = tertile_split(data.NFC);
 
-subplot(2,2,4)
+figure
+subplot(1,2,1)
 % accuracy by group
 bars = [nanmean(tasks_overall(split==1,1)) nanmean(tasks_overall(split==2,1)) nanmean(tasks_overall(split==3,1)); ...
     nanmean(tasks_overall(split==1,2)) nanmean(tasks_overall(split==2,2)) nanmean(tasks_overall(split==3,2)); ...
@@ -1001,6 +979,7 @@ xticklabels(tasklabels)
 title('Accuracy by NFC group')
 legend({'Low NFC','Mid NFC','High NFC'})
 xticklabels(tasklabels)
+clean_fig();
 
 % are high NFC-ers more accurate than everyone else on the 2-back?
 [h,p] = ttest2(tasks_overall(split==3,3),tasks_overall(split==2,3));
@@ -1008,7 +987,7 @@ xticklabels(tasklabels)
 
 
 % how does NFC interact with 'baseline EF' i.e. practice accuracy?
-figure
+subplot(1,2,2)
 pracn0acc = data.practiceacc(:,1);
 prac3dacc = data.practiceacc(:,2);
 pracn1acc = data.practiceacc(:,3); %first practice round for each task
@@ -1039,7 +1018,7 @@ ylabel('NFC')
 ax = gca; fig = gcf;
 fig.Color = 'w'; ax.FontSize = 12;
 
-%run ANOVA over practice accuracy for all 4 tasks, analyzing by NFC groups
+%run ANOVA over PRACTICE accuracy by task and NFC group
 maxlength = min([sum(split==1) sum(split==2) sum(split==3)]);
 distances = [sum(split==1) sum(split==2) sum(split==3)]-maxlength;
 trim = find(distances>0); matrix = [pracn0acc pracn1acc pracn2acc prac3dacc split];
@@ -1055,10 +1034,10 @@ matrix = sortrows(matrix,5); matrix(isnan(matrix(:,5)),:) = [];
 % no effect of NFC group on practice accuracy when all tasks taken into
 % account
 
-%2-way anova on overall accuracy by task and NFC group
+%2-way ANOVA on MAIN EXPERIMENT accuracy by task and NFC group
 tasklist = [repmat(1,n,1); repmat(2,n,1); repmat(3,n,1); repmat(4,n,1)];
 matrix = [reshape(tasks_overall,numel(tasks_overall),1) repmat(split,4,1) tasklist];
-[~,~,stats] = anovan(matrix(:,1),{matrix(:,2),matrix(:,3)},'model','interaction','varnames',{'NFC','task'});
+[~,~,stats] = anovan(matrix(:,1),{matrix(:,2),matrix(:,3)},'model','interaction','varnames',{'NFC','task'},'Display','off');
 
 [h,p] = ttest2(data.overall(split==1),data.overall(split==3));
 [h,p] = ttest2(data.overall(split==2),data.overall(split==3));
@@ -1071,15 +1050,17 @@ matrix = [reshape(tasks_overall,numel(tasks_overall),1) repmat(split,4,1) taskli
 % there's also a very clear effect of task, where 2-back performance is
 % much worse across the board
 
-%% try to understand random effects by plotting one plot/subject, BDM vs.
-%nswitches, NFC as title %%%%%%%
+%% What's driving differences in 1- and 2-back ratings?
+% Is it NFC?
+% Is it just rating noise?
+
 split = tertile_split(data.NFC);
 
 n1 = data.task_displayed == 1;
 n2 = data.task_displayed == 2;
 ndetect = data.task_displayed==7;
 figure
-subplot(2,2,1)
+subplot(1,2,1)
 for subj = 1:n
     diff(subj) = [nanmean(data.values(subj,n2(subj,:)))-nanmean(data.values(subj,n1(subj,:)))];
     scatter(diff(subj),data.NFC(subj))
@@ -1089,10 +1070,9 @@ end
 title([num2str(r) ' : relationship of NFC and mean diff between task values'])
 ylabel('NFC')
 xlabel('2-back minus 1-back fair wages')
-ax = gca; fig = gcf;
-ax.FontSize = 12; fig.Color = 'w';
+clean_fig();
 
-subplot(2,2,2)
+subplot(1,2,2)
 for subj = 1:n
     scatter(diff(subj),nanstd(data.values(subj,:)))
     hold on
@@ -1100,42 +1080,10 @@ end
 title('Relationship of STD of BDMs and mean diff between task values')
 ylabel('STD of BDM fair wages (all from 1 subj)')
 xlabel('2-back minus 1-back fair wages')
-ax = gca; fig = gcf;
-ax.FontSize = 12; fig.Color = 'w';
+clean_fig();
 
-% plot mean fair wage on each task by tertile split groups
-measures = [data.NFC data.SAPS];
-labels = {'NFC','SAPS'};
-for measure = 1:2
-    split = [];
-    split = tertile_split(measures(:,measure));
-    if measure == 1
-        colors = NFCcolors;
-    else
-        colors = SAPScolors;
-    end
-    subplot(2,2,2+measure)
-    lowNFCvalues = data.values(split==1,:);
-    midNFCvalues = data.values(split==2,:);
-    highNFCvalues = data.values(split==3,:);
-    errorbar([nanmean(lowNFCvalues(n1(split==1,:))) nanmean(lowNFCvalues(ndetect(split==1,:))) nanmean(lowNFCvalues(n2(split==1,:)))],[nanstd(lowNFCvalues(n1(split==1,:))) nanstd(lowNFCvalues(ndetect(split==1,:))) nanstd(lowNFCvalues(n2(split==1,:)))]/sqrt(sum(split==1)),'Color',colors(1,:),'Linewidth',1.5)
-    hold on
-    errorbar([nanmean(midNFCvalues(n1(split==2,:))) nanmean(midNFCvalues(ndetect(split==2,:))) nanmean(midNFCvalues(n2(split==2,:)))],[nanstd(midNFCvalues(n1(split==2,:))) nanstd(midNFCvalues(ndetect(split==2,:))) nanstd(midNFCvalues(n2(split==2,:)))]/sqrt(sum(split==2)),'Color',colors(2,:),'Linewidth',1.5)
-    errorbar([nanmean(highNFCvalues(n1(split==3,:))) nanmean(highNFCvalues(ndetect(split==3,:))) nanmean(highNFCvalues(n2(split==3,:)))],[nanstd(highNFCvalues(n1(split==3,:))) nanstd(highNFCvalues(ndetect(split==3,:))) nanstd(highNFCvalues(n2(split==3,:)))]/sqrt(sum(split==3)),'Color',colors(3,:),'Linewidth',1.5)
-    legend(['Low ' labels{measure}],['Mid ' labels{measure}],['High ' labels{measure}])
-    title(['Mean Task Wage Requested by ' labels{measure} ' group'])
-    ylabel('Wage')
-    xlabel('Task')
-    xticklabels(tasklabels(2:end))
-    xticks([1:3])
-    ax = gca; fig = gcf;
-    ax.FontSize = 12; fig.Color = 'w';
-    
-    tasklist = [repmat(1,n,1); repmat(2,n,1); repmat(3,n,1)];
-    ratings = [nanmean(n1subjvalue,2); nanmean(n3subjvalue,2); nanmean(n2subjvalue,2)];
-    matrix = [ratings repmat(split,3,1) tasklist];
-    %[~,~,stats] = anovan(matrix(:,1),{matrix(:,2),matrix(:,3)},'model','interaction','varnames',{'NFC','task'});
-end
+%% What's up with NFC tertiles and difficulty ratings?
+% Also, are NFC subjects better at paying attention to the task as a whole?
 
 % look into self-rated competence i.e. how "easy" or "hard" they rated the
 % task to be
@@ -1170,6 +1118,10 @@ errorbar(means,E,'k','LineWidth',1.5)
 fig = gcf; fig.Color = 'w';
 
 %% demographic data analysis
+% does NFC change with sex or age?
+% how about SAPS?
+% how about reaction time and accuracy on the tasks?
+
 figure
 subplot(3,2,1)
 bar([nanmean(data.NFC(data.sex==1)) nanmean(data.NFC(data.sex==2))])
@@ -1229,6 +1181,9 @@ if p<0.05
     lsline
 end
 fig = gcf; fig.Color = 'w';
+
+%% Are subjects more accurate at the tasks when more BDM points are on the line?
+% Does this differ across NFC tertiles?
 
 % basic diff rating versus accuracy stuff - how well do people gauge their
 % own abilities?
@@ -1399,11 +1354,11 @@ for measure = 1:size(measures,2)
         xticklabels({['Low ' names{measure}],['Mid ' names{measure}],['High ' names{measure}]})
         % run group-level t-tests
         [h,pval] = ttest2(params(split==1,p),params(split==2,p));
-        disp([paramnames{p} ': ' num2str(pval) 'difference between low and mid ' names{measure}])
+        disp([paramnames{p} ': ' num2str(pval) ' difference between low and mid ' names{measure}])
         [h,pval] = ttest2(params(split==3,p),params(split==2,p));
-        disp([paramnames{p} ': ' num2str(pval) 'difference between high and mid ' names{measure}])
+        disp([paramnames{p} ': ' num2str(pval) ' difference between high and mid ' names{measure}])
         [h,pval] = ttest2(params(split==1,p),params(split==3,p));
-        disp([paramnames{p} ': ' num2str(pval) 'difference between low and high ' names{measure}])
+        disp([paramnames{p} ': ' num2str(pval) ' difference between low and high ' names{measure}])
     end
     fig = gcf; fig.Color = 'w';
     
@@ -1442,22 +1397,24 @@ for measure = 1:2
         nparams = size(all_params{modelnum},2);
         name = best_model.overallfit.fitmodels{modelnum};
         paramnames = strsplit(strrep(name,'c',' cost'),'-');
-        paramnames = strrep(paramnames,'u ','update '); strrep(paramnames,'main ','maintenance ');
+        paramnames = strrep(paramnames,'u ','update '); 
+        paramnames = strrep(paramnames,'main ','maintenance ');
+        % add clearer labels to param plots
         costs = find(contains(paramnames,'cost'));
         values = all_params{modelnum}(:,costs);
         for c = 1:size(costs,2)
             count = count+1;
             
             % run stats on measurement groups
-            [p,~,stats] = anova1(values(:,1),split,'off');
-            if p < 0.05; [compared] = multcompare(stats,'display','on'); end
+            % [p,~,stats] = anova1(values(:,1),split,'off');
+            %if p < 0.05; [compared] = multcompare(stats,'display','on'); end
             % run group-based & continuous stats
             [h,pval] = ttest2(values(split==1,c),values(split==2,c));
-            disp([paramnames{costs(c)} ': ' num2str(pval) 'difference between low and mid ' names{measure}])
+            disp([paramnames{costs(c)} ': ' num2str(pval) ' difference between low and mid ' names{measure}])
             [h,pval] = ttest2(values(split==3,c),values(split==2,c));
-            disp([paramnames{costs(c)} ': ' num2str(pval) 'difference between high and mid ' names{measure}])
+            disp([paramnames{costs(c)} ': ' num2str(pval) ' difference between high and mid ' names{measure}])
             [h,pval] = ttest2(values(split==1,c),values(split==3,c));
-            disp([paramnames{costs(c)} ': ' num2str(pval) 'difference between low and high ' names{measure}])
+            disp([paramnames{costs(c)} ': ' num2str(pval) ' difference between low and high ' names{measure}])
             
             Y = nanmean(values,2); Y(invalid,:) = [];
             [betas,BINV,~,~,stats] = regress(Y,X);
@@ -1486,15 +1443,4 @@ for measure = 1:2
     
 end %of cycling over SAPS & NFC
 
-%% Where in the task is dropout occurring?
-
-figure
-bar([sum(excluded.values(excluded.exp_version==4,1:4))+n n])
-labels = [excluded.labels(1,1:4) 'finished'];
-xticklabels([labels])
-title('# Subjects completed each phase')
-ylabel('n')
-ax = gca; fig = gcf;
-ax.FontSize = 14;
-fig.Color = 'w';
 

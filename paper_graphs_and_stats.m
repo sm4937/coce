@@ -64,9 +64,8 @@ disp(['Mean total TOT: ' num2str(nanmean(data.totalTOT)) ', median total TOT: ' 
 % REMINDER OF TASK ORDERS in VARIABLES %
 %tasks = [detection,n1,3detection,n2];
 
-extra_flag = false;
-
 % turn on if you want to run a BUNCH of extra analyses
+extra_flag = true;
 % (don't recommend, if you have extra questions, you should open
 % run_supplementary_analyses and run it cell-by-cell according to what
 % you're interested in seeing)
@@ -321,33 +320,6 @@ vector = [n1subjvalue(:);n2subjvalue(:);n3subjvalue(:)];
 taskidentity = [ones(length(n1subjvalue(:)),1);2*ones(length(n2subjvalue(:)),1);3*ones(length(n3subjvalue(:)),1)];
 iternum = repmat([1 2 3 4 5 6 7 8 9 10],n*3,1);
 [~,~,stats] = anovan(vector,[taskidentity iternum(:)]);
-
-
-% An interesting supplementary plot showing that:
-% % subjects are RELATIVELY STABLE IN THEIR BDMs % %
-% this speaks to the relationship between BDM & task iteration being more
-% stationary than would be assumed from the group means, as plotted %
-
-% subplot(2,2,4)
-% for task = 4 %grab 2-back specifically
-%     rating_idx = data.task_displayed==tasknumbers(task);
-%     eval(['ratings = n' num2str(task-1) 'subjvalue;'])
-%     hold on
-%     eval(['completions = sum(~isnan(n' num2str(task-1) 'subjlearning),2);'])
-%     ratings = [completions ratings]; ratings = sortrows(ratings,1);
-%     n_rounds = unique(completions);
-%     for i = 1:length(n_rounds)
-%         tomean = ratings(ratings(:,1)==n_rounds(i),2:end);
-%         toplot = nanmean(tomean,1);
-%         errorbar(toplot,nanstd(tomean,[],1)./sqrt(size(tomean,1)),'Color',taskcolors(task,:))
-%         hold on
-%     end
-%     xlabel('# task iters completed')
-%     ylabel('Mean BDM rating')
-%     title([tasklabels{task} ' ratings by completed iterations'])
-% end
-% fig = gcf; fig.Color = 'w';
-% xlim([0 11])
 
 % END FIGURE 2
 
@@ -886,6 +858,8 @@ for measure = 1:2  %set measure = 1:2 to see SAPS score bins also, not just NFC
     %paramnames{3} = 'maintenance cost';
     [~,assignments] = max(best_model.cbm.output.responsibility,[],2);
     modelgroup = assignments==modelnum;
+    X = X(modelgroup(~invalid),:);
+    
     values = all_params{modelnum};
     model = coc_createModels(best_model.name);
     values = applyTrans_parameters(model,values);
@@ -898,7 +872,8 @@ for measure = 1:2  %set measure = 1:2 to see SAPS score bins also, not just NFC
         [h,pval3] = ttest2(values(split==1&modelgroup,p),values(split==3&modelgroup,p));
         ps = [NaN pval1 pval3; pval1 NaN pval2; pval3 pval2 NaN];
         
-        Y = values(:,p); Y(invalid,:) = [];
+        %Y = values(:,p); Y(invalid,:) = [];
+        Y = values(modelgroup(~invalid),p);
         [betas,BINV,~,~,stats] = regress(Y,X);
         % get betas for quadratic term
         predicted = X*betas;

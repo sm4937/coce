@@ -1,4 +1,4 @@
-function [modellist] = getAllParamCombos(paramlist)
+function [modellist] = get_all_param_combos(paramlist)
 %getAllParamCombos Get all possible model combinations and their
 %recoverability
 %   paramlist is a cellstr list of possble param names, like
