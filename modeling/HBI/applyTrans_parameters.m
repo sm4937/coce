@@ -11,8 +11,23 @@ end
 if model.alpha %learning rate, like from RL model - must be between 0 and 1
     idx = find(contains(model.paramnames,'alpha'));
     x = parameters(:,idx);
-    parameters(:,idx) = 1./(1+exp(-x)); %transform with sigmoid
+   parameters(:,idx) = 1./(1+exp(-x)); %transform with sigmoid
 end
+
+% these two delta parameters should be positive - then one of them is
+% forced to be negative (delta_practice reduces costs of cognition)
+% if model.delta_time
+%     idx = find(contains(model.paramnames,'delta_time'));
+%     x = parameters(:,idx);
+%     parameters(:,idx) = 1./(1+exp(-x)); %transform 
+% end
+% if model.delta_practice
+%     idx = find(contains(model.paramnames,'delta_practice'));
+%     x = parameters(:,idx);
+%     parameters(:,idx) = 1./(1+exp(-x)); %transform 
+% end
+% but recovery is awful, so trying a different approach
+
 
 end
 

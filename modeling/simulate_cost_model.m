@@ -28,13 +28,14 @@ for subj = 1:nsubjs  %simulate the model for one subject at a time
     % select parameter values for that subject
     subjnum = subjnums(subj);
     
-    [uc,epsilon,init,missc,mainc,matchc,noisec,respc,lurec,errorc,fac,alpha,delta] = set_param_values(params,modeltosim);
+    [uc,epsilon,init,missc,mainc,matchc,noisec,respc,lurec,errorc,fac,rtc,otherlurec,alpha,delta] = set_param_values(params,modeltosim);
+
     % you'll notice that the same functions are applied here and in the
     % fitting function, getprobs_costlearning
     % this is an attempt to standardize param scaling, model specification,
     % etc. across different points in the model simulation/fitting pipeline
-    
-    costs = [uc missc mainc matchc noisec respc lurec errorc fac];
+        
+    costs = [uc missc mainc matchc noisec respc lurec errorc fac rtc otherlurec];
     % put all costs in one vector for ease of transformation in
     % set_new_costs (the cost-changing models)
     costs_0 = costs; 
@@ -64,6 +65,17 @@ for subj = 1:nsubjs  %simulate the model for one subject at a time
     nlures = zscore(onesubj.nlures);
     nerrors = zscore(onesubj.nerrors); 
     nFAs = zscore(onesubj.nFAs);
+    if sum(contains(onesubj.Properties.VariableNames,'RTs'))>0
+        RTs = zscore(onesubj.RTs);
+        notherlures = zscore(onesubj.notherlures);
+        pct_time_elapsed = onesubj.pct_time_elapsed;
+        pct_iters_complete = onesubj.pct_iters_complete;
+    else
+        RTs = zeros(height(onesubj),1);
+        notherlures = zeros(height(onesubj),1);
+        pct_time_elapsed = zeros(height(onesubj),1);
+        pct_iters_complete = zeros(height(onesubj),1);
+    end
     
     ntrials = sum(~isnan(onesubj.BDM)&~isnan(onesubj.display)); %height(onesubj);
     for trial = 1:ntrials
@@ -105,16 +117,29 @@ for subj = 1:nsubjs  %simulate the model for one subject at a time
         
         % if it's a cost-changing (delta) model, update the costs according
         % to delta below
-        if (modeltosim.delta || modeltosim.deltai) & trial > 1
-            costs = set_new_costs(costs_0,delta,trial);
+        time = pct_time_elapsed(trial);
+        iter = pct_iters_complete(trial);
+        evolving_costs(1,:) = costs_0;
+        if sum(contains(modeltosim.paramnames,'delta'))>0 & trial > 1
+            
+            % which delta model are you running? the default is the linear
+            % delta model from bioRxiv preprint 2023
+            two_delta_flag = modeltosim.delta_time & modeltosim.delta_practice;
+            quadratic_delta_flag = modeltosim.deltaexp;
+            
+            costs = set_new_costs(costs_0,delta,trial,quadratic_delta_flag,two_delta_flag,time,iter);
             %figure(10);scatter(trial*ones(1,sum(costs~=0)),costs(costs~=0));hold on
+            evolving_costs(trial,:) = costs;
         end
         
         % which task did they just complete?
         % not always the same as they just rated
         task = onesubj.task(trial);
         
-        cost = costs*[nupdates(trial);nmisses(trial);nmaintained(trial);nmatches(trial);noisiness(trial);responses(trial);nlures(trial);nerrors(trial);nFAs(trial)]; %add all the costs together
+        %add all the costs together
+        cost = costs*[nupdates(trial);nmisses(trial);nmaintained(trial);nmatches(trial);...
+            noisiness(trial);responses(trial);nlures(trial);nerrors(trial);nFAs(trial);...
+            RTs(trial);notherlures(trial)]; 
         % how costly was it, according to these parameter values?
         
         % learn from that cost (either with learning rate = alpha, or
@@ -131,11 +156,14 @@ for subj = 1:nsubjs  %simulate the model for one subject at a time
         
         end
         
-        simdata = [simdata; subjnum task rating torate nupdates(trial) nmisses(trial) nmaintained(trial) nmatches(trial) noisiness(trial) responses(trial) nlures(trial) nerrors(trial) nFAs(trial)];
+        simdata = [simdata; subjnum task rating torate nupdates(trial) nmisses(trial) nmaintained(trial) nmatches(trial)...
+            noisiness(trial) responses(trial) nlures(trial) nerrors(trial) nFAs(trial) RTs(trial) notherlures(trial)...
+            time iter];
         % concatenate the simulated data from this subject to the greater
         % simdata matrix
-        
+                
     end %of one subj run-through
+    %hold off
     
     % when we were having trouble fitting epsilon, I began calculating the
     % true epsilon for each subject, to rule out the possibiliy that
@@ -143,6 +171,12 @@ for subj = 1:nsubjs  %simulate the model for one subject at a time
     % problems. This is no longer an issue, but in case it's useful I've left
     % that functionality in.
     real_epsilon_opt(subj) = sqrt((1/ntrials) * sum(real_epsilon(:,4)).^2);
+    
+    [simdata(:,4) simdata(:,3)];
+    
+    figure(11)
+    errorbar(1:ntrials,sum(evolving_costs,2),rand(ntrials,1),'LineWidth',1.5)
+    hold on
     
 end % of simulating all subjects
 

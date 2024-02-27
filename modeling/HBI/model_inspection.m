@@ -16,8 +16,8 @@ n = size(params,1);
 subset = 1:n;
 % default subject subset, can be overwritten by loading files below
 
-load(['model-details/' model_name '.mat']);
-load('../../simdata/toanalyze.mat')
+load(['../model-details/' model_name '.mat']);
+load('../../../data/toanalyze.mat')
 % Load generate/recover for this model, too, to see goodness-of-fit
 
 
@@ -42,6 +42,28 @@ for subj = 1:n
 end
 subjrankings = sortrows([MSE' (1:n)'],1);
 
+% Clean up parameter names for plotting purposes
+alpha_indx = contains(modeltofit.paramnames,'alpha');
+modeltofit.paramnames{alpha_indx} = '\alpha';
+
+epsilon_indx = contains(modeltofit.paramnames,'epsilon');
+modeltofit.paramnames{epsilon_indx} = '\sigma';
+
+costs_indx = contains(modeltofit.paramnames,'c');
+names = modeltofit.paramnames(costs_indx);
+for i = 1:length(names)
+    % format cost parameter names to be more intelligible
+    name = names{i};
+    temp = strsplit(name,'c');
+    temp = temp{1};
+    temp = ['c_{' temp '}'];
+    names{i} = temp;
+end
+modeltofit.paramnames(costs_indx) = names;
+
+init_indx = contains(modeltofit.paramnames,'init');
+modeltofit.paramnames(init_indx) = {'init_{1-back}','init_{2-back}','init_{3-detect}'};
+
 figure
 for p = 1:nparams 
     subplot(5,2,p)
@@ -59,27 +81,9 @@ end
 fig = gcf; fig.Color = 'w';
 
 
-% Clean up parameter names for plotting purposes
-alpha_indx = contains(modeltofit.paramnames,'alpha');
-modeltofit.paramnames{alpha_indx} = '\alpha';
-
-epsilon_indx = contains(modeltofit.paramnames,'epsilon');
-modeltofit.paramnames{epsilon_indx} = '\epsilon';
-
-costs_indx = contains(modeltofit.paramnames,'c');
-names = modeltofit.paramnames(costs_indx);
-for i = 1:length(names)
-    % format cost parameter names to be more intelligible
-    name = names{i};
-    temp = strsplit(name,'c');
-    temp = temp{1};
-    temp = ['c_{' temp '}'];
-    names{i} = temp;
+if max(subset)>length(realparamlist)
+    subset = 1:length(realparamlist);
 end
-modeltofit.paramnames(costs_indx) = names;
-
-init_indx = contains(modeltofit.paramnames,'init');
-modeltofit.paramnames(init_indx) = {'init_{1-back}','init_{2-back}','init_{3-detect}'};
 
 % Plot real versus fit parameters
 figure

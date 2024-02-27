@@ -6,6 +6,7 @@ function [mean_r_squared] = get_mean_r_squared(nboot,subj_list,model_list,params
 
 disp('Calculating mean r-squared iteratively')
 
+subj_list = subj_list(~isnan(subj_list));
 nsubjs = length(subj_list);
 
 for boot = 1:nboot
@@ -34,8 +35,6 @@ for boot = 1:nboot
        
         % some subjects' data where the task identity wasn't saved for
         % whatever reason so ratings have no accompanying task
-        % love running online experiments w/ weird internet connection bugs
-        % :)
         
         truewages = [truewages; toanalyze.BDM(toanalyze.subj==subj,:)];
     end

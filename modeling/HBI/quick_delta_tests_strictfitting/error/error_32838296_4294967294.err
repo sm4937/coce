@@ -1,5 +1,0 @@
-{Reference to non-existent field 'loglik'.
-
-Error in run_model_fitting_deltas (line 146)
-    LLHs(file,:) = cbm.math.loglik;
-} 

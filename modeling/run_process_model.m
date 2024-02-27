@@ -35,7 +35,7 @@ end
 % (subject numbers are in "list", which are randomly generated at the beginning of
 % the MTurk task & about 7 digits long)
 
-preloadflag = false;
+preloadflag = true;
 % do you want to run all these analyses? they take some time
 
 if preloadflag
@@ -138,6 +138,11 @@ if preloadflag
                 oneperson.nmatches = double(string(data.nmatches(idx)));
                 oneperson.nmatches(isnan(oneperson.nmatches)) = 0; %replace NaN's with 0
                 oneperson.keypress = data.key_press(idx);
+                oneperson.RT = data.rt(idx);
+                
+                oneperson.time_elapsed = data.time_elapsed(idx)./1000;
+                % time elapsed in seconds
+                
                 tosim = [tosim; oneperson];
                 % save all of the data you've pulled from
             end
@@ -145,7 +150,7 @@ if preloadflag
     end %end of loading/formatting
     
     save([data_directory 'simdata.mat'],'tosim')
-    
+
 else % if NOT running all of this stuff, and just preloading, then:
     
     load([data_directory 'simdata.mat'])
@@ -175,27 +180,74 @@ noise = 0; %turn this to a value that is NOT 0 to see how cost components change
 
 for subj = 1:length(unique(tosim.subj)) % loop over subjects captured in tosim
     oneperson = tosim(tosim.subj==subj,:);
-    completed(subj,:) = ceil([sum(oneperson.task==0) sum(oneperson.task==1) sum(oneperson.task==3) sum(oneperson.task==2)]./15);
+    
+    completed(subj,:) = ceil([sum(oneperson.task==0) sum(oneperson.task==1) sum(oneperson.task==2) sum(oneperson.task==3)]./15);
+    completions(subj,1:4) = zeros(1,4);
+    
+    % from previous analyses, we know how long the mean subject took (35
+    % minutes)
+    % use this as time elapsed baseline
+    mean_length = 35*60;
+    
     for block = 0:max(oneperson.block)
+        % pull this subject's data
         blockdata = oneperson(oneperson.block==block,:);
-        nupdates = 0; nlures = 0; %initialize cost variables
+        
+        %initialize cost variables
+        nupdates = 0; 
+        nlures = 0; notherlures = 0;
         maintained = NaN(1,2); %keep track of storage over time, to get a sense of maintained info over time
+        
+        % which task is being *completed* on this block?
         task = blockdata.task(2)+1;
         n = blockdata.n(2); matches = blockdata.nmatches(2);
         if isnan(n) %again, with this duplicate trial for subj 98, causing problems
             n = blockdata.n(3); matches = blockdata.nmatches(3);
         end
-        storage = NaN(1,n); %empty storage for n-back
+        
+        %empty WM storage out
+        storage = NaN(1,n); 
+
         for trial = 2:height(blockdata)
             stim = blockdata.stimnum(trial);
             if n == 0 %do detection, pretty simple
                 maintained(trial,:) = 0;
             else %n-backs and n-detects
-                if task==3 %only in 2-back can there be WM lures inside buffer
-                    if storage(2)==stim
-                        nlures = nlures + 1; %not a real 2-back, but a lure trial
+                
+                %count lure stimuli in WM storage
+                % first, in 2-back
+                if task==3 
+                    % set up to look for 3-back lures in 2-back
+                    stim_3back = NaN;
+                    if trial>=4
+                        stim_3back = blockdata.stimnum(trial-3);
                     end
+                    
+                    % tally traditional lures (as defined in bioRxiv
+                    % preprint) and non-traditional (as needed for
+                    % revision)
+                     %not a real 2-back, but a lure trial
+                    if storage(2)==stim
+                        nlures = nlures + 1;
+                    % maybe they didn't forget the one 3 trials back
+                    elseif stim_3back==stim
+                        notherlures = notherlures + 1; 
+                    end
+                    
                 end
+                
+                %count lure stimuli in WM storage
+                % now in 3-detect
+                if task==4                   
+                    % tally 3-detect lures
+                    % it's actually just a 2-back, not a 3-in-a-row
+                    if storage(2)==stim & ~blockdata.detect(trial)
+                        notherlures = notherlures + 1; 
+                    end
+                    
+                end
+                
+                % store stimuli, forget old stimuli
                 if sum(stim == storage)==n %full storage remaining the same
                     % do nothing, no cost, no update
                 else %update storage with some noise
@@ -210,6 +262,7 @@ for subj = 1:length(unique(tosim.subj)) % loop over subjects captured in tosim
                 end
                 maintained(trial,:) = storage;
             end
+            
         end
         % grab noisiness for whole block instead of trial
         noisiness = sum((blockdata.detect|blockdata.nback)==true&blockdata.correct==false)/max([sum(blockdata.detect|blockdata.nback) 1]);
@@ -225,8 +278,31 @@ for subj = 1:length(unique(tosim.subj)) % loop over subjects captured in tosim
         % this should be confounded with errors
         % let's just set it to N and see if that's different in any way
         maintained = n;
-
-        components = [components; subj nmatches maintained nupdates nmisses blockdata.display(1)+1 task blockdata.BDM(1) noisiness nresponses nlures nerrors nFAs];
+        % pull mean reaction time
+        RTs = nanmean(blockdata.RT(2:end));
+        
+        % when rating is being made, how much time has passed?
+        % let's baseline it relative to the MEAN amount of time subjects
+        % spent, such that subjects who spend an hour experience greater
+        % costs due to time.
+        pct_time_elapsed = blockdata.time_elapsed(1)./mean_length;
+        
+        % when rating is being made, how many times have they done this
+        % specific task? baselined by the MAX number of possible task
+        % iterations for the rated tasks (not the 1-detect)
+        % such that subjects who skip the tasks don't accumulate false task
+        % experience
+        pct_iters_complete = completions(subj,task)./11;
+        
+        % % SAVE COST AND TASK COMPONENTS HERE!! % %
+        components = [components; subj nmatches maintained nupdates nmisses ...
+            blockdata.display(1)+1 task blockdata.BDM(1) noisiness nresponses ...
+            nlures nerrors nFAs RTs notherlures pct_time_elapsed pct_iters_complete];
+        
+        % update total number of completions to be accurate for next round!
+        task_index = zeros(1,4); task_index(task) = 1;
+        completions(subj,:) = completions(subj,:) + task_index;
+        
     end %end of block by block loop
 
     %     if sum(completed(subj,2:end)>2)<3 %3 iterations or more for each rated task?
@@ -252,7 +328,11 @@ toanalyze.nmisses = components(:,5); toanalyze.display = components(:,6);
 toanalyze.task = components(:,7); toanalyze.BDM = components(:,8);
 toanalyze.noisiness = components(:,9); toanalyze.nresponses = components(:,10);
 toanalyze.nlures = components(:,11); toanalyze.nerrors = components(:,12);
-toanalyze.nFAs = components(:,13);
+toanalyze.nFAs = components(:,13); toanalyze.RTs = components(:,14);
+% other lures is a new way of thinking about lures & encapsulates all kinds
+toanalyze.notherlures = components(:,15) + components(:,11);
+toanalyze.pct_time_elapsed = components(:,16);
+toanalyze.pct_iters_complete = components(:,17);
 save([data_directory 'toanalyze.mat'],'toanalyze','trim')
 
 % how many times did the 2-back actually get completed?
@@ -262,7 +342,7 @@ save([data_directory 'toanalyze.mat'],'toanalyze','trim')
 % recovery problem. but it looks like there's a good spread in the numbers
 % here.
 figure
-histogram(completed(:,end))
+histogram(completed(:,3))
 fig = gcf; fig.Color = 'w';
 title('Completed 2-backs across subjects')
 

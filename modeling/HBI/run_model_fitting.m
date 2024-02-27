@@ -58,7 +58,7 @@ modelstofit = [modelstofit get_all_param_combos({'uc','mainc','lurec','missc','f
 % fidelity of recovered parameters has already been confirmed)
 % Having a sense for this requires that you run test_model_recoverability
 
-strict_criterion_for_fitting = false;
+strict_criterion_for_fitting = true;
 
 recoverability = true(length(modelstofit),1);
 
@@ -118,7 +118,7 @@ for m = 1:length(modelstofit)
     
     % keep low-level fits separate from high-level fits, this becomes
     % relevant when calculating covariances of cost parameters
-    copyfile(fnames{m},['low-level-fits/' fnames{m}])
+    % copyfile(fnames{m},['low-level-fits/' fnames{m}])
     
 end
 

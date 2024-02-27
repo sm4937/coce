@@ -190,6 +190,6 @@ fig = gcf; fig.Color = 'w';
 % mean r-squared - more accurate due to stochasticity in model
 % simulations:
 nboot = 1000;
-mean_r_squared_onemodel = get_mean_r_squared(nboot,1:nsubjs,repmat({one_best_model},nsubjs,1), one_model_subj_params, toanalyze);
-mean_r_squared_allmodels =  get_mean_r_squared(nboot,1:nsubjs,all_subj_models, all_models_subj_params, toanalyze);
+mean_r_squared_onemodel = get_mean_r_squared(nboot,1:nsubjs,repmat({one_best_model},nsubjs,1), one_model_subj_params, toanalyze)
+mean_r_squared_allmodels =  get_mean_r_squared(nboot,1:nsubjs,all_subj_models, all_models_subj_params, toanalyze)
 

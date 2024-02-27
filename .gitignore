@@ -14,6 +14,7 @@ modeling/.DS_Store
 #data folders and files
 pilotdata/*
 data/*
+public_data/*
 simdata/*
 obsolete/*
 modeling/HBI/model-details/*.mat

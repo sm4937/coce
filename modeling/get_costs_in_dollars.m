@@ -12,6 +12,7 @@ costs = cost_parameters.*cost_scaling;
 
 col_names = toanalyze.Properties.VariableNames;
 relevant = contains(col_names,cost_labels,'IgnoreCase',true);
+relevant(contains(col_names,'otherlures','IgnoreCase',true)) = false;
 columns = table2array(toanalyze(:,relevant));
 
 %since z-scoring happened within subject, this transform should, too

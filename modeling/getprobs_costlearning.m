@@ -28,6 +28,10 @@ if ~realsubjectsflag
     nlures = onesim(:,11);
     nerrors = onesim(:,12);
     nFAs = onesim(:,13);
+    RTs = onesim(:,14);
+    notherlures = onesim(:,15);
+    pct_time_elapsed = onesim(:,16);
+    pct_iters_complete = onesim(:,17);
 elseif realsubjectsflag %fitting real subject data
     % the cost components (maintenance etc.) need to be z-scored to be
     % normally distributed
@@ -44,6 +48,10 @@ elseif realsubjectsflag %fitting real subject data
     nlures = zscore(onesim.nlures);
     nerrors = zscore(onesim.nerrors);
     nFAs = zscore(onesim.nFAs);
+    RTs = zscore(onesim.RTs);
+    notherlures = zscore(onesim.notherlures);
+    pct_time_elapsed = onesim.pct_time_elapsed;
+    pct_iters_complete = onesim.pct_iters_complete;
 end
 
 % Transform parameters if HBI model fitting being performed
@@ -53,13 +61,14 @@ if HBI_flag
     params = applyTrans_parameters(modeltofit,params);
 end
 
-[uc,epsilon,init,missc,mainc,matchc,noisec,respc,lurec,errorc,fac,alpha,delta] = set_param_values(params,modeltofit);
+[uc,epsilon,init,missc,mainc,matchc,noisec,respc,lurec,errorc,fac,rtc,otherlurec,alpha,delta] = set_param_values(params,modeltofit);
 ntrials = sum(~isnan(realratings));
 % in set_param_values, I scale cost parameters up, make sure epislon &
 % alpha are always positive, etc. as a function, it makes
 % simulating/fitting much easier to do
 
-costs = [uc missc mainc matchc noisec respc lurec errorc fac];
+costs = [uc missc mainc matchc noisec respc lurec errorc fac rtc otherlurec];
+costs_0 = costs;
 % put all costs in one vector
 % majority of models include only a few of the above costs, so the costs
 % not in play are set to 0 as a default
@@ -68,7 +77,7 @@ costs = [uc missc mainc matchc noisec respc lurec errorc fac];
 % themselves, as opposed to the alpha learning rule, which is implemented
 % through the incremental updating of unchanging cost values)
 
-components = [nupdates nmisses mains nmatches noisiness responses nlures nerrors nFAs];
+components = [nupdates nmisses mains nmatches noisiness responses nlures nerrors nFAs RTs notherlures];
 %costs = [uc missc mainc matchc noisec respc lurec errorc fac];
 % these HAVE to be in the right order (i.e. matched up) to draw any
 % inferences from the cost parameter values, so be careful changing these!!
@@ -82,17 +91,6 @@ ratings = [1 init].*(ones(1,max(display)));
 ratings_list = NaN(ntrials,1); %init for each subject 
 % initialize to correct length w placeholder values
 
-costs = repmat(costs,ntrials,1);
-if (modeltofit.delta || modeltofit.deltai)
-    for trial = 2:ntrials
-        costs(trial,:) = set_new_costs(costs(1,:),delta,trial);
-    end
-end
-% pre-update the costs according to the delta update rule specified in
-% set_new_costs.m, but only if it's a delta-type model. if not, the costs
-% are stable.
-
-cost = sum(costs.*components(1:ntrials,:),2); %add all the costs together
 for trial = 1:ntrials
     % loop over ratings (32 in total, though 1 subject's data wasn't saved
     % all the way through, so they have 30 or 31 ratings instead)
@@ -111,16 +109,37 @@ for trial = 1:ntrials
     % now, which task was actually completed? (won't always be the same as what
     % was rated)
     
+    % if it's a cost-changing (delta) model, update the costs according
+    % to delta below
+    time = pct_time_elapsed(trial);
+    iter = pct_iters_complete(trial);
+    if sum(contains(modeltofit.paramnames,'delta'))>0 & trial > 1
+        
+          % which delta model are you running? the default is the linear
+          % delta model from bioRxiv preprint 2023
+          two_delta_flag = modeltofit.delta_time & modeltofit.delta_practice;
+          quadratic_delta_flag = modeltofit.deltaexp;
+            
+          costs = set_new_costs(costs_0,delta,trial,quadratic_delta_flag,two_delta_flag,time,iter);
+  
+    end
+    
+    %add all the costs together
+    cost = costs*components(trial,:)';
+    % how costly was it, according to these parameter values?
+    
     % learn about the cumulative cost of completing that task
     % either with a learning rate of alpha or with a learning rate of 1
     % (complete update every trial)
     if modeltofit.alpha
-        ratings(stim) = ratings(stim) + alpha.*(cost(trial,:)-ratings(stim)); %delta rule
+        ratings(stim) = ratings(stim) + alpha.*(cost-ratings(stim)); %delta rule
     else %alpha fixed or no alpha
         %ratings(stim) = ratings(stim) + alpha*(cost); %compounding cost model
         %ratings(stim) = cost(trial); %no learning, no compounding, no delta rule. just a basic regression on last round
-        ratings(stim) = ratings(stim)+ 1*(cost(trial,:)-ratings(stim));
+        ratings(stim) = ratings(stim)+ 1*(cost-ratings(stim));
     end
+    
+    
     
 end
 
