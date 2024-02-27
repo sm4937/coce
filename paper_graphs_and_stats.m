@@ -1,5 +1,12 @@
-%% A script to print stats and paper stuff, with more upfront formatting and
-% fewer exploratory analyses
+%% A script to print the FIGURES (both main & some supplementary) from
+% WAGERS FOR WORK: Master, Curtis, & Dayan 2024 
+
+% There were four versions of this experiment. The fourth and final version
+% of this experiment is what made it to a full round of subject recruitment
+% & into the bioRxiv manuscript.
+% The first three versions were either too easy, or too hard.
+% Below we load the data from the public_data directory or from the native
+% data directory with all the raw participant files.
 
 %% Process raw jspsych text file data
 clear all
@@ -9,26 +16,42 @@ addpath('modeling/HBI/')
 addpath('modeling/')
 addpath(genpath('data_loading_and_scoring/'))
 
-%if isdir('data')
-if isdir('data')
+if isfolder('data')
+    
     % ALL experimental data, all 100 subjects live in 'data'
     load('data/filenames.mat')
     prefix = 'data/';
-    % grab all subjects from those files, then
-elseif isdir('example_data')
-    files{1} = 'example_data/example_subjs.mat';
-    prefix = 'example_data/';
+    % grab all subjects from those files, then load up the data from its
+    % raw format
+    [data,excluded] = load_cost_data(files); %load data in
+    
+elseif isfolder('public_data')
+    
+    % if you downloaded this repository from Github, you will likely also
+    % be using/loading the publicly available dataset, which has been
+    % scrubbed of identifying info & this cleaned version uploaded to OSF:
+    % 
+    
+    files{1} = 'public_data/example_subjs.mat';
+    prefix = 'public_data/';
+    % public data is already formatted such that identifying information
+    % (including text box responses) is not available
+    
+    load([prefix 'public_data.mat'])
+    % loads the table called "data" which is used below
+    
 end
-% version 4
-[data,excluded] = load_cost_data(files); %load data in
+
+% how many subjects? 100!
 n = height(data);
 
+% label tasks in the data set by their number & names
 tasks = [categorical(cellstr('detection'));categorical(cellstr('n1')); categorical(cellstr('ndetection')); categorical(cellstr('n2'))];
 tasklabels = {'1-detect','1-back','3-detect','2-back'};
 tasknumbers = [0,1,7,2];
-default_length = 32;
 
-inattentive = data.perf<60;
+default_length = 32; 
+%32 rounds by default, some data saving issues resulted in only 31 rounds for some subjects
 
 % save important variables for later
 for subj = 1:n
@@ -41,7 +64,7 @@ tasks_rts = [nanmean(data.detectrts,2) nanmean(data.n1rts,2) nanmean(data.ndetec
 data.taskfreqs = [sum(data.task_progression==tasks(1),2) sum(data.task_progression==tasks(2),2) sum(data.task_progression==tasks(3),2) sum(data.task_progression==tasks(4),2)];
 meanBDM = nanmean(data.values(:,2:end),2);
 
-%display variables
+%initialize display variables
 subjcolors = rand(n);subjcolors(:,4:end) = []; %delete unnecessary columns
 taskcolors = ptc6(6); %[0.75 0.75 0.75;0 0.75 0.75; 0.75 0.75 0; 0.75 0 0.75];
 taskcolors(4,:) = taskcolors(1,:);
@@ -52,10 +75,7 @@ modelcolors = parula(16);
 modelcolors = modelcolors(7:end,:);
 modelcolors = [modelcolors(1:2:end,:); flip(modelcolors(2:2:end,:))];
 
-list = data.subjnum;
-save([prefix 'fullsubjnumbers.mat'],'list');
-
-% Initial print-outs of demographics, etc., for beginning of methods
+%% Initial print-outs of demographics, etc., for beginning of methods
 % section
 
 disp(['Sample of ' num2str(n) ' subjects (' num2str(sum(data.sex==2)) ' female). Mean(std) age: ' num2str(nanmean(data.age)) '(' num2str(nanstd(data.age)) ')'])
@@ -483,8 +503,8 @@ group_level_variance_top_level(2) = sum(((xs'.*uc_dist)-group_level_means_top_le
 group_level_variance_top_level(3) = sum(((xs'.*lurec_dist)-group_level_means_top_level(2)).^2)./length(xs);
 group_level_variance_top_level(4) = sum(((xs'.*fac_dist)-group_level_means_top_level(2)).^2)./length(xs);
 
-N_bar(2) = sum(sum(cbm.output.responsibility(:,contains(best_model.overallfit.fitmodels,'uc')),1));
 N_bar(1) = sum(sum(cbm.output.responsibility(:,contains(best_model.overallfit.fitmodels,'mainc')),1));
+N_bar(2) = sum(sum(cbm.output.responsibility(:,contains(best_model.overallfit.fitmodels,'uc')),1));
 N_bar(3) = sum(sum(cbm.output.responsibility(:,contains(best_model.overallfit.fitmodels,'lurec')),1));
 N_bar(4) = sum(sum(cbm.output.responsibility(:,contains(best_model.overallfit.fitmodels,'fac')),1));
 

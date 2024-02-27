@@ -119,6 +119,9 @@ for subj = 1:nsubjs  %simulate the model for one subject at a time
         % to delta below
         time = pct_time_elapsed(trial);
         iter = pct_iters_complete(trial);
+        
+        % this evolving_costs variable can be used to plot the progression
+        % of costs according to delta models
         evolving_costs(1,:) = costs_0;
         if sum(contains(modeltosim.paramnames,'delta'))>0 & trial > 1
             
@@ -128,7 +131,6 @@ for subj = 1:nsubjs  %simulate the model for one subject at a time
             quadratic_delta_flag = modeltosim.deltaexp;
             
             costs = set_new_costs(costs_0,delta,trial,quadratic_delta_flag,two_delta_flag,time,iter);
-            %figure(10);scatter(trial*ones(1,sum(costs~=0)),costs(costs~=0));hold on
             evolving_costs(trial,:) = costs;
         end
         
@@ -163,7 +165,6 @@ for subj = 1:nsubjs  %simulate the model for one subject at a time
         % simdata matrix
                 
     end %of one subj run-through
-    %hold off
     
     % when we were having trouble fitting epsilon, I began calculating the
     % true epsilon for each subject, to rule out the possibiliy that
@@ -171,12 +172,17 @@ for subj = 1:nsubjs  %simulate the model for one subject at a time
     % problems. This is no longer an issue, but in case it's useful I've left
     % that functionality in.
     real_epsilon_opt(subj) = sqrt((1/ntrials) * sum(real_epsilon(:,4)).^2);
+        
+    % do you want to see how the total costs are evolving in response to
+    % delta models? turn the plot flag on!
+    plot_flag = false;
     
-    [simdata(:,4) simdata(:,3)];
-    
-    figure(11)
-    errorbar(1:ntrials,sum(evolving_costs,2),rand(ntrials,1),'LineWidth',1.5)
-    hold on
+    if plot_flag & sum(contains(modeltosim.paramnames,'delta'))>0
+        figure(11)
+        scatter(1:ntrials,sum(evolving_costs,2),'LineWidth',1.5)
+        set(gcf,'Color','w')
+        set(gca,'FontSize',15)
+    end
     
 end % of simulating all subjects
 

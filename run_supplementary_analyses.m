@@ -67,6 +67,7 @@ ylabel('Count')
 
 % Where in the task is dropout occurring?
 subplot(1,3,1)
+if contains(prefix,'public_data'); load('publib_data/excluded.mat'); end;
 bar([sum(excluded.values(excluded.exp_version==4,1:4))+n n])
 labels = [excluded.labels(1,1:4) 'finished'];
 xticklabels([labels])

@@ -20,6 +20,8 @@ example_data/*
 obsolete/*
 modeling/HBI/model-details/*.mat
 modeling/HBI/low-level-fits/*.mat
+modeling/HBI/plosCB_fits/*.mat
+modeling/HBI/obsolete_fits/*
 modeling/HBI/*.log
 modeling/HBI/*.mat
 modeling/HBI/HPC_functions/*

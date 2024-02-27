@@ -3,7 +3,7 @@
 % Takes a subplot label as the only argument
 
 % % Load up real subject's data
-load('simdata/toanalyze.mat')
+load([prefix '/toanalyze.mat'])
 %scale things appropriately
 toanalyze.BDM = (toanalyze.BDM./25) + 1;
 
