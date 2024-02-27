@@ -65,7 +65,7 @@ disp(['Mean total TOT: ' num2str(nanmean(data.totalTOT)) ', median total TOT: ' 
 %tasks = [detection,n1,3detection,n2];
 
 % turn on if you want to run a BUNCH of extra analyses
-extra_flag = true;
+extra_flag = false;
 % (don't recommend, if you have extra questions, you should open
 % run_supplementary_analyses and run it cell-by-cell according to what
 % you're interested in seeing)
@@ -84,17 +84,17 @@ clear vector; vector = tasks_overall(:); taskidentity = [ones(n,1); 2*ones(n,1);
 Table1 = table; Table1.onedetect = nanmean(vector(taskidentity==1)); Table1.oneback = nanmean(vector(taskidentity==2));
 Table1.threedetect = nanmean(vector(taskidentity==3)); Table1.twoback = nanmean(vector(taskidentity==4));
 Table1.Properties.RowNames{1} = 'Accuracy';
-[h,p] = ttest(vector(taskidentity==1),vector(taskidentity==2));
+[h,p,~,stats] = ttest(vector(taskidentity==1),vector(taskidentity==2));
 p_mat = NaN(3,3); p_mat(1,2) = p; p_mat(2,1) = p;
-[h,p] = ttest(vector(taskidentity==4),vector(taskidentity==2));
+[h,p,~,stats] = ttest(vector(taskidentity==4),vector(taskidentity==2));
 p_mat(2,4) = p; p_mat(4,2) = p;
-[h,p] = ttest(vector(taskidentity==1),vector(taskidentity==3));
+[h,p,~,stats] = ttest(vector(taskidentity==1),vector(taskidentity==3));
 p_mat(1,3) = p; p_mat(3,1) = p;
-[h,p] = ttest(vector(taskidentity==1),vector(taskidentity==4));
+[h,p,~,stats] = ttest(vector(taskidentity==1),vector(taskidentity==4));
 p_mat(1,4) = p; p_mat(4,1) = p;
-[h,p] = ttest(vector(taskidentity==3),vector(taskidentity==2));
+[h,p,~,stats] = ttest(vector(taskidentity==3),vector(taskidentity==2));
 p_mat(3,2) = p; p_mat(2,3) = p;
-[h,p] = ttest(vector(taskidentity==3),vector(taskidentity==4));
+[h,p,~,stats] = ttest(vector(taskidentity==3),vector(taskidentity==4));
 p_mat(3,4) = p; p_mat(4,3) = p;
 
 % COMPARE MEAN RTs ON TASK %
@@ -104,12 +104,12 @@ clear vector; vector = tasks_rts(:);
 temp = table; temp.onedetect = nanmean(vector(taskidentity==1)); temp.oneback = nanmean(vector(taskidentity==2));
 temp.threedetect = nanmean(vector(taskidentity==3)); temp.twoback = nanmean(vector(taskidentity==4));
 Table1 = [Table1; temp]; Table1.Properties.RowNames{2} = 'RT (msec)';
-[h,p] = ttest(vector(taskidentity==1),vector(taskidentity==2));
-[h,p] = ttest(vector(taskidentity==4),vector(taskidentity==2));
-[h,p] = ttest(vector(taskidentity==1),vector(taskidentity==3));
-[h,p] = ttest(vector(taskidentity==1),vector(taskidentity==4));
-[h,p] = ttest(vector(taskidentity==3),vector(taskidentity==2));
-[h,p] = ttest(vector(taskidentity==3),vector(taskidentity==4));
+[h,p,~,stats] = ttest(vector(taskidentity==1),vector(taskidentity==2));
+[h,p,~,stats] = ttest(vector(taskidentity==4),vector(taskidentity==2));
+[h,p,~,stats] = ttest(vector(taskidentity==1),vector(taskidentity==3));
+[h,p,~,stats] = ttest(vector(taskidentity==1),vector(taskidentity==4));
+[h,p,~,stats] = ttest(vector(taskidentity==3),vector(taskidentity==2));
+[h,p,~,stats] = ttest(vector(taskidentity==3),vector(taskidentity==4));
 
 % COMPARE DIFFICULTY RATINGS FROM END OF TASK %
 clear vector; vector = data.taskratings(:);
@@ -118,12 +118,12 @@ clear vector; vector = data.taskratings(:);
 temp = table; temp.onedetect = nanmean(vector(taskidentity==1)); temp.oneback = nanmean(vector(taskidentity==2));
 temp.threedetect = nanmean(vector(taskidentity==3)); temp.twoback = nanmean(vector(taskidentity==4));
 Table1 = [Table1; temp]; Table1.Properties.RowNames{3} = 'Difficulty';
-[h,p] = ttest(vector(taskidentity==1),vector(taskidentity==2));
-[h,p] = ttest(vector(taskidentity==4),vector(taskidentity==2));
-[h,p] = ttest(vector(taskidentity==1),vector(taskidentity==3));
-[h,p] = ttest(vector(taskidentity==1),vector(taskidentity==4));
-[h,p] = ttest(vector(taskidentity==3),vector(taskidentity==2));
-[h,p] = ttest(vector(taskidentity==3),vector(taskidentity==4));
+[h,p,~,stats] = ttest(vector(taskidentity==1),vector(taskidentity==2));
+[h,p,~,stats] = ttest(vector(taskidentity==4),vector(taskidentity==2));
+[h,p,~,stats] = ttest(vector(taskidentity==1),vector(taskidentity==3));
+[h,p,~,stats] = ttest(vector(taskidentity==1),vector(taskidentity==4));
+[h,p,~,stats] = ttest(vector(taskidentity==3),vector(taskidentity==2));
+[h,p,~,stats] = ttest(vector(taskidentity==3),vector(taskidentity==4));
 
 % COMPARE MEAN BDM RATINGS %
 n1 = data.task_displayed==tasknumbers(2); %1
@@ -134,13 +134,13 @@ temp = table; temp.onedetect = NaN; temp.oneback = nanmean(data.values(n1));
 temp.threedetect = nanmean(data.values(ndetect)); temp.twoback = nanmean(data.values(n2));
 Table1 = [Table1; temp]; Table1.Properties.RowNames{4} = 'Fair wage';
 p_mat_BDM = NaN(3,3);
-[h,p] = ttest2(data.values(n1),data.values(n2));
+[h,p,~,stats] = ttest2(data.values(n1),data.values(n2));
 disp (['t-test 1-back versus 2-back BDM values p = ' num2str(p)]);
 p_mat_BDM(1,3) = p; p_mat_BDM(3,1) = p;
-[h,p] = ttest2(data.values(ndetect),data.values(n2));
+[h,p,~,stats] = ttest2(data.values(ndetect),data.values(n2));
 disp (['t-test 2-back versus 3-detect BDM values p = ' num2str(p)]); %task 2 values versus task 3 values
 p_mat_BDM(3,2) = p; p_mat_BDM(2,3) = p;
-[h,p] = ttest2(data.values(n1),data.values(ndetect));
+[h,p,~,stats] = ttest2(data.values(n1),data.values(ndetect));
 disp (['t-test 1-back versus 3-detect BDM values p = ' num2str(p)]); %task 1 values versus task 3 values
 p_mat_BDM(1,2) = p; p_mat_BDM(2,1) = p;
 % basically it's task 2 versus the world
@@ -327,7 +327,12 @@ iternum = repmat([1 2 3 4 5 6 7 8 9 10],n*3,1);
 % % BEGIN FIGURE 3 % % 
 
 % LOAD MODELING RESULTS FROM HBI FOLDER
+% BIORXIV PREPRINT
 load('modeling/HBI/HBI_modelStruct_2023.mat');
+
+%PLOS CB REVISIONS - SUPPLEMENTAL MODEL FITS
+%load('modeling/HBI/HBI_modelStruct_2024.mat');
+
 cbm = best_model.cbm;
 
 freqs = cbm.output.model_frequency;
@@ -590,84 +595,7 @@ title('All subjects')
 clean_fig();
 
 
-% is error cost related to perfectionism?
-
-%1) Standard correlation of error cost parameter magnitude and
-%perfectionism scores (SAPS)
-
-% where lure cost parameter in output?
-model = coc_createModels(best_model.overallfit.fitmodels{5});
-column = find(contains(model.paramnames,'fac'));
-
-% interference costs from second-best model (number 3)
-fa_costs = cbm.output.parameters{5}(:,column);
-
-[r,p] = corr(fa_costs(~isnan(data.SAPS)),data.SAPS(~isnan(data.SAPS)));
-
-%2) Tertile split, then examine SAPS tertiles' FA costs
-% doesn't really make sense because... FA costs only explain 8 subjects'
-% data, so not the best way to look at stuff, but I'm curious.
-count = 0;
-split = tertile_split(data.SAPS);
-low = fa_costs(split==1); mid = fa_costs(split==2); high = fa_costs(split==3);
-
-[h,pval1] = ttest2(low,mid);
-[h,pval2] = ttest2(high,mid);
-[h,pval3] = ttest2(low,high);
-ps = [NaN pval1 pval3; pval1 NaN pval2; pval3 pval2 NaN];
-
-X = [ones(length(data.SAPS),1) data.SAPS]; invalid = isnan(data.SAPS);
-X(invalid,:) = [];
-Y = fa_costs; Y(invalid,:) = [];
-[betas,BINV,~,~,stats] = regress(Y,X);
-% get betas for quadratic term
-predicted = X*betas;
-distance = predicted-Y; MSE = distance'*distance; %squared distance
-if stats(3)<0.05
-    disp(['SAPS significant betas on FA costs, linear & quadratic: ' num2str(betas')])
-    disp(['p value = ' num2str(stats(3))])
-end
-
-figure;
-% plot effect of SAPS group on FA cost values
-superbar([nanmean(low) nanmean(mid) nanmean(high)], ...
-    'E',[nanstd(low) nanstd(mid) nanstd(high)]./sqrt(n), ...
-    'P',ps,'BarFaceColor',SAPScolors,'PStarShowNS',false,'PStarBackgroundColor','None');
-ylabel('False alarm costs')
-%title(model_labels{modelnum})
-xticks([1:3])
-xtickangle(30)
-xticklabels({['Low'],['Mid'],['High']})
-xlabel(['SAPS group'])
-clean_fig();
-
-% 3) are subjects in FA cost model more perfectionist than other subjects?
-FA_subjects = assignments==5 | assignments==16; others = assignments~=5;
-figure;
-bar([nanmean(data.SAPS(FA_subjects)) nanmean(data.SAPS(others))],'FaceColor',SAPScolors(2,:))
-hold on
-errorbar([nanmean(data.SAPS(FA_subjects)) nanmean(data.SAPS(others))],...
-    [nanstd(data.SAPS(FA_subjects)) nanstd(data.SAPS(others))]./[sqrt(sum(FA_subjects)) sqrt(sum(others))],...
-    'k*')
-xticklabels({'Subjs w/ FA costs','Subjs w/o'})
-clean_fig();
-
-
-% % Another model-agnostic to model-dependent finding:
-% are subjects with more than 1 cost more effort-approaching than others?
-% no, but subject numbers are way off here, anyway
-more_than_one_cost = assignments>6;
-figure
-bar([nanmean(data.NFC(more_than_one_cost)) nanmean(data.NFC(~more_than_one_cost))], ...
-    'FaceColor',NFCcolors(2,:))
-hold on
-errorbar([nanmean(data.NFC(more_than_one_cost)) nanmean(data.NFC(~more_than_one_cost))], ...
-    [nanstd(data.NFC(more_than_one_cost))./sqrt(sum(more_than_one_cost)) nanstd(data.NFC(~more_than_one_cost))./sqrt(sum(~more_than_one_cost))], ...
-    '*k','LineWidth',2)
-[h,p] = ttest2(data.NFC(more_than_one_cost),data.NFC(~more_than_one_cost));
-
-
-%% BEGIN SUPPLEMENTARY FIGURE 1
+%% BEGIN SUPPLEMENTARY FIGURE 2
 % Individual differences measures, as measured by questionnaires.
 % Their spread (histograms) and relationship to each other (scatter plots).
 % Primarily examining Need for Cognition (NFC) and Short Almost Perfect
@@ -831,7 +759,8 @@ matrix = [nanmean(n1subjvalue,2) nanmean(n2subjvalue,2) nanmean(n3subjvalue,2) d
 matrix(sum(isnan(matrix),2)>0,:) = [];
 [r,p] = corr(matrix);
 
-%% Another way of looking at the stuff above (differences between NFC & SAPS groups)
+%% MAKE FIGURE 4 %%
+% Another way of looking at the stuff above (differences between NFC & SAPS groups)
 % within subjects
 
 % now distinguishing between which subjects were best fit by each model
@@ -856,6 +785,8 @@ for measure = 1:2  %set measure = 1:2 to see SAPS score bins also, not just NFC
     paramnames = strrep(paramnames,'epsilon','\sigma');
     paramnames = strrep(paramnames,'alpha','\alpha');
     %paramnames{3} = 'maintenance cost';
+    
+    % who is best described by the update costs model?
     [~,assignments] = max(best_model.cbm.output.responsibility,[],2);
     modelgroup = assignments==modelnum;
     X = X(modelgroup(~invalid),:);
@@ -1018,7 +949,7 @@ for measure = 1:2
     
 end
 
-%% SUPPLEMENTARY FIGURE 4
+%% SUPPLEMENTARY FIGURE 1
 % Also, one fairly complicated analysis to uncover whether more task
 % iterations leads to a difference in BDM fair wage requests,
 % which had to be run according to how many task iterations the subjects
@@ -1041,6 +972,7 @@ for task = 1:3
     
     first_vs_last_values = [];
     first_vs_last_accuracies = [];
+    first_vs_last_rts = [];
     % initialize this - it's task-specific
     
     subplot(3,1,task)
@@ -1066,11 +998,14 @@ for task = 1:3
         if task == 1 
             %1-back
             accuracies = data.n1acc(idx,:);
+            RTs = data.n1rts(idx,:);
         elseif task == 2
             % 3-detect
             accuracies = data.ndetectacc(idx,:);
+            RTs = data.ndetectrts(idx,:);
         elseif task == 3
             accuracies = data.n2acc(idx,:);
+            RTs = data.n2rts(idx,:);
         end
         values = data.values(idx,:);
         values(data.task_displayed(idx,:)~=tasknumbers(task+1)) = NaN;
@@ -1093,9 +1028,11 @@ for task = 1:3
                     % also AFTER LAST TASK ITERATIONS
                     % (first half ratings versus last half ratings)
                     % where TASK ITERATION is what divides the HALVES
+                    first_vs_last_rts = [first_vs_last_rts; nanmean(RTs(subj,[firsts lasts]),1)];
                 else
                     first_vs_last_values = [first_vs_last_values; nanmean(values(subj,firsts)) nanmean(values(subj,lasts))];
                     first_vs_last_accuracies = [first_vs_last_accuracies; nanmean(accuracies(subj,firsts)) nanmean(accuracies(subj,lasts))];
+                    first_vs_last_rts = [first_vs_last_rts; nanmean(RTs(subj,firsts)) nanmean(RTs(subj,lasts))];
                 end
             end
         end
@@ -1107,8 +1044,10 @@ for task = 1:3
     xlim([0.5 10.5])
     clean_fig();
     
-    [h,p] = ttest(first_vs_last_values(:,1),first_vs_last_values(:,2));
-    [h,p] = ttest(first_vs_last_accuracies(:,1), first_vs_last_accuracies(:,2));
+    [h,p,~,stats] = ttest(first_vs_last_values(:,1),first_vs_last_values(:,2));
+    [h,p,~,stats] = ttest(first_vs_last_accuracies(:,1), first_vs_last_accuracies(:,2));
+    % adding in test of first/last mean reaction times - changes there?
+    [h,p,~,stats] = ttest(first_vs_last_rts(:,1), first_vs_last_rts(:,2));    
     
     
 end % of task loop

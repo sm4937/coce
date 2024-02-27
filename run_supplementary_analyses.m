@@ -421,6 +421,8 @@ ylabel('Accuracy')
 % the computer isn't random & is maybe going lower on its bids)
 
 %plot BDM request by previous offer
+all_subj_matrix = [];
+
 subplot(1,2,2)
 for row = 1:n
     y = data.offers(row,:)';
@@ -428,6 +430,9 @@ for row = 1:n
     matrix = sortrows([y,x],1);
     plot(matrix(:,1),matrix(:,2),'o')
     hold on
+    matrix(sum(isnan(matrix),2)>0,:) = [];
+    [r,ps(row)] = corr(matrix(:,1),matrix(:,2),'type','Spearman');
+    all_subj_matrix = [all_subj_matrix; matrix];
 end
 ax = gca; fig = gcf;
 fig.Color = 'w';
@@ -436,6 +441,12 @@ title('BDM value by prev. computer offer')
 ylim([1 5.1])
 ylabel('BDM points')
 xlabel('Last offer')
+
+% big correlation
+[r,p] = corr(all_subj_matrix(:,1),all_subj_matrix(:,2),'type','Spearman');
+
+% how many correlations come out on individual level?
+n_sig_individual_corr = sum(ps<0.05);
 
 %% Plot late responses/changed responses by task
 
@@ -1196,9 +1207,7 @@ for task = 1:length(tasklabels)
     prune = [tasks_overall(:,task) data.taskratings(:,task)];
     prune(isnan(tasks_overall(:,task))|isnan(data.taskratings(:,task)),:) = [];
     [r,p] = corr(prune(:,1),prune(:,2));
-    if p<0.05
-        disp(['relationship between ' tasklabels{task} ' overall acc and diff rating r = ' num2str(r) ' p = ' num2str(p)])
-    end
+    disp(['relationship between ' tasklabels{task} ' overall acc and diff rating r = ' num2str(r) ' p = ' num2str(p)])
 end
 title('Difficulty rating by overall accuracy')
 ylabel('Rating')
@@ -1265,6 +1274,7 @@ title('Points on Offer by Performance')
 xlabel('Accuracy')
 ylabel('Points to Win')
 
+split = tertile_split(data.NFC);
 NFCdata{1} = []; NFCdata{2} = []; NFCdata{3} = [];
 for subj = 1:n
     points = NaN(1,default_length);
@@ -1302,8 +1312,7 @@ end
 % more params, more groups plotted (as in, people also best fit by 2nd and
 % 3rd winning models, not just people best fit by 1st winning model)
 
-%modelfits = load('data/modelfits_2_models_13-Jan-2021.mat'); %miss c, response c, lure c - most recoverable
-modelfits = load('modeling/HBI/HBI_modelStruct.mat');
+modelfits = load('modeling/HBI/HBI_modelStruct_2023.mat');
 no_fits = load('simdata/toanalyze.mat','trim'); no_fits = no_fits.trim;
 % remove subjects who weren't fit to models
 % grab best model
@@ -1424,7 +1433,7 @@ for measure = 1:2
             disp([names{measure} ' betas on ' paramnames{costs(c)} ', linear & quadratic: ' num2str(betas')])
             
             % plot effect of measure group on parameter values
-            subplot(4,2,count)
+            subplot(8,2,count)
             for group = 1:3
                 relevant = values(split==group,c);
                 bar(group,nanmean(relevant),'FaceColor',colors(group,:))
@@ -1443,4 +1452,134 @@ for measure = 1:2
     
 end %of cycling over SAPS & NFC
 
+%% RELATE MORE MODEL-AGNOSTIC FINDINGS TO MORE MODEL-BASED FINDINGS 
+
+% is error cost related to perfectionism?
+
+%1) Standard correlation of error cost parameter magnitude and
+%perfectionism scores (SAPS)
+
+% where lure cost parameter in output?
+modelstofit = best_model.overallfit.fitmodels;
+model = coc_createModels(modelstofit{5});
+column = find(contains(model.paramnames,'fac'));
+cbm = best_model.cbm;
+[~,assignments] = max(cbm.output.responsibility,[],2);
+
+% interference costs from second-best model (number 3)
+fa_costs = cbm.output.parameters{5}(:,column);
+
+[r,p] = corr(fa_costs(~isnan(data.SAPS)),data.SAPS(~isnan(data.SAPS)));
+
+%2) Tertile split, then examine SAPS tertiles' FA costs
+% doesn't really make sense because... FA costs only explain 8 subjects'
+% data, so not the best way to look at stuff, but I'm curious.
+count = 0;
+split = tertile_split(data.SAPS);
+low = fa_costs(split==1); mid = fa_costs(split==2); high = fa_costs(split==3);
+
+[h,pval1] = ttest2(low,mid);
+[h,pval2] = ttest2(high,mid);
+[h,pval3] = ttest2(low,high);
+ps = [NaN pval1 pval3; pval1 NaN pval2; pval3 pval2 NaN];
+
+X = [ones(length(data.SAPS),1) data.SAPS]; invalid = isnan(data.SAPS);
+X(invalid,:) = [];
+Y = fa_costs; Y(invalid,:) = [];
+[betas,BINV,~,~,stats] = regress(Y,X);
+% get betas for quadratic term
+predicted = X*betas;
+distance = predicted-Y; MSE = distance'*distance; %squared distance
+if stats(3)<0.05
+    disp(['SAPS significant betas on FA costs, linear & quadratic: ' num2str(betas')])
+    disp(['p value = ' num2str(stats(3))])
+end
+
+figure;
+% plot effect of SAPS group on FA cost values
+superbar([nanmean(low) nanmean(mid) nanmean(high)], ...
+    'E',[nanstd(low) nanstd(mid) nanstd(high)]./sqrt(n), ...
+    'P',ps,'BarFaceColor',SAPScolors,'PStarShowNS',false,'PStarBackgroundColor','None');
+ylabel('False alarm costs')
+%title(model_labels{modelnum})
+xticks([1:3])
+xtickangle(30)
+xticklabels({['Low'],['Mid'],['High']})
+xlabel(['SAPS group'])
+ylabel('Mean false alarm cost')
+clean_fig();
+
+% 3) are subjects in FA cost model more perfectionist than other subjects?
+FA_subjects = assignments==5 | assignments==16; others = assignments~=5;
+figure;
+bar([nanmean(data.SAPS(FA_subjects)) nanmean(data.SAPS(others))],'FaceColor',SAPScolors(2,:))
+hold on
+errorbar([nanmean(data.SAPS(FA_subjects)) nanmean(data.SAPS(others))],...
+    [nanstd(data.SAPS(FA_subjects)) nanstd(data.SAPS(others))]./[sqrt(sum(FA_subjects)) sqrt(sum(others))],...
+    'k*')
+xticklabels({'Subjs w/ FA costs','Subjs w/o'})
+ylabel('Mean SAPS score')
+clean_fig();
+
+
+% % Another model-agnostic to model-dependent finding:
+% are subjects with more than 1 cost more effort-approaching than others?
+% no, but subject numbers are way off here, anyway
+more_than_one_cost = assignments>6;
+figure
+bar([nanmean(data.NFC(more_than_one_cost)) nanmean(data.NFC(~more_than_one_cost))], ...
+    'FaceColor',NFCcolors(2,:))
+hold on
+errorbar([nanmean(data.NFC(more_than_one_cost)) nanmean(data.NFC(~more_than_one_cost))], ...
+    [nanstd(data.NFC(more_than_one_cost))./sqrt(sum(more_than_one_cost)) nanstd(data.NFC(~more_than_one_cost))./sqrt(sum(~more_than_one_cost))], ...
+    '*k','LineWidth',2)
+ylabel('NFC score')
+xlabel('Group')
+xticklabels({'Subjects w more than 1 cost','Subjects w 1 cost in best model'})
+xtickangle(45)
+clean_fig()
+[h,p] = ttest2(data.NFC(more_than_one_cost),data.NFC(~more_than_one_cost));
+
+% % Lastly, subjects who randomly respond to NFC questionnaire, as well as
+% respond randomly on the BDM, will have 1) mid NFC score and 2) poor model
+% fit as exhibited by high sigma parameter. Is that intuition correct?
+
+%  Some subjects are poorly described even by their best model
+% Identify outliers in sigma to identify these subjects
+% They may be influencing other analyses in an outsized way (e.g. NFC
+% analyses)
+
+for sii = 1:n
+    
+    model = assignments(sii);
+    model_structure = coc_createModels(modelstofit{model});
+    sigma_index = contains(model_structure.paramnames,'epsilon');
+    % yes, confusingly, I misnamed the std (sigma) parameter at first, and just
+    % left it that way to avoid any strange bugs that could arise from
+    % trying to re-name everything
+    sigma_sii = cbm.output.parameters{model}(sii,sigma_index);
+    sigmas_from_best_models(sii) = exp(sigma_sii);
+    
+end
+
+%visually identify outliers
+figure
+scatter(1:n,sort(sigmas_from_best_models))
+ylabel('\sigma value from best model')
+xlabel('Subject # (sorted)')
+clean_fig();
+
+% cutoff, visually, appears to be sigma values of/above 1 
+bad_fits = find(sigmas_from_best_models>1);
+good_fits = 1:n; good_fits(bad_fits) = [];
+
+figure
+errorbar([nanmean(data.NFC(good_fits)) nanmean(data.NFC(bad_fits))], ...
+    [nanstd(data.NFC(good_fits)) nanstd(data.NFC(bad_fits))]./[sqrt(length(good_fits)) sqrt(length(bad_fits))], ...
+    'k','LineWidth',2)
+set(gcf,'color','w')
+ylabel('Mean NFC score')
+xlabel('Group')
+xticks([1 2]); xlim([0.75 2.25])
+xticklabels({'Good model fits','Bad fits'})
 
